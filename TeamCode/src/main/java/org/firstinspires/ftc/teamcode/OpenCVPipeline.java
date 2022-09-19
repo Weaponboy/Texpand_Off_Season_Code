@@ -14,10 +14,10 @@ public class OpenCVPipeline extends OpenCvPipeline {
 
     //Initialise camera
     int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-    WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
-    OpenCvCamera camera = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
 
-    //Start streaming from camera
+    WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
+    OpenCvCamera Texpandcamera = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
+
 
     @Override
     public Mat processFrame(Mat input) {
