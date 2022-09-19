@@ -17,7 +17,6 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 public class Pipeline extends OpenCvPipeline {
-
     Mat mat = new Mat();
     public enum Location {
         blue,
@@ -34,7 +33,6 @@ public class Pipeline extends OpenCvPipeline {
 
     @Override
     public Mat processFrame(Mat input) {
-
         Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV);
         Scalar yellow = new Scalar(59, 93 ,100);
         Scalar blue = new Scalar(235, 90, 100);
@@ -78,8 +76,11 @@ public class Pipeline extends OpenCvPipeline {
         telemetry.update();
 
         Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV);
-
-        
+        return input;
 
     }
 }
+
+
+
+
