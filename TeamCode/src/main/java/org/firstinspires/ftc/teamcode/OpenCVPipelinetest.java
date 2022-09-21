@@ -36,10 +36,22 @@ public class OpenCVPipelinetest extends LinearOpMode {
             public void onError(int errorCode)
             {
 
-                
             }
         });
 
+        switch (pipeline.getLocation()){
+            case red:
+                telemetry.addData("Position", "Red");
+                break;
+            case blue:
+                telemetry.addData("Position", "Blue");
+                break;
+            case yellow:
+                telemetry.addData("Position", "Bellow");
+                break;
+            default:
+        }
+        telemetry.update();
         waitForStart();
 
         Texpandcamera.closeCameraDevice();

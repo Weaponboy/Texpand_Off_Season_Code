@@ -75,9 +75,22 @@ public class Pipeline extends OpenCvPipeline {
         }
         telemetry.update();
 
-        Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV);
-        return input;
+        Imgproc.cvtColor(input, mat, Imgproc.COLOR_GRAY2RGB);
 
+        Scalar bluerect = new Scalar(0, 0, 250);
+        Scalar yellowrect = new Scalar(0, 250, 0);
+        Scalar redrect = new Scalar(250, 0, 0);
+
+        Imgproc.rectangle(mat, center, location == Location.blue? bluerect:yellowrect);
+        Imgproc.rectangle(mat, center, location == Location.yellow? yellowrect:bluerect);
+        Imgproc.rectangle(mat, center, location == Location.red? redrect:bluerect);
+
+        return mat;
+
+    }
+
+    public Location getLocation(){
+        return location;
     }
 }
 
