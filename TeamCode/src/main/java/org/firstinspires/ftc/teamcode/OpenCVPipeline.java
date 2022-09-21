@@ -6,9 +6,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.opencv.core.Mat;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
-import org.openftc.easyopencv.OpenCvWebcam;
 
 public class OpenCVPipeline extends OpenCvPipeline {
 
@@ -19,8 +17,10 @@ public class OpenCVPipeline extends OpenCvPipeline {
 
     //Start streaming from camera
 
+
     @Override
     public Mat processFrame(Mat input) {
         return null;
     }
+
 }
