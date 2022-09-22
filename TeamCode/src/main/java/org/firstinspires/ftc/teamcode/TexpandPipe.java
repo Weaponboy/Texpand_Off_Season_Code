@@ -16,7 +16,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-public class Pipeline extends OpenCvPipeline {
+public class TexpandPipe extends OpenCvPipeline {
     Mat mat = new Mat();
     public enum Location {
         blue,
@@ -26,8 +26,9 @@ public class Pipeline extends OpenCvPipeline {
     }
     private Location location;
     static final Rect center = new Rect(
-            new Point(35, 75),
-            new Point(75, 35));
+            new Point(250, 75),
+            new Point(75, 35)
+    );
 
     static double COLOR_THRESHOLD = 0.4;
 

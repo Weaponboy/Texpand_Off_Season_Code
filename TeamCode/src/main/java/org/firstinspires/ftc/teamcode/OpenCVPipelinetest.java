@@ -1,21 +1,17 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.opencv.core.Mat;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvPipeline;
 
 @Autonomous
 public class OpenCVPipelinetest extends LinearOpMode {
 
-    Pipeline pipeline;
+    TexpandPipe texpipeline = new TexpandPipe();
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -24,7 +20,7 @@ public class OpenCVPipelinetest extends LinearOpMode {
         WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
 
         OpenCvCamera Texpandcamera = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
-        Texpandcamera.setPipeline(pipeline);
+        Texpandcamera.setPipeline(new TexpandPipe());
         Texpandcamera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
         {
             @Override
@@ -39,7 +35,7 @@ public class OpenCVPipelinetest extends LinearOpMode {
             }
         });
 
-        switch (pipeline.getLocation()){
+        switch (texpipeline.getLocation()){
             case red:
                 telemetry.addData("Position", "Red");
                 break;
