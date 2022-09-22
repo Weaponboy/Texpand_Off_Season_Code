@@ -11,11 +11,13 @@ import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
+import org.firstinspires.ftc.teamcode.Pipeline;
 
 @Autonomous
 public class OpenCVPipelinetest extends LinearOpMode {
 
-    Pipeline pipeline;
+
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -24,7 +26,7 @@ public class OpenCVPipelinetest extends LinearOpMode {
         WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
 
         OpenCvCamera Texpandcamera = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
-        Texpandcamera.setPipeline(pipeline);
+        Texpandcamera.setPipeline(new Pipeline());
         Texpandcamera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
         {
             @Override
@@ -39,19 +41,19 @@ public class OpenCVPipelinetest extends LinearOpMode {
             }
         });
 
-        switch (pipeline.getLocation()){
-            case red:
-                telemetry.addData("Position", "Red");
-                break;
-            case blue:
-                telemetry.addData("Position", "Blue");
-                break;
-            case yellow:
-                 telemetry.addData("Position", "Bellow");
-                 break;
-                 default:
-        }
-        telemetry.update();
+//        switch (pipeline.getLocation()){
+//            case red:
+//                telemetry.addData("Position", "Red");
+//                break;
+//            case blue:
+//                telemetry.addData("Position", "Blue");
+//                break;
+//            case yellow:
+//                 telemetry.addData("Position", "Bellow");
+//                 break;
+//                 default:
+//        }
+        //telemetry.update();
 
 
         waitForStart();
