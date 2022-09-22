@@ -47,11 +47,13 @@ public class OpenCVPipelinetest extends LinearOpMode {
                 telemetry.addData("Position", "Blue");
                 break;
             case yellow:
-                telemetry.addData("Position", "Bellow");
-                break;
-            default:
+                 telemetry.addData("Position", "Bellow");
+                 break;
+                 default:
         }
         telemetry.update();
+
+
         waitForStart();
 
         Texpandcamera.closeCameraDevice();
