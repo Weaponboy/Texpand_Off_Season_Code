@@ -56,9 +56,9 @@ public class Josh_Test_Pipeline extends OpenCvPipeline {
         Scalar yellowup = new Scalar(255, 255, 102);
         Scalar yellowdown = new Scalar(204, 204, 0);
 
-        Core.inRange(workingMatrix, purpleup, purpledown, Purple);
-        Core.inRange(workingMatrix, greenup, greendown, Green);
-        Core.inRange(workingMatrix, yellowup, yellowdown, Yellow);
+        Core.inRange(Purple, purpleup, purpledown, Purple);
+        Core.inRange(Green, greenup, greendown, Green);
+        Core.inRange(Yellow, yellowup, yellowdown, Yellow);
 
         getPurple = Purple.submat(center);
         getGreen = Green.submat(center);
