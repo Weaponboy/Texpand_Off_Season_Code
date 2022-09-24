@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -11,7 +11,6 @@ import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 public class Pipeline extends OpenCvPipeline {
-    public Pipeline() { }
     
     Mat output = new Mat();
     public enum Location {
@@ -20,7 +19,8 @@ public class Pipeline extends OpenCvPipeline {
         yellow,
         not_found
     }
-    private Location location;
+    private static Location location;
+
     static final Rect center = new Rect(
             new Point(35, 75),
             new Point(75, 35));
@@ -50,6 +50,7 @@ public class Pipeline extends OpenCvPipeline {
         bluecheck.release();
         redcheck.release();
 
+
         boolean yellowtrue = YELLOW > COLOR_THRESHOLD;
         boolean bluetrue = BLUE > COLOR_THRESHOLD;
         boolean redtrue = RED > COLOR_THRESHOLD;
@@ -58,11 +59,11 @@ public class Pipeline extends OpenCvPipeline {
                 location = Location.yellow;
                 //telemetry.addData("Color", "yellow");
             }
-            if (bluetrue){
+            else if (bluetrue){
                 location = Location.blue;
                 //telemetry.addData("Color", "blue");
             }
-            if (redtrue){
+            else if (redtrue){
                 location = Location.red;
                 //telemetry.addData("Color", "red" );
             }else{
