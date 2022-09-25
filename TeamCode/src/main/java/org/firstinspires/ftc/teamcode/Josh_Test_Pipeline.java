@@ -51,10 +51,12 @@ public class Josh_Test_Pipeline extends OpenCvPipeline {
         input.copyTo(Yellow);
         input.copyTo(Green);
 
+        //to prevent errors
         if (workingMatrix.empty()){
             return input;
         }
 
+        //color scales
         Scalar purpleup = new Scalar(178, 102, 255);
         Scalar purpledown = new Scalar(51, 0, 102);
         Scalar greenup = new Scalar(51, 255, 51);
@@ -62,6 +64,7 @@ public class Josh_Test_Pipeline extends OpenCvPipeline {
         Scalar yellowup = new Scalar(255, 255, 102);
         Scalar yellowdown = new Scalar(204, 204, 0);
 
+        // check for colors on the matrix's
         Core.inRange(Purple, purpleup, purpledown, Purple);
         Core.inRange(Green, greenup, greendown, Green);
         Core.inRange(Yellow, yellowup, yellowdown, Yellow);
