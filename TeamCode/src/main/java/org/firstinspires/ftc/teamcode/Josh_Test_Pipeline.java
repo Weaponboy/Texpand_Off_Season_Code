@@ -16,19 +16,24 @@ public class Josh_Test_Pipeline extends OpenCvPipeline {
     Telemetry telemetry;
     public Josh_Test_Pipeline(Telemetry t){telemetry = t;}
 
+    //create matrix's
     Mat workingMatrix = new Mat();
     Mat Purple = new Mat();
     Mat Yellow = new Mat();
     Mat Green = new Mat();
 
+    // region of interest
     static final Rect center = new Rect(new Point(0, 0), new Point(640, 480));
 
+    //storing color
     Mat getYellow;
     Mat getGreen;
     Mat getPurple;
 
+    //color threshold
     static double COLOR_THRESHOLD = 0.4;
 
+    //store location
     public enum Location {
         purple,
         green,
@@ -40,6 +45,7 @@ public class Josh_Test_Pipeline extends OpenCvPipeline {
 
     @Override
     public Mat processFrame(Mat input) {
+        //copy to all matrix's
         input.copyTo(workingMatrix);
         input.copyTo(Purple);
         input.copyTo(Yellow);
