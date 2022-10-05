@@ -27,13 +27,8 @@ public class Josh_Test_Pipeline extends OpenCvPipeline {
     // region of interest
     static final Rect center = new Rect(new Point(100, 100), new Point(550, 350));
 
-    //storing color
-    Mat getYellow = new Mat();
-    Mat getGreen = new Mat();
-    Mat getPurple = new Mat();
-
     //color threshold
-    static double COLOR_THRESHOLD = 0.04;
+    static double COLOR_THRESHOLD = 0.001;
 
     //store location
 //    public enum Location {
@@ -54,16 +49,10 @@ public class Josh_Test_Pipeline extends OpenCvPipeline {
         input.copyTo(Yellow);
         input.copyTo(Green);
 
-        //to prevent errors
-//        if (workingMatrix.empty()){
-//            return input;
-//        }
-
         //color scales
         Imgproc.cvtColor(Purple, Purple, Imgproc.COLOR_RGB2HSV);
         Imgproc.cvtColor(Yellow, Yellow, Imgproc.COLOR_RGB2HSV);
         Imgproc.cvtColor(Green, Green, Imgproc.COLOR_RGB2HSV);
-        
 
         Scalar purpleup = new Scalar(320, 100, 255);
         Scalar purpledown = new Scalar(260, 22, 31);
@@ -77,12 +66,13 @@ public class Josh_Test_Pipeline extends OpenCvPipeline {
         Core.inRange(Green, greendown, greenup, Green);
         Core.inRange(Yellow, yellowdown, yellowup, Yellow);
 
-
+        Purple.submat(center);
+        Green.submat(center);
+        Yellow.submat(center);
 
         double PURPLE = Math.round(Core.mean(Purple).val[0] / 255);
         double GREEN = Math.round(Core.mean(Green).val[0] / 255);
         double YELLOW = Math.round(Core.mean(Yellow).val[0] / 255);
-
 
         Scalar greenrect = new Scalar(0, 204, 0);
         Scalar yellowrect = new Scalar(204, 204, 0);
