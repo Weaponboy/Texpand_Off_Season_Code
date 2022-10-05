@@ -139,15 +139,15 @@ class Josh_Test_Pipeline_indent extends OpenCvPipeline {
 
         if (YELLOW > COLOR_THRESHOLD){
 ////            location = Location.yellow;
-            Imgproc.rectangle(workingMatrix, center, yellowrect);
+            Imgproc.rectangle(workingMatrix, center, yellowrect, 1);
             telemetry.addData("Color", "Yellow");
         }else if (GREEN > COLOR_THRESHOLD){
 ////            location = Location.green;
-            Imgproc.rectangle(workingMatrix, center, greenrect);
+            Imgproc.rectangle(workingMatrix, center, greenrect, 1);
             telemetry.addData("Color", "Green");
         }else if (PURPLE > COLOR_THRESHOLD){
 ////            location = Location.purple;
-            Imgproc.rectangle(workingMatrix, center, purplerect);
+            Imgproc.rectangle(workingMatrix, center, purplerect, 1);
             telemetry.addData("Color", "Purple");
         }
 ////        else{
