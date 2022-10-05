@@ -1,64 +1,39 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.opencv.core.Mat;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
-import org.firstinspires.ftc.teamcode.Pipeline;
-
 
 @Autonomous
-public class OpenCVPipelinetest extends LinearOpMode {
+public class Test_Pipline extends LinearOpMode {
 
-    private Josh_Test_Pipeline detect = new Josh_Test_Pipeline(telemetry);
+    private blue_Pipeline detect = new blue_Pipeline(telemetry);
 
     @Override
     public void runOpMode() throws InterruptedException {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-
         WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
-
         OpenCvCamera Texpandcamera = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
         Texpandcamera.setPipeline(detect);
-        Texpandcamera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
-        {
+        Texpandcamera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
-            public void onOpened()
-            {
+            public void onOpened() {
                 Texpandcamera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
             }
+
             @Override
-            public void onError(int errorCode)
-            {
+            public void onError(int errorCode) {
 
             }
         });
-
-//        switch (detect.getLocation()){
-//            case green:
-//                telemetry.addData("Position", "Green");
-//                break;
-//            case purple:
-//                telemetry.addData("Position", "Purple");
-//                break;
-//            case yellow:
-//                 telemetry.addData("Position", "Yellow");
-//                 break;
-//                 default:
-//        }
-//        telemetry.update();
-
 
         waitForStart();
 
         Texpandcamera.closeCameraDevice();
     }
 }
-

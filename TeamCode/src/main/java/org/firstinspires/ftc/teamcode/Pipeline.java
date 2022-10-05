@@ -22,21 +22,25 @@ public class Pipeline extends OpenCvPipeline {
     private static Location location;
 
     static final Rect center = new Rect(
-            new Point(35, 75),
-            new Point(75, 35));
+            new Point(0, 0),
+            new Point(640, 480));
 
     static double COLOR_THRESHOLD = 0.4;
 
     @Override
     public Mat processFrame(Mat input) {
-        Imgproc.cvtColor(input, output, Imgproc.COLOR_RGB2HSV);
-        Scalar yellow = new Scalar(59, 93 ,100);
-        Scalar blue = new Scalar(235, 90, 100);
-        Scalar red = new Scalar(0, 98, 100);
 
-        Core.inRange(output, yellow, yellow, output);
-        Core.inRange(output, blue, blue, output);
-        Core.inRange(output, red, red, output);
+        Scalar purpleup = new Scalar(178, 102, 255);
+        Scalar purpledown = new Scalar(51, 0, 102);
+        Scalar greenup = new Scalar(51, 255, 51);
+        Scalar greendown = new Scalar(102, 0, 102);
+        Scalar yellowup = new Scalar(255, 255, 102);
+        Scalar yellowdown = new Scalar(204, 204, 0);
+
+
+//        Core.inRange(output, yellow, yellow, output);
+//        Core.inRange(output, blue, blue, output);
+//        Core.inRange(output, red, red, output);
 
         Mat yellowcheck = output.submat(center);
         Mat bluecheck = output.submat(center);
