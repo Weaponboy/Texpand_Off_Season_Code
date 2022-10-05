@@ -109,7 +109,6 @@ public class Angle_Slide_Test extends OpMode {
         LF.setPower(0);
         RB.setPower(0);
         LB.setPower(0);
-        Intake.setPosition(Intakepos);
-        Intake_Angle.setPosition(AngleOfIntake);
+
     }
 }

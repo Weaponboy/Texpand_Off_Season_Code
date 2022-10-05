@@ -33,7 +33,7 @@ public class Josh_Test_Pipeline extends OpenCvPipeline {
     Mat getPurple = new Mat();
 
     //color threshold
-    static double COLOR_THRESHOLD = 0.4;
+    static double COLOR_THRESHOLD = 0.04;
 
     //store location
 //    public enum Location {
@@ -60,45 +60,37 @@ public class Josh_Test_Pipeline extends OpenCvPipeline {
 //        }
 
         //color scales
-//        Imgproc.cvtColor(Purple, Purple, Imgproc.COLOR_HSV2RGB);
-//        Imgproc.cvtColor(Yellow, Yellow, Imgproc.COLOR_HSV2RGB);
-//        Imgproc.cvtColor(Green, Green, Imgproc.COLOR_HSV2RGB);
-//        Imgproc.cvtColor(workingMatrix, workingMatrix, Imgproc.COLOR_HSV2RGB);
+        Imgproc.cvtColor(Purple, Purple, Imgproc.COLOR_RGB2HSV);
+        Imgproc.cvtColor(Yellow, Yellow, Imgproc.COLOR_RGB2HSV);
+        Imgproc.cvtColor(Green, Green, Imgproc.COLOR_RGB2HSV);
+        
 
-        Imgproc.cvtColor(Yellow, Yellow, Imgproc.COLOR_RGBA2RGB);
-        Imgproc.cvtColor(Green, Green, Imgproc.COLOR_RGBA2RGB);
-        Imgproc.cvtColor(Purple, Purple, Imgproc.COLOR_RGBA2RGB);
-        Scalar purpleup = new Scalar(0, 126, 255);
-        Scalar purpledown = new Scalar(77, 0, 255);
-        Scalar greenup = new Scalar(51, 255, 51);
-        Scalar greendown = new Scalar(102, 0, 102);
-        Scalar yellowup = new Scalar(255, 255, 102);
-        Scalar yellowdown = new Scalar(204, 204, 0);
+        Scalar purpleup = new Scalar(320, 100, 255);
+        Scalar purpledown = new Scalar(260, 22, 31);
+        Scalar greenup = new Scalar(165, 100, 100);
+        Scalar greendown = new Scalar(99, 32, 22);
+        Scalar yellowup = new Scalar(76, 100, 100);
+        Scalar yellowdown = new Scalar(55, 29, 28);
 
         // check for colors on the matrix's
-        Core.inRange(Purple, purpleup, purpledown , Purple);
-        Core.inRange(Green, greenup, greendown, Green);
-        Core.inRange(Yellow, yellowup, yellowdown, Yellow);
+        Core.inRange(Purple, purpledown, purpleup , Purple);
+        Core.inRange(Green, greendown, greenup, Green);
+        Core.inRange(Yellow, yellowdown, yellowup, Yellow);
 
-        getPurple = Purple.submat(center);
-        getGreen = Green.submat(center);
-        getYellow = Yellow.submat(center);
 
-        double PURPLE = Math.round(Core.mean(getPurple).val[0] / 255);
-        double GREEN = Math.round(Core.mean(getGreen).val[0] / 255);
-        double YELLOW = Math.round(Core.mean(getYellow).val[0] / 255);
 
-        getPurple.release();
-        getYellow.release();
-        getGreen.release();
+        double PURPLE = Math.round(Core.mean(Purple).val[0] / 255);
+        double GREEN = Math.round(Core.mean(Green).val[0] / 255);
+        double YELLOW = Math.round(Core.mean(Yellow).val[0] / 255);
+
 
         Scalar greenrect = new Scalar(0, 204, 0);
         Scalar yellowrect = new Scalar(204, 204, 0);
         Scalar purplerect = new Scalar(76, 0, 153);
 
-        telemetry.addData("purple raw value", (int) Core.mean(getPurple).val[0]);
-        telemetry.addData("yellow raw value", (int) Core.mean(getYellow).val[0]);
-        telemetry.addData("green raw value", (int) Core.mean(getGreen).val[0]);
+        telemetry.addData("purple raw value", (int) Core.mean(Purple).val[0]);
+        telemetry.addData("yellow raw value", (int) Core.mean(Yellow).val[0]);
+        telemetry.addData("green raw value", (int) Core.mean(Green).val[0]);
 
 
         if (YELLOW > COLOR_THRESHOLD){
