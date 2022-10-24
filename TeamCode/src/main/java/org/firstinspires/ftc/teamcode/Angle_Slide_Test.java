@@ -65,7 +65,11 @@ public class Angle_Slide_Test extends OpMode {
             telemetry.addData("Intake_Angle", AngleOfIntake);
         }
         telemetry.update();
-
+        try {
+            Thread.sleep(20);
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
         if(gamepad1.right_trigger>0 || gamepad1.right_trigger<0){
             Intake.setPosition(1);
 
@@ -74,6 +78,7 @@ public class Angle_Slide_Test extends OpMode {
 
         }
         telemetry.update();
+        Intake.setPosition(-1);
 
         try {
             Thread.sleep(75);
