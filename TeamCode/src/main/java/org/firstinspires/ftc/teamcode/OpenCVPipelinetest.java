@@ -74,12 +74,13 @@ class Josh_Test_Pipeline_indent extends OpenCvPipeline {
 
     //create matrix's
     Mat workingMatrix = new Mat();
-    Mat Purple = new Mat();
+    Mat Pink = new Mat();
     Mat Yellow = new Mat();
-    Mat Green = new Mat();
+    Mat Blue = new Mat();
 
     // region of interest
-    static final Rect center = new Rect(new Point(100, 100), new Point(550, 350));
+    static final Rect center = new Rect(new Point(100, 100), new
+            Point(550, 350));
 
     //color threshold
     static double COLOR_THRESHOLD = 0.2;
@@ -99,42 +100,44 @@ class Josh_Test_Pipeline_indent extends OpenCvPipeline {
 
         //copy to all matrix's
         input.copyTo(workingMatrix);
-        input.copyTo(Purple);
+        input.copyTo(Pink);
         input.copyTo(Yellow);
-        input.copyTo(Green);
+        input.copyTo(Blue);
 
         //color scales
-        Imgproc.cvtColor(Purple, Purple, Imgproc.COLOR_RGB2HSV);
+        Imgproc.cvtColor(Pink, Pink, Imgproc.COLOR_RGB2HSV);
         Imgproc.cvtColor(Yellow, Yellow, Imgproc.COLOR_RGB2HSV);
-        Imgproc.cvtColor(Green, Green, Imgproc.COLOR_RGB2HSV);
+        Imgproc.cvtColor(Blue, Blue, Imgproc.COLOR_RGB2HSV);
 
-        Scalar purpleup = new Scalar(290/2, 100, 99);
-        Scalar purpledown = new Scalar(240/2, 30, 20);
-        Scalar greenup = new Scalar(140/2, 100, 99);
-        Scalar greendown = new Scalar(95/2, 32, 20);
-        Scalar yellowup = new Scalar(80/2, 100, 99);
-        Scalar yellowdown = new Scalar(10/2, 35, 20);
+        Scalar pinkup = new Scalar(319/2, 100, 100);
+        Scalar pinkdown = new Scalar(292/2, 42, 64);
+
+        Scalar blueup = new Scalar(190/2, 100, 100);
+        Scalar bluedown = new Scalar(160/2, 45, 60);
+
+        Scalar yellowup = new Scalar(68/2, 100, 100);
+        Scalar yellowdown = new Scalar(50/2, 49, 77);
 
         // check for colors on the matrix's
-        Core.inRange(Purple, purpledown, purpleup , Purple);
-        Core.inRange(Green, greendown, greenup, Green);
+        Core.inRange(Pink, pinkdown, pinkup , Pink);
+        Core.inRange(Blue, bluedown, blueup, Blue);
         Core.inRange(Yellow, yellowdown, yellowup, Yellow);
 
-        Purple.submat(center);
-        Green.submat(center);
+        Pink.submat(center);
+        Blue.submat(center);
         Yellow.submat(center);
 
-        double PURPLE = Math.round(Core.mean(Purple).val[2]);
-        double GREEN = Math.round(Core.mean(Green).val[2]);
+        double PURPLE = Math.round(Core.mean(Pink).val[2]);
+        double GREEN = Math.round(Core.mean(Blue).val[2]);
         double YELLOW = Math.round(Core.mean(Yellow).val[2]);
 
-        Scalar greenrect = new Scalar(130/2, 100, 50);
-        Scalar yellowrect = new Scalar(204/2, 100, 0);
-        Scalar purplerect = new Scalar(274/2, 100, 99);
+        Scalar pinkrect = new Scalar(306/2, 100, 100);
+        Scalar yellowrect = new Scalar(58/2, 100, 100);
+        Scalar bluerect = new Scalar(190/2, 100, 100);
 
-        telemetry.addData("purple raw value", (int) Core.mean(Purple).val[2]);
+        telemetry.addData("purple raw value", (int) Core.mean(Pink).val[2]);
         telemetry.addData("yellow raw value", (int) Core.mean(Yellow).val[2]);
-        telemetry.addData("green raw value", (int) Core.mean(Green).val[2]);
+        telemetry.addData("green raw value", (int) Core.mean(Blue).val[2]);
 
 
         if (YELLOW > COLOR_THRESHOLD){
@@ -143,11 +146,11 @@ class Josh_Test_Pipeline_indent extends OpenCvPipeline {
             telemetry.addData("Color", "Yellow");
         }else if (GREEN > COLOR_THRESHOLD){
 ////            location = Location.green;
-            Imgproc.rectangle(workingMatrix, center, greenrect, 1);
+            Imgproc.rectangle(workingMatrix, center, pinkrect, 1);
             telemetry.addData("Color", "Green");
         }else if (PURPLE > COLOR_THRESHOLD){
 ////            location = Location.purple;
-            Imgproc.rectangle(workingMatrix, center, purplerect, 1);
+            Imgproc.rectangle(workingMatrix, center, bluerect, 1);
             telemetry.addData("Color", "Purple");
         }
 ////        else{

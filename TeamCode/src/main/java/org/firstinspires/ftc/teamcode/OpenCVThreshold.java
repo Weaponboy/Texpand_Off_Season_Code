@@ -132,7 +132,7 @@ class threshold_Pipeline extends OpenCvPipeline {
 
 
         if (color > Threshold){
-            telemetry.addData("working", "well");
+            telemetry.addData("Working", "Well");
             telemetry.update();
 
             if (YELLOW > Threshold){

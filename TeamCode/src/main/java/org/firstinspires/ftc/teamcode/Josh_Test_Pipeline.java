@@ -70,7 +70,7 @@ public class Josh_Test_Pipeline extends OpenCvPipeline {
         Green.submat(center);
         Yellow.submat(center);
 
-        double PURPLE = Math.round(Core.mean(Purple).val[0] / 255);
+        double PURPLE = Core.sumElems(Purple).val[0] / center.area() / 255;
         double GREEN = Math.round(Core.mean(Green).val[0] / 255);
         double YELLOW = Math.round(Core.mean(Yellow).val[0] / 255);
 
