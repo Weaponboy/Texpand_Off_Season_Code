@@ -127,31 +127,31 @@ class Josh_Test_Pipeline_indent extends OpenCvPipeline {
         Blue.submat(center);
         Yellow.submat(center);
 
-        double PURPLE = Math.round(Core.mean(Pink).val[2]);
-        double GREEN = Math.round(Core.mean(Blue).val[2]);
+        double PINK = Math.round(Core.mean(Pink).val[2]);
+        double BLUE = Math.round(Core.mean(Blue).val[2]);
         double YELLOW = Math.round(Core.mean(Yellow).val[2]);
 
         Scalar pinkrect = new Scalar(306/2, 100, 100);
         Scalar yellowrect = new Scalar(58/2, 100, 100);
         Scalar bluerect = new Scalar(190/2, 100, 100);
 
-        telemetry.addData("purple raw value", (int) Core.mean(Pink).val[2]);
-        telemetry.addData("yellow raw value", (int) Core.mean(Yellow).val[2]);
-        telemetry.addData("green raw value", (int) Core.mean(Blue).val[2]);
+        telemetry.addData("Pink raw value", (int) Core.mean(Pink).val[2]);
+        telemetry.addData("Yellow raw value", (int) Core.mean(Yellow).val[2]);
+        telemetry.addData("Blue raw value", (int) Core.mean(Blue).val[2]);
 
 
         if (YELLOW > COLOR_THRESHOLD){
 ////            location = Location.yellow;
             Imgproc.rectangle(workingMatrix, center, yellowrect, 5);
             telemetry.addData("Color", "Yellow");
-        }else if (GREEN > COLOR_THRESHOLD){
+        }else if (PINK > COLOR_THRESHOLD){
 ////            location = Location.green;
             Imgproc.rectangle(workingMatrix, center, pinkrect, 5);
-            telemetry.addData("Color", "Green");
-        }else if (PURPLE > COLOR_THRESHOLD){
+            telemetry.addData("Color", "Pink");
+        }else if (BLUE > COLOR_THRESHOLD){
 ////            location = Location.purple;
             Imgproc.rectangle(workingMatrix, center, bluerect, 5);
-            telemetry.addData("Color", "Purple");
+            telemetry.addData("Color", "Blue");
         }
 ////        else{
 ////            location = Location.not_found;

@@ -66,9 +66,9 @@ class threshold_Pipeline extends OpenCvPipeline {
     double color = 0;
     final double Threshold = 0.01;
     Mat workingmatrix = new Mat();
-    Mat Purple = new Mat();
+    Mat Red = new Mat();
     Mat Yellow = new Mat();
-    Mat Green = new Mat();
+    Mat Blue = new Mat();
     static final Rect center = new Rect(new Point(100, 100), new Point(550, 350));
     Telemetry telemetry;
     public threshold_Pipeline(Telemetry t) {
@@ -82,44 +82,46 @@ class threshold_Pipeline extends OpenCvPipeline {
     @Override
     public Mat processFrame(Mat input) {
         input.copyTo(workingmatrix);
-        input.copyTo(Purple);
+        input.copyTo(Red);
         input.copyTo(Yellow);
-        input.copyTo(Green);
+        input.copyTo(Blue);
 
         //color scales
-        Imgproc.cvtColor(Purple, Purple, Imgproc.COLOR_RGB2HSV);
-        Imgproc.cvtColor(Yellow, Yellow, Imgproc.COLOR_RGB2HSV);
-        Imgproc.cvtColor(Green, Green, Imgproc.COLOR_RGB2HSV);
-        Imgproc.cvtColor(workingmatrix, workingmatrix, Imgproc.COLOR_RGB2HSV);
+        Imgproc.cvtColor(Red, Red, Imgproc.COLOR_RGB2BGR);
+        Imgproc.cvtColor(Yellow, Yellow, Imgproc.COLOR_RGB2BGR);
+        Imgproc.cvtColor(Blue, Blue, Imgproc.COLOR_RGB2BGR);
+        Imgproc.cvtColor(workingmatrix, workingmatrix, Imgproc.COLOR_RGB2BGR);
 
         Scalar top = new Scalar(355, 100, 100);
         Scalar bottom = new Scalar(0, 0, 0);
-        Scalar purpleup = new Scalar(290/2, 100, 99);
-        Scalar purpledown = new Scalar(240/2, 30, 20);
-        Scalar greenup = new Scalar(140/2, 100, 99);
-        Scalar greendown = new Scalar(95/2, 32, 20);
-        Scalar yellowup = new Scalar(80/2, 100, 99);
-        Scalar yellowdown = new Scalar(10/2, 35, 20);
+        Scalar redup = new Scalar(130, 150, 255);
+        Scalar reddown = new Scalar(100, 42, 0);
+
+        Scalar blueup = new Scalar(190, 100, 100);
+        Scalar bluedown = new Scalar(160, 45, 60);
+
+        Scalar yellowup = new Scalar(68, 100, 100);
+        Scalar yellowdown = new Scalar(50, 49, 77);
 
         // check for colors on the matrix's
-        Core.inRange(Purple, purpledown, purpleup , Purple);
-        Core.inRange(Green, greendown, greenup, Green);
+        Core.inRange(Red, reddown, redup , Red);
+        Core.inRange(Blue, bluedown, blueup, Blue);
         Core.inRange(Yellow, yellowdown, yellowup, Yellow);
         Core.inRange(workingmatrix, bottom, top , workingmatrix);
 
-        Purple.submat(center);
-        Green.submat(center);
+        Red.submat(center);
+        Blue.submat(center);
         Yellow.submat(center);
         workingmatrix.submat(center);
 
-        Scalar greenrect = new Scalar(130/2, 100, 50);
-        Scalar yellowrect = new Scalar(204/2, 100, 0);
-        Scalar purplerect = new Scalar(274/2, 100, 99);
+        Scalar greenrect = new Scalar(130, 100, 50);
+        Scalar yellowrect = new Scalar(204, 100, 0);
+        Scalar purplerect = new Scalar(274, 100, 99);
 
         color = Core.sumElems(workingmatrix).val[0] / center.area() / 255;
-        double PURPLE = Core.sumElems(Purple).val[0] / center.area() / 255;
-        double GREEN = Core.sumElems(Green).val[0] / center.area() / 255;
-        double YELLOW = Core.sumElems(Yellow).val[0] / center.area() / 255;
+        double RED = Core.sumElems(Red).val[2] / center.area() / 255;
+        double BLUE = Core.sumElems(Blue).val[0] / center.area() / 255;
+        double YELLOW = Core.sumElems(Yellow).val[1] / center.area() / 255;
 
 
 
@@ -138,15 +140,15 @@ class threshold_Pipeline extends OpenCvPipeline {
             if (YELLOW > Threshold){
 ////            location = Location.yellow;
                 Imgproc.rectangle(input, center, yellowrect, 5);
-                telemetry.addData("Color", "Yellow");
-            }else if (GREEN > Threshold){
+                telemetry.addData("Color", "YELLOW");
+            }else if (BLUE > Threshold){
 ////            location = Location.green;
                 Imgproc.rectangle(input, center, greenrect, 5);
-                telemetry.addData("Color", "Green");
-            }else if (PURPLE > Threshold){
+                telemetry.addData("Color", "BLUE");
+            }else if (RED > Threshold){
 ////            location = Location.purple;
                 Imgproc.rectangle(input, center, purplerect, 6);
-                telemetry.addData("Color", "Purple");
+                telemetry.addData("Color", "RED");
             }
 
         }

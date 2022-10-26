@@ -37,30 +37,30 @@ public class Angle_Slide_Test extends OpMode {
         LB.setPower(pivot + (vertical - horizontal));
 
         if(gamepad1.dpad_left){
-            Angle_slide.setPower(0.25);
+            Angle_slide.setPower(0.4);
         }else if(gamepad1.dpad_right){
-            Angle_slide.setPower(-0.25);
+            Angle_slide.setPower(-0.4);
         }else{
             Angle_slide.setPower(0);
         }
 
         if(gamepad1.dpad_up){
-            Right_Slide.setPower(0.25);
-            Left_Slide.setPower(0.25);
+            Right_Slide.setPower(1);
+            Left_Slide.setPower(1);
         }else if(gamepad1.dpad_down){
-            Right_Slide.setPower(-0.25);
-            Left_Slide.setPower(-0.25);
+            Right_Slide.setPower(-0.88);
+            Left_Slide.setPower(-0.8);
         }else{
             Right_Slide.setPower(0);
             Left_Slide.setPower(0);
         }
 
         if(gamepad1.right_bumper){
-            AngleOfIntake = AngleOfIntake - 0.03;
+            AngleOfIntake = AngleOfIntake - 0.033;
             Intake_Angle.setPosition(AngleOfIntake);
             telemetry.addData("Intake_Angle", AngleOfIntake);
         }else if(gamepad1.left_bumper){
-            AngleOfIntake = AngleOfIntake + 0.03;
+            AngleOfIntake = AngleOfIntake + 0.003;
             Intake_Angle.setPosition(AngleOfIntake);
             telemetry.addData("Intake_Angle", AngleOfIntake);
         }
@@ -76,15 +76,10 @@ public class Angle_Slide_Test extends OpMode {
         }else if(gamepad1.left_trigger>0 || gamepad1.left_trigger<0){
             Intake.setPosition(0);
 
+        }else{
+            Intake.setPosition(0.5);
         }
         telemetry.update();
-        Intake.setPosition(-1);
-
-        try {
-            Thread.sleep(75);
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-        }
 
 
     }

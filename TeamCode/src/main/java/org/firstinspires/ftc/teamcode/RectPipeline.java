@@ -74,10 +74,10 @@ class RectPipelinepipe extends OpenCvPipeline {
     @Override
     public Mat processFrame(Mat input) {
 
-        Scalar blue = new Scalar(221/2, 100, 100);
+        Scalar blue = new Scalar(319, 100, 100);
 
-        Imgproc.rectangle(input, center, blue, 1);
-
+        Imgproc.rectangle(input, center, blue, 10);
+        Imgproc.cvtColor(input, input, Imgproc.COLOR_RGB2HSV);
         return input;
     }
 }
