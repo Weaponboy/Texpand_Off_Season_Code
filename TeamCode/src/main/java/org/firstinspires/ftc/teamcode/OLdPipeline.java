@@ -17,7 +17,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 @Autonomous
-public class OpenCVPipelinetest extends LinearOpMode {
+public class OLdPipeline extends LinearOpMode {
 
     Threshold_Pipeline thresholdPipe = new Threshold_Pipeline();
     @Override
@@ -63,93 +63,68 @@ public class OpenCVPipelinetest extends LinearOpMode {
     }
 }
 
-class Threshold_Pipeline extends OpenCvPipeline {
-    Mat Red = new Mat();
-    Mat Yellow = new Mat();
-    Mat Blue = new Mat();
+class Threshold_Pipe extends OpenCvPipeline {
+    double color = 0;
+    final double Threshold = 0.01;
     Mat workingmatrix = new Mat();
-    static final Rect center = new Rect(new Point(200, 180), new Point(350, 320));
-
+    static final Rect center = new Rect(new Point(100, 100), new Point(550, 350));
     Telemetry telemetry;
-    public Threshold_Pipeline(Telemetry t) {
+    public Threshold_Pipe(Telemetry t) {
         telemetry = t;
     }
 
-    public Threshold_Pipeline() {
+    public Threshold_Pipe() {
 
     }
 
     @Override
     public Mat processFrame(Mat input) {
         input.copyTo(workingmatrix);
-        input.copyTo(Red);
-        input.copyTo(Yellow);
-        input.copyTo(Blue);
+
+
         //color scales
 
         Imgproc.cvtColor(workingmatrix, workingmatrix, Imgproc.COLOR_RGB2HSV_FULL);
-        Imgproc.cvtColor(Red, Red, Imgproc.COLOR_RGB2HSV_FULL);
-        Imgproc.cvtColor(Yellow, Yellow, Imgproc.COLOR_RGB2HSV_FULL);
-        Imgproc.cvtColor(Blue, Blue, Imgproc.COLOR_RGB2HSV_FULL);
 
-
-        Scalar redup = new Scalar(250, 100, 100);
-        Scalar reddown = new Scalar(150, 0, 0);
-        Scalar blueup = new Scalar(148, 100, 100);
-        Scalar bluedown = new Scalar(110, 0, 0);
-        Scalar yelowup = new Scalar(110, 100, 100);
-        Scalar yelowdown = new Scalar(30, 0, 0);
+        Scalar bottom = new Scalar(355, 100, 100);
+        Scalar top = new Scalar(0, 0, 0);
+        Scalar redup = new Scalar(60, 100, 100);
+        Scalar reddown = new Scalar(0, 40, 40);
 
 
         // check for colors on the matrix's
 
-        Core.inRange(Red, reddown, redup , Red);
-        Core.inRange(Yellow, yelowdown, yelowup , Yellow);
-        Core.inRange(Blue, bluedown, blueup , Blue);
+        //Core.inRange(workingmatrix, reddown, redup , workingmatrix);
+
+        //workingmatrix.submat(center);
 
 
 
-
-
-
+        //color = Math.round(Core.mean(workingmatrix).val[0] / 255);
 
 
 
 
 
 //        workingmatrix.release();
+        telemetry.addData("HUE", Math.round(Core.mean(workingmatrix).val[0]) );
+        telemetry.addData("SATURATION", Math.round(Core.mean(workingmatrix).val[1]) );
+        telemetry.addData("VALUE", Math.round(Core.mean(workingmatrix).val[2]) );
 
 
 
-        if (Core.mean(workingmatrix.submat(center)).val[0] > 30 && Core.mean(workingmatrix.submat(center)).val[0] < 110){
+
+        if (Core.mean(workingmatrix).val[0] > 30 && Core.mean(workingmatrix).val[0] < 110){
             telemetry.addData("Colour", "Yellow");
 
-        }else if(Core.mean(workingmatrix.submat(center)).val[0] > 110 && Core.mean(workingmatrix.submat(center)).val[0] < 135){
+        }else if(Core.mean(workingmatrix).val[0] > 110 && Core.mean(workingmatrix).val[0] < 148){
             telemetry.addData("Colour", "Blue");
 
-        }else if(Core.mean(workingmatrix.submat(center)).val[0] > 136 && Core.mean(workingmatrix.submat(center)).val[0] < 250){
+        }else if(Core.mean(workingmatrix).val[0] > 150 && Core.mean(workingmatrix).val[0] < 250){
             telemetry.addData("Colour", "Red");
 
         }
-        telemetry.addData("workingmatrix HUE", Math.round(Core.mean(workingmatrix.submat(center)).val[0]) );
-        telemetry.addData("workingmatrix SATURATION", Math.round(Core.mean(workingmatrix.submat(center)).val[1]) );
-        telemetry.addData("workingmatrix VALUE", Math.round(Core.mean(workingmatrix.submat(center)).val[2]) );
-
-        telemetry.addData("Red HUE", Math.round(Core.mean(Red).val[0] ) );
-        telemetry.addData("Red SATURATION", Math.round(Core.mean(Red).val[1]) );
-        telemetry.addData("Red VALUE", Math.round(Core.mean(Red).val[2]) );
-
-        telemetry.addData("Yellow HUE", Math.round(Core.mean(Yellow).val[0] ) );
-        telemetry.addData("Yellow SATURATION", Math.round(Core.mean(Yellow).val[1]) );
-        telemetry.addData("Yellow VALUE", Math.round(Core.mean(Yellow).val[2]) );
-
-        telemetry.addData("Blue HUE", Math.round(Core.mean(Blue).val[0] ) );
-        telemetry.addData("Blue SATURATION", Math.round(Core.mean(Blue).val[1]) );
-        telemetry.addData("Blue VALUE", Math.round(Core.mean(Blue).val[2]) );
         telemetry.update();
-        Scalar blue = new Scalar(319, 100, 100);
-
-        Imgproc.rectangle(input, center, blue, 10);
-        return input.submat(center);
+        return input;
     }
 }
