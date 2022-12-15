@@ -50,7 +50,8 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
 @Config
 @Autonomous(group = "drive")
 public class DriveVelocityPIDTuner extends LinearOpMode {
-    public static double DISTANCE = 72; // in
+
+    public static double DISTANCE = 50; // in
 
     enum Mode {
         DRIVER_MODE,
@@ -65,17 +66,17 @@ public class DriveVelocityPIDTuner extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        if (!RUN_USING_ENCODER) {
-            RobotLog.setGlobalErrorMsg("%s does not need to be run if the built-in motor velocity" +
-                    "PID is not in use", getClass().getSimpleName());
-        }
+
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-
+        drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Mode mode = Mode.TUNING_MODE;
-
+        if (!RUN_USING_ENCODER) {
+            RobotLog.setGlobalErrorMsg("%s does not need to be run if the built-in motor velocity" +
+                    "PID is not in use", getClass().getSimpleName());
+        }
         double lastKp = MOTOR_VELO_PID.p;
         double lastKi = MOTOR_VELO_PID.i;
         double lastKd = MOTOR_VELO_PID.d;
