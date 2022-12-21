@@ -137,7 +137,7 @@ public class DoubleGripperLatest extends OpMode {
         }
 //toggle positioin of top gripper
         if(gamepad1.y && Top_Gripper.getPosition() == 0){
-            Top_Gripper.setPosition(0.4); //lift up top griper if it is down
+            Top_Gripper.setPosition(0.45); //lift up top griper if it is down
         }else if(gamepad1.y && Top_Gripper.getPosition() > 0){
             Top_Gripper.setPosition(0); //lower top gripper if it is up
         }
@@ -232,7 +232,7 @@ public class DoubleGripperLatest extends OpMode {
                     Left_Slide.setPower(-0.9);
                 }
                 Top_Pivot.setPosition(1);
-                Top_Gripper.setPosition(0.45);
+                Top_Gripper.setPosition(0.5);
                 Base_Gripper.setPosition(0);
                 try {
                     Thread.sleep(100);
@@ -240,8 +240,14 @@ public class DoubleGripperLatest extends OpMode {
                     System.out.println(e.getMessage());
                 }
                 if(Base_Gripper.getPosition() == 0){
-                    Extend.setTargetPosition(0);
+                    Extend.setTargetPosition(20);
                     Extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    Base_Pivot.setPosition(1);
+                    try {
+                        Thread.sleep(100);
+                    }catch (Exception e){
+                        System.out.println(e.getMessage());
+                    }
                     while (Extend.isBusy()) {
                         if(Right_Slide.getCurrentPosition() < 50 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 50 && !Left_Slide.isBusy()){
                             Right_Slide.setPower(0);
@@ -256,7 +262,7 @@ public class DoubleGripperLatest extends OpMode {
                         }
                         Base_Gripper.setPosition(0);
                         Destacker.setPosition(0.2);
-                        Base_Pivot.setPosition(1);
+
                         Extend.setPower(1);
                     }
                     if(Right_Slide.getCurrentPosition() < 50 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 50 && !Left_Slide.isBusy()){
@@ -271,7 +277,7 @@ public class DoubleGripperLatest extends OpMode {
                         Left_Slide.setPower(-0.9);
                     }
                     Extend.setPower(0);
-                    if(Base_Pivot.getPosition() > 0.9) {
+                    if(Base_Pivot.getPosition() == 1) {
                         try {
                             Thread.sleep(70);
                         }catch (Exception e){
@@ -281,15 +287,18 @@ public class DoubleGripperLatest extends OpMode {
                         if (Top_Gripper.getPosition() == 0) {
                             Base_Gripper.setPosition(0.45);
                             try {
-                                Thread.sleep(50);
+                                Thread.sleep(100);
                             }catch (Exception e){
                                 System.out.println(e.getMessage());
                             }
                             if (Base_Gripper.getPosition() <= 0.45) {
                                 Top_Pivot.setPosition(0.4);
-                                if (Top_Pivot.getPosition() <= 0.35) {
-                                    Base_Pivot.setPosition(0.35);
+                                try {
+                                    Thread.sleep(50);
+                                }catch (Exception e){
+                                    System.out.println(e.getMessage());
                                 }
+                                Base_Pivot.setPosition(0.35);
                             }
 
                         }
@@ -299,7 +308,7 @@ public class DoubleGripperLatest extends OpMode {
 
                 Extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             }else{
-                Extend.setTargetPosition(0);
+                Extend.setTargetPosition(-50);
                 Extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 while (Extend.isBusy()) {
                     if(Right_Slide.getCurrentPosition() < 50 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 50 && !Left_Slide.isBusy()){
@@ -402,7 +411,7 @@ public class DoubleGripperLatest extends OpMode {
         RB.setPower(0);
         LB.setPower(0);
         Top_Pivot.setPosition(1);
-        Top_Gripper.setPosition(0.4);
+        Top_Gripper.setPosition(0.5);
         Base_Pivot.setPosition(0.35);
         Base_Gripper.setPosition(0.45);
         Destacker.setPosition(0.2);
