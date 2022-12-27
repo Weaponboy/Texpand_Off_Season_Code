@@ -107,16 +107,6 @@ class Threshold_Pipeline extends OpenCvPipeline {
         Core.inRange(Yellow, yelowdown, yelowup , Yellow);
         Core.inRange(Blue, bluedown, blueup , Blue);
 
-
-
-
-
-
-
-
-
-
-
 //        workingmatrix.release();
 
 

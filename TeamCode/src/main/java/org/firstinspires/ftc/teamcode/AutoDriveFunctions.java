@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 @Autonomous
 public class AutoDriveFunctions extends LinearOpMode {
-    static double ticksperdegree = 12.54;
+    static double ticksperdegree = 1.493;
     static double circumference = 30.15;
     public DcMotor RF = null;
     public DcMotor LF = null;
