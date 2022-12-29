@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.Hardware.Drivetrain;
 import org.firstinspires.ftc.teamcode.Hardware.Slides;
 import org.firstinspires.ftc.teamcode.Hardware.Top_gripper;
-import org.firstinspires.ftc.teamcode.Hardware.bottom_gripper;
+import org.firstinspires.ftc.teamcode.Hardware.Bottom_Gripper_Assembly;
 import org.firstinspires.ftc.teamcode.Vision.Stack_Detection;
 
 @Autonomous
@@ -15,7 +15,7 @@ public class Red_Cycle_Auto extends LinearOpMode {
     Stack_Detection line = new Stack_Detection();
     Threshold_Pipeline pipe = new Threshold_Pipeline();
     Drivetrain drive = new Drivetrain();
-    bottom_gripper B_grip = new bottom_gripper();
+    Bottom_Gripper_Assembly B_grip = new Bottom_Gripper_Assembly();
     Slides slide = new Slides();
     Top_gripper top = new Top_gripper();
 

@@ -3,11 +3,10 @@ package org.firstinspires.ftc.teamcode.Auto;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.checkerframework.common.subtyping.qual.Bottom;
 import org.firstinspires.ftc.teamcode.Hardware.Drivetrain;
 import org.firstinspires.ftc.teamcode.Hardware.Slides;
 import org.firstinspires.ftc.teamcode.Hardware.Top_gripper;
-import org.firstinspires.ftc.teamcode.Hardware.bottom_gripper;
+import org.firstinspires.ftc.teamcode.Hardware.Bottom_Gripper_Assembly;
 import org.firstinspires.ftc.teamcode.Vision.OpenCVPipelinetest;
 import org.firstinspires.ftc.teamcode.Vision.Stack_Detection;
 
@@ -24,7 +23,7 @@ public class Blue_Cycle_Auto extends LinearOpMode {
     Drivetrain drive = new Drivetrain();
 
     //Bottom gripper system object
-    bottom_gripper B_grip = new bottom_gripper();
+    Bottom_Gripper_Assembly B_grip = new Bottom_Gripper_Assembly();
 
     //All slides object
     Slides slide = new Slides();

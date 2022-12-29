@@ -7,13 +7,13 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.Hardware.Drivetrain;
 import org.firstinspires.ftc.teamcode.Hardware.Slides;
 import org.firstinspires.ftc.teamcode.Hardware.Top_gripper;
-import org.firstinspires.ftc.teamcode.Hardware.bottom_gripper;
+import org.firstinspires.ftc.teamcode.Hardware.Bottom_Gripper_Assembly;
 
 public class Driver_Red extends OpMode {
 
 
     Drivetrain drive = new Drivetrain();
-    bottom_gripper B_grip = new bottom_gripper();
+    Bottom_Gripper_Assembly B_grip = new Bottom_Gripper_Assembly();
     Slides slide = new Slides();
     Top_gripper top = new Top_gripper();
 

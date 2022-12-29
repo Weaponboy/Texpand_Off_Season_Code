@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-public class bottom_gripper {
+public class Bottom_Gripper_Assembly {
 
     public Servo Destacker = null;
     public Servo Base_Gripper = null;
@@ -18,7 +18,7 @@ public class bottom_gripper {
     private int BGripperpos = 0;
 
 
-    public bottom_gripper() { }
+    public Bottom_Gripper_Assembly() { }
 
     public void init(HardwareMap hwMap) {
 
