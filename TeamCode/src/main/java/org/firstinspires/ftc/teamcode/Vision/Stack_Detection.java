@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.Hardware.Drivetrain;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -68,9 +69,13 @@ public class Stack_Detection extends LinearOpMode {
 
 class Stack_Pos extends OpenCvPipeline {
 
+    Drivetrain drive = new Drivetrain();
+
     private static boolean L = false;
     private static boolean R = false;
     private static boolean M = false;
+
+    double color_Threshold;
 
     Mat workingmatrix = new Mat();
 
@@ -121,6 +126,24 @@ class Stack_Pos extends OpenCvPipeline {
         Imgproc.rectangle(input, Right, blue, 10);
         Imgproc.rectangle(input, Left, blue, 10);
         Imgproc.rectangle(input, Middle, blue, 10);
+
+        if (M && !R && !L){
+            // What we want
+        }else if(!M && R && !L){
+            //Strafe Left 5cm
+            drive.StrafeDistance(-5, .5);
+        }else if(!M && !R && L){
+            //Strafe Right 5cm
+            drive.StrafeDistance(5, .5);
+        }
+        else if(M && R && !L){
+            //Strafe Right 2.5cm
+            drive.StrafeDistance(-2.5, .5);
+        }
+        else if(M && !R && L){
+            //Strafe Right 2.5cm
+            drive.StrafeDistance(2.5, .5);
+        }
 
         if (L){
             input.submat(Left);

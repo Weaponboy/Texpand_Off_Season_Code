@@ -39,7 +39,7 @@ public class Top_gripper {
         TopgripperPos = TopgripperPos + 1;
 
         if(TopgripperPos == 1 && Top_Gripper.getPosition() == 0){
-            Top_Gripper.setPosition(0.45); //lift up top griper if it is down
+            Top_Gripper.setPosition(0.4); //lift up top griper if it is down
         }else if(TopgripperPos == 2 && Top_Gripper.getPosition() > 0){
             Top_Gripper.setPosition(0); //lower top gripper if it is up
         }

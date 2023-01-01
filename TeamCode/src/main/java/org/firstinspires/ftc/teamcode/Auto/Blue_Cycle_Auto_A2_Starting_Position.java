@@ -11,13 +11,14 @@ import org.firstinspires.ftc.teamcode.Vision.OpenCVPipelinetest;
 import org.firstinspires.ftc.teamcode.Vision.Stack_Detection;
 
 @Autonomous
-public class Blue_Cycle_Auto extends LinearOpMode {
+public class Blue_Cycle_Auto_A2_Starting_Position extends LinearOpMode {
 
     //Vision for finding the cone stack
     Stack_Detection line = new Stack_Detection();
 
     //vision to find the parking position
     OpenCVPipelinetest sleeve = new OpenCVPipelinetest();
+
 
     //Drivetrain object
     Drivetrain drive = new Drivetrain();
@@ -41,18 +42,34 @@ public class Blue_Cycle_Auto extends LinearOpMode {
         B_grip.init(hardwareMap);
         slide.init(hardwareMap);
         top.init(hardwareMap);
-        line.runOpMode();
 
         waitForStart();
 
+        sleeve.runOpMode();
+
         if(sleeve.Pos_1 = true){
             //Code for cycling and stopping in position 1 goes here
+            drive.DriveDistance(119, .75);
+            drive.TurnDegrees(105);
+            line.runOpMode();
+            top.Top_Pivot.setPosition(0.4);
+            slide.Top_pole();
 
         }else if(sleeve.Pos_2 = true){
             //Code for cycling and stopping in position 2 goes here
+            drive.DriveDistance(119, .75);
+            drive.TurnDegrees(105);
+            line.runOpMode();
+            top.Top_Pivot.setPosition(0.4);
+            slide.Top_pole();
 
         }else if(sleeve.Pos_3 = true){
             //Code for cycling and stopping in position 3 goes here
+            drive.DriveDistance(119, .75);
+            drive.TurnDegrees(105);
+            line.runOpMode();
+            top.Top_Pivot.setPosition(0.4);
+            slide.Top_pole();
 
         }
     }
