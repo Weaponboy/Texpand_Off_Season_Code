@@ -16,13 +16,12 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-public class Stack_Detection extends LinearOpMode {
+public class Stack_Detection_Blue extends LinearOpMode {
 
     Stack_Pos thresholdPipe = new Stack_Pos();
     public boolean middle_true = false;
     public boolean right_true = false;
     public boolean left_true = false;
-
 
 
     @Override

@@ -3,19 +3,18 @@ package org.firstinspires.ftc.teamcode.Auto;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.Hardware.Bottom_Gripper_Assembly;
 import org.firstinspires.ftc.teamcode.Hardware.Drivetrain;
 import org.firstinspires.ftc.teamcode.Hardware.Slides;
 import org.firstinspires.ftc.teamcode.Hardware.Top_gripper;
-import org.firstinspires.ftc.teamcode.Hardware.Bottom_Gripper_Assembly;
 import org.firstinspires.ftc.teamcode.Vision.OpenCVPipelinetest;
-import org.firstinspires.ftc.teamcode.Vision.Stack_Detection_Blue;
 import org.firstinspires.ftc.teamcode.Vision.Stack_Detection_Red;
 
 @Autonomous
-public class Blue_Cycle_Auto_A2_Starting_Position extends LinearOpMode {
+public class Red_Cycle_Auto_F2_Starting_Position extends LinearOpMode {
 
     //Vision for finding the cone stack
-    Stack_Detection_Blue line = new Stack_Detection_Blue();
+    Stack_Detection_Red line = new Stack_Detection_Red();
 
     //vision to find the parking position
     OpenCVPipelinetest sleeve = new OpenCVPipelinetest();
@@ -49,31 +48,56 @@ public class Blue_Cycle_Auto_A2_Starting_Position extends LinearOpMode {
 
         if(sleeve.Pos_1 = true){
             //Code for cycling and stopping in position 1 goes here
+
             drive.DriveDistance(119, .75);
-            drive.TurnDegrees(105);
+            drive.TurnDegrees(-110);
             line.runOpMode();
+            //Drop off the pre loaded cone
+            top.Top_Gripper.setPosition(0);
+            B_grip.Base_Gripper.setPosition(0);
             top.Top_Pivot.setPosition(0.4);
             slide.Top_pole();
-
-            drive.TurnDegrees(-15);
-            drive.StrafeDistance(5, .75);
-            drive.DriveDistance(119, .75);
+            //Cycle the 5 cone stack
+            slide.Destack_5();
+            //Drive to correct parking position
+            drive.TurnDegrees(20);
+            drive.StrafeDistance(-15, .75);
+            drive.DriveDistance(55, .75);
 
         }else if(sleeve.Pos_2 = true){
             //Code for cycling and stopping in position 2 goes here
+
             drive.DriveDistance(119, .75);
-            drive.TurnDegrees(105);
+            drive.TurnDegrees(-110);
             line.runOpMode();
+            //Drop off the pre loaded cone
+            top.Top_Gripper.setPosition(0);
+            B_grip.Base_Gripper.setPosition(0);
             top.Top_Pivot.setPosition(0.4);
             slide.Top_pole();
+            //Cycle the 5 cone stack
+            slide.Destack_5();
+            //Drive to correct parking position
+            drive.TurnDegrees(20);
+            drive.StrafeDistance(-15, .75);
 
         }else if(sleeve.Pos_3 = true){
             //Code for cycling and stopping in position 3 goes here
+
             drive.DriveDistance(119, .75);
-            drive.TurnDegrees(105);
+            drive.TurnDegrees(-110);
             line.runOpMode();
+            //Drop off the pre loaded cone
+            top.Top_Gripper.setPosition(0);
+            B_grip.Base_Gripper.setPosition(0);
             top.Top_Pivot.setPosition(0.4);
             slide.Top_pole();
+            //Cycle the 5 cone stack
+            slide.Destack_5();
+            //Drive to correct parking position
+            drive.TurnDegrees(20);
+            drive.StrafeDistance(-15, .75);
+            drive.DriveDistance(-55, .75);
 
         }
     }
