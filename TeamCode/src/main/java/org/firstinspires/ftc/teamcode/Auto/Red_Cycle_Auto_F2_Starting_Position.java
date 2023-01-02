@@ -47,6 +47,7 @@ public class Red_Cycle_Auto_F2_Starting_Position extends LinearOpMode {
         sleeve.runOpMode();
 
         if(sleeve.Pos_1 = true){
+
             //Code for cycling and stopping in position 1 goes here
 
             drive.DriveDistance(119, .75);
@@ -65,6 +66,7 @@ public class Red_Cycle_Auto_F2_Starting_Position extends LinearOpMode {
             drive.DriveDistance(55, .75);
 
         }else if(sleeve.Pos_2 = true){
+
             //Code for cycling and stopping in position 2 goes here
 
             drive.DriveDistance(119, .75);
@@ -82,6 +84,7 @@ public class Red_Cycle_Auto_F2_Starting_Position extends LinearOpMode {
             drive.StrafeDistance(-15, .75);
 
         }else if(sleeve.Pos_3 = true){
+
             //Code for cycling and stopping in position 3 goes here
 
             drive.DriveDistance(119, .75);
