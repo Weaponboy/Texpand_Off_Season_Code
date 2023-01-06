@@ -49,13 +49,12 @@ public class Red_Cycle_Auto_F2_Starting_Position extends LinearOpMode {
         if(sleeve.Pos_1 = true){
 
             //Code for cycling and stopping in position 1 goes here
-
             drive.DriveDistance(119, .75);
             drive.TurnDegrees(-110);
             line.runOpMode();
             //Drop off the pre loaded cone
             top.Top_Gripper.setPosition(0);
-            B_grip.Base_Gripper.setPosition(0);
+            B_grip.Base_Gripper.setPosition(0.45);
             top.Top_Pivot.setPosition(0.4);
             slide.Top_pole();
             //Cycle the 5 cone stack
@@ -68,13 +67,12 @@ public class Red_Cycle_Auto_F2_Starting_Position extends LinearOpMode {
         }else if(sleeve.Pos_2 = true){
 
             //Code for cycling and stopping in position 2 goes here
-
             drive.DriveDistance(119, .75);
             drive.TurnDegrees(-110);
             line.runOpMode();
             //Drop off the pre loaded cone
             top.Top_Gripper.setPosition(0);
-            B_grip.Base_Gripper.setPosition(0);
+            B_grip.Base_Gripper.setPosition(0.45);
             top.Top_Pivot.setPosition(0.4);
             slide.Top_pole();
             //Cycle the 5 cone stack
@@ -86,13 +84,12 @@ public class Red_Cycle_Auto_F2_Starting_Position extends LinearOpMode {
         }else if(sleeve.Pos_3 = true){
 
             //Code for cycling and stopping in position 3 goes here
-
             drive.DriveDistance(119, .75);
             drive.TurnDegrees(-110);
             line.runOpMode();
             //Drop off the pre loaded cone
             top.Top_Gripper.setPosition(0);
-            B_grip.Base_Gripper.setPosition(0);
+            B_grip.Base_Gripper.setPosition(0.45);
             top.Top_Pivot.setPosition(0.4);
             slide.Top_pole();
             //Cycle the 5 cone stack

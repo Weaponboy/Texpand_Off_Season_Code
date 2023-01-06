@@ -55,7 +55,7 @@ public class Red_Cycle_Auto_F4_Starting_Position extends LinearOpMode {
             line.runOpMode();
             //Drop off the pre loaded cone
             top.Top_Gripper.setPosition(0);
-            B_grip.Base_Gripper.setPosition(0);
+            B_grip.Base_Gripper.setPosition(0.45);
             top.Top_Pivot.setPosition(0.4);
             slide.Top_pole();
             //Cycle the 5 cone stack
@@ -74,7 +74,7 @@ public class Red_Cycle_Auto_F4_Starting_Position extends LinearOpMode {
             line.runOpMode();
             //Drop off the pre loaded cone
             top.Top_Gripper.setPosition(0);
-            B_grip.Base_Gripper.setPosition(0);
+            B_grip.Base_Gripper.setPosition(0.45);
             top.Top_Pivot.setPosition(0.4);
             slide.Top_pole();
             //Cycle the 5 cone stack
@@ -92,7 +92,7 @@ public class Red_Cycle_Auto_F4_Starting_Position extends LinearOpMode {
             line.runOpMode();
             //Drop off the pre loaded cone
             top.Top_Gripper.setPosition(0);
-            B_grip.Base_Gripper.setPosition(0);
+            B_grip.Base_Gripper.setPosition(0.45);
             top.Top_Pivot.setPosition(0.4);
             slide.Top_pole();
             //Cycle the 5 cone stack
