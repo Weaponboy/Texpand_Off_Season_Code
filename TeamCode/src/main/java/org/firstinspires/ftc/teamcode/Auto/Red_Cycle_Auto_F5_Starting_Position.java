@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.Vision.OpenCVPipelinetest;
 import org.firstinspires.ftc.teamcode.Vision.Stack_Detection_Red;
 
 @Autonomous
-public class Red_Cycle_Auto_F4_Starting_Position extends LinearOpMode {
+public class Red_Cycle_Auto_F5_Starting_Position extends LinearOpMode {
 
     //Vision for finding the cone stack
     Stack_Detection_Red line = new Stack_Detection_Red();
@@ -58,6 +58,7 @@ public class Red_Cycle_Auto_F4_Starting_Position extends LinearOpMode {
             B_grip.Base_Gripper.setPosition(0.45);
             top.Top_Pivot.setPosition(0.4);
             slide.Top_pole();
+            slide.return_Zero();
             //Cycle the 5 cone stack
             slide.Destack_5();
             //Drive to correct parking position
@@ -77,6 +78,7 @@ public class Red_Cycle_Auto_F4_Starting_Position extends LinearOpMode {
             B_grip.Base_Gripper.setPosition(0.45);
             top.Top_Pivot.setPosition(0.4);
             slide.Top_pole();
+            slide.return_Zero();
             //Cycle the 5 cone stack
             slide.Destack_5();
             //Drive to correct parking position
@@ -95,6 +97,7 @@ public class Red_Cycle_Auto_F4_Starting_Position extends LinearOpMode {
             B_grip.Base_Gripper.setPosition(0.45);
             top.Top_Pivot.setPosition(0.4);
             slide.Top_pole();
+            slide.return_Zero();
             //Cycle the 5 cone stack
             slide.Destack_5();
             //Drive to correct parking position

@@ -19,11 +19,6 @@ import org.openftc.easyopencv.OpenCvPipeline;
 public class Stack_Detection_Red extends LinearOpMode {
 
     Stack_Pos_Red thresholdPipe = new Stack_Pos_Red();
-    public boolean middle_true = false;
-    public boolean right_true = false;
-    public boolean left_true = false;
-
-
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -46,23 +41,6 @@ public class Stack_Detection_Red extends LinearOpMode {
             }
         });
 
-        switch (thresholdPipe.Location()){
-            case right:
-                telemetry.addData("Position", "Green");
-                right_true = true;
-                break;
-            case left:
-                telemetry.addData("Position", "Purple");
-                left_true = true;
-                break;
-            case middle:
-                 telemetry.addData("Position", "Yellow");
-                middle_true = true;
-                break;
-            default:
-        }
-        telemetry.update();
-
     }
 
 }
@@ -75,8 +53,6 @@ class Stack_Pos_Red extends OpenCvPipeline {
     private static boolean R = false;
     private static boolean M = false;
 
-    double color_Threshold;
-
     Mat workingmatrix = new Mat();
 
     static final Rect Left = new Rect(new Point(0, 0), new Point(215, 480));
@@ -86,15 +62,7 @@ class Stack_Pos_Red extends OpenCvPipeline {
     Telemetry telemetry;
     public Stack_Pos_Red(Telemetry t) {telemetry = t;}
 
-    POS pos;
-
     public Stack_Pos_Red() {}
-
-    public enum POS{
-        right,
-        left,
-        middle
-    }
 
     @Override
     public Mat processFrame(Mat input) {
@@ -105,19 +73,16 @@ class Stack_Pos_Red extends OpenCvPipeline {
         //Left
         if (Core.mean(workingmatrix.submat(Left)).val[0] > 136 && Core.mean(workingmatrix.submat(Left)).val[0] < 250){
             telemetry.addData("Colour", "Yellow");
-            pos = POS.left;
             L = true;
         }
         //Right
         else if(Core.mean(workingmatrix.submat(Right)).val[0] > 136 && Core.mean(workingmatrix.submat(Right)).val[0] < 250){
             telemetry.addData("Colour", "Blue");
-            pos = POS.left;
             R = true;
         }
         //Middle
         else if(Core.mean(workingmatrix.submat(Middle)).val[0] > 136 && Core.mean(workingmatrix.submat(Middle)).val[0] < 250){
             telemetry.addData("Colour", "Red");
-            pos = POS.middle;
             M = true;
         }
 
@@ -156,7 +121,4 @@ class Stack_Pos_Red extends OpenCvPipeline {
         return input;
     }
 
-    public POS Location(){
-         return pos;
-    }
 }

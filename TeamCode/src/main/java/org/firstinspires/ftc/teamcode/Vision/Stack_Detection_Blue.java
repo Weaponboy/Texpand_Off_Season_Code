@@ -45,23 +45,6 @@ public class Stack_Detection_Blue extends LinearOpMode {
             }
         });
 
-        switch (thresholdPipe.Location()){
-            case right:
-                telemetry.addData("Position", "Green");
-                right_true = true;
-                break;
-            case left:
-                telemetry.addData("Position", "Purple");
-                left_true = true;
-                break;
-            case middle:
-                 telemetry.addData("Position", "Yellow");
-                middle_true = true;
-                break;
-            default:
-        }
-        telemetry.update();
-
     }
 
 }
@@ -74,8 +57,6 @@ class Stack_Pos extends OpenCvPipeline {
     private static boolean R = false;
     private static boolean M = false;
 
-    double color_Threshold;
-
     Mat workingmatrix = new Mat();
 
     static final Rect Left = new Rect(new Point(0, 0), new Point(215, 480));
@@ -85,15 +66,7 @@ class Stack_Pos extends OpenCvPipeline {
     Telemetry telemetry;
     public Stack_Pos(Telemetry t) {telemetry = t;}
 
-    POS pos;
-
     public Stack_Pos() {}
-
-    public enum POS{
-        right,
-        left,
-        middle
-    }
 
     @Override
     public Mat processFrame(Mat input) {
@@ -104,19 +77,16 @@ class Stack_Pos extends OpenCvPipeline {
         //Left
         if (Core.mean(workingmatrix.submat(Left)).val[0] > 110 && Core.mean(workingmatrix.submat(Left)).val[0] < 135){
             telemetry.addData("Colour", "Yellow");
-            pos = POS.left;
             L = true;
         }
         //Right
         else if(Core.mean(workingmatrix.submat(Right)).val[0] > 110 && Core.mean(workingmatrix.submat(Right)).val[0] < 135){
             telemetry.addData("Colour", "Blue");
-            pos = POS.left;
             R = true;
         }
         //Middle
         else if(Core.mean(workingmatrix.submat(Middle)).val[0] > 110 && Core.mean(workingmatrix.submat(Middle)).val[0] < 135){
             telemetry.addData("Colour", "Red");
-            pos = POS.middle;
             M = true;
         }
 
@@ -153,9 +123,5 @@ class Stack_Pos extends OpenCvPipeline {
         }
 
         return input;
-    }
-
-    public POS Location(){
-         return pos;
     }
 }

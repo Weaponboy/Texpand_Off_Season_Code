@@ -57,6 +57,7 @@ public class Red_Cycle_Auto_F2_Starting_Position extends LinearOpMode {
             B_grip.Base_Gripper.setPosition(0.45);
             top.Top_Pivot.setPosition(0.4);
             slide.Top_pole();
+            slide.return_Zero();
             //Cycle the 5 cone stack
             slide.Destack_5();
             //Drive to correct parking position
@@ -75,6 +76,7 @@ public class Red_Cycle_Auto_F2_Starting_Position extends LinearOpMode {
             B_grip.Base_Gripper.setPosition(0.45);
             top.Top_Pivot.setPosition(0.4);
             slide.Top_pole();
+            slide.return_Zero();
             //Cycle the 5 cone stack
             slide.Destack_5();
             //Drive to correct parking position
@@ -92,6 +94,7 @@ public class Red_Cycle_Auto_F2_Starting_Position extends LinearOpMode {
             B_grip.Base_Gripper.setPosition(0.45);
             top.Top_Pivot.setPosition(0.4);
             slide.Top_pole();
+            slide.return_Zero();
             //Cycle the 5 cone stack
             slide.Destack_5();
             //Drive to correct parking position

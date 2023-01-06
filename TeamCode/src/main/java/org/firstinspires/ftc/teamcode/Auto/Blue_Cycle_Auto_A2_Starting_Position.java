@@ -59,10 +59,11 @@ public class Blue_Cycle_Auto_A2_Starting_Position extends LinearOpMode {
             line.runOpMode();
             top.Top_Pivot.setPosition(0.4);
             slide.Top_pole();
-
+            slide.return_Zero();
+            //need destacker here
             drive.TurnDegrees(-15);
-            drive.StrafeDistance(5, .75);
-            drive.DriveDistance(119, .75);
+            drive.StrafeDistance(15,0.75);
+            drive.DriveDistance(-59,0.75);
 
         }else if(sleeve.Pos_2 = true){
             //Code for cycling and stopping in position 2 goes here
@@ -71,6 +72,11 @@ public class Blue_Cycle_Auto_A2_Starting_Position extends LinearOpMode {
             line.runOpMode();
             top.Top_Pivot.setPosition(0.4);
             slide.Top_pole();
+            slide.return_Zero();
+            //need destacker here
+            drive.TurnDegrees(-15);
+            drive.StrafeDistance(15,0.75);
+
 
         }else if(sleeve.Pos_3 = true){
             //Code for cycling and stopping in position 3 goes here
@@ -79,6 +85,11 @@ public class Blue_Cycle_Auto_A2_Starting_Position extends LinearOpMode {
             line.runOpMode();
             top.Top_Pivot.setPosition(0.4);
             slide.Top_pole();
+            slide.return_Zero();
+            //need destacker here
+            drive.TurnDegrees(-15);
+            drive.StrafeDistance(15,0.75);
+            drive.DriveDistance(59,0.75);
 
         }
     }
