@@ -223,6 +223,20 @@ public class Slides {
         // Code not done yet
     }
 
+    public void return_Zero() {
+        top.Top_Gripper.setPosition(0.45);
+        if(top.Top_Gripper.getPosition() == 0.45) {
+            Right_Slide.setTargetPosition(0);
+            Left_Slide.setTargetPosition(0);
+            Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            top.Top_Pivot.setPosition(1);
+            Right_Slide.setPower(-0.9);
+            Left_Slide.setPower(-0.9);
+            lowering = true;
+        }
+    }
+
 
     public void init(HardwareMap hwMap) {
 
