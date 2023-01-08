@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.Hardware.Drivetrain;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -15,13 +16,12 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-public class Stack_Detection extends LinearOpMode {
+public class Stack_Detection_Blue extends LinearOpMode {
 
     Stack_Pos thresholdPipe = new Stack_Pos();
     public boolean middle_true = false;
     public boolean right_true = false;
     public boolean left_true = false;
-
 
 
     @Override
@@ -45,28 +45,13 @@ public class Stack_Detection extends LinearOpMode {
             }
         });
 
-        switch (thresholdPipe.Location()){
-            case right:
-                telemetry.addData("Position", "Green");
-                right_true = true;
-                break;
-            case left:
-                telemetry.addData("Position", "Purple");
-                left_true = true;
-                break;
-            case middle:
-                 telemetry.addData("Position", "Yellow");
-                middle_true = true;
-                break;
-            default:
-        }
-        telemetry.update();
-
     }
 
 }
 
 class Stack_Pos extends OpenCvPipeline {
+
+    Drivetrain drive = new Drivetrain();
 
     private static boolean L = false;
     private static boolean R = false;
@@ -81,15 +66,7 @@ class Stack_Pos extends OpenCvPipeline {
     Telemetry telemetry;
     public Stack_Pos(Telemetry t) {telemetry = t;}
 
-    POS pos;
-
     public Stack_Pos() {}
-
-    public enum POS{
-        right,
-        left,
-        middle
-    }
 
     @Override
     public Mat processFrame(Mat input) {
@@ -100,19 +77,16 @@ class Stack_Pos extends OpenCvPipeline {
         //Left
         if (Core.mean(workingmatrix.submat(Left)).val[0] > 110 && Core.mean(workingmatrix.submat(Left)).val[0] < 135){
             telemetry.addData("Colour", "Yellow");
-            pos = POS.left;
             L = true;
         }
         //Right
         else if(Core.mean(workingmatrix.submat(Right)).val[0] > 110 && Core.mean(workingmatrix.submat(Right)).val[0] < 135){
             telemetry.addData("Colour", "Blue");
-            pos = POS.left;
             R = true;
         }
         //Middle
         else if(Core.mean(workingmatrix.submat(Middle)).val[0] > 110 && Core.mean(workingmatrix.submat(Middle)).val[0] < 135){
             telemetry.addData("Colour", "Red");
-            pos = POS.middle;
             M = true;
         }
 
@@ -121,6 +95,24 @@ class Stack_Pos extends OpenCvPipeline {
         Imgproc.rectangle(input, Right, blue, 10);
         Imgproc.rectangle(input, Left, blue, 10);
         Imgproc.rectangle(input, Middle, blue, 10);
+
+        if (M && !R && !L){
+            // What we want
+        }else if(!M && R && !L){
+            //Strafe Left 5cm
+            drive.StrafeDistance(-5, .5);
+        }else if(!M && !R && L){
+            //Strafe Right 5cm
+            drive.StrafeDistance(5, .5);
+        }
+        else if(M && R && !L){
+            //Strafe Right 2.5cm
+            drive.StrafeDistance(-2.5, .5);
+        }
+        else if(M && !R && L){
+            //Strafe Right 2.5cm
+            drive.StrafeDistance(2.5, .5);
+        }
 
         if (L){
             input.submat(Left);
@@ -131,9 +123,5 @@ class Stack_Pos extends OpenCvPipeline {
         }
 
         return input;
-    }
-
-    public POS Location(){
-         return pos;
     }
 }

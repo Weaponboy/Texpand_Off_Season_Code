@@ -102,32 +102,23 @@ class Threshold_Pipeline extends OpenCvPipeline {
     @Override
     public Mat processFrame(Mat input) {
         input.copyTo(workingmatrix);
-        input.copyTo(Red);
-        input.copyTo(Yellow);
-        input.copyTo(Blue);
-        //color scales
 
-        Imgproc.cvtColor(workingmatrix, workingmatrix, Imgproc.COLOR_RGB2HSV_FULL);
-        Imgproc.cvtColor(Red, Red, Imgproc.COLOR_RGB2HSV_FULL);
-        Imgproc.cvtColor(Yellow, Yellow, Imgproc.COLOR_RGB2HSV_FULL);
-        Imgproc.cvtColor(Blue, Blue, Imgproc.COLOR_RGB2HSV_FULL);
-
-
-        Scalar redup = new Scalar(250, 100, 100);
-        Scalar reddown = new Scalar(150, 0, 0);
-        Scalar blueup = new Scalar(148, 100, 100);
-        Scalar bluedown = new Scalar(110, 0, 0);
-        Scalar yelowup = new Scalar(110, 100, 100);
-        Scalar yelowdown = new Scalar(30, 0, 0);
-
-
-        // check for colors on the matrix's
-
-        Core.inRange(Red, reddown, redup, Red);
-        Core.inRange(Yellow, yelowdown, yelowup, Yellow);
-        Core.inRange(Blue, bluedown, blueup, Blue);
-
-//        workingmatrix.release();
+//        input.copyTo(Red);
+//        input.copyTo(Yellow);
+//        input.copyTo(Blue);
+//        Imgproc.cvtColor(workingmatrix, workingmatrix, Imgproc.COLOR_RGB2HSV_FULL);
+//        Imgproc.cvtColor(Red, Red, Imgproc.COLOR_RGB2HSV_FULL);
+//        Imgproc.cvtColor(Yellow, Yellow, Imgproc.COLOR_RGB2HSV_FULL);
+//        Imgproc.cvtColor(Blue, Blue, Imgproc.COLOR_RGB2HSV_FULL);
+//        Scalar redup = new Scalar(250, 100, 100);
+//        Scalar reddown = new Scalar(150, 0, 0);
+//        Scalar blueup = new Scalar(148, 100, 100);
+//        Scalar bluedown = new Scalar(110, 0, 0);
+//        Scalar yelowup = new Scalar(110, 100, 100);
+//        Scalar yelowdown = new Scalar(30, 0, 0);
+//        Core.inRange(Red, reddown, redup, Red);
+//        Core.inRange(Yellow, yelowdown, yelowup, Yellow);
+//        Core.inRange(Blue, bluedown, blueup, Blue);
 
 
         if (Core.mean(workingmatrix.submat(center)).val[0] > 30 && Core.mean(workingmatrix.submat(center)).val[0] < 110) {
@@ -137,22 +128,7 @@ class Threshold_Pipeline extends OpenCvPipeline {
         } else if (Core.mean(workingmatrix.submat(center)).val[0] > 136 && Core.mean(workingmatrix.submat(center)).val[0] < 250) {
             telemetry.addData("Colour", "Red");
         }
-        telemetry.addData("workingmatrix HUE", Math.round(Core.mean(workingmatrix.submat(center)).val[0]));
-        telemetry.addData("workingmatrix SATURATION", Math.round(Core.mean(workingmatrix.submat(center)).val[1]));
-        telemetry.addData("workingmatrix VALUE", Math.round(Core.mean(workingmatrix.submat(center)).val[2]));
 
-        telemetry.addData("Red HUE", Math.round(Core.mean(Red).val[0]));
-        telemetry.addData("Red SATURATION", Math.round(Core.mean(Red).val[1]));
-        telemetry.addData("Red VALUE", Math.round(Core.mean(Red).val[2]));
-
-        telemetry.addData("Yellow HUE", Math.round(Core.mean(Yellow).val[0]));
-        telemetry.addData("Yellow SATURATION", Math.round(Core.mean(Yellow).val[1]));
-        telemetry.addData("Yellow VALUE", Math.round(Core.mean(Yellow).val[2]));
-
-        telemetry.addData("Blue HUE", Math.round(Core.mean(Blue).val[0]));
-        telemetry.addData("Blue SATURATION", Math.round(Core.mean(Blue).val[1]));
-        telemetry.addData("Blue VALUE", Math.round(Core.mean(Blue).val[2]));
-        telemetry.update();
         Scalar blue = new Scalar(319, 100, 100);
 
         Imgproc.rectangle(input, center, blue, 10);

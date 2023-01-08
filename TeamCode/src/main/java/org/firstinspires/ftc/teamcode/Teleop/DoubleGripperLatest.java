@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -54,6 +54,7 @@ public class DoubleGripperLatest extends OpMode {
         LF.setPower(slow*(pivot + (vertical + horizontal)));
         LB.setPower(slow*(pivot + (vertical - horizontal)));
 
+        //destack
         if (gamepad1.dpad_up) {
             stakerpos = stakerpos + 1;
 
@@ -199,7 +200,6 @@ public class DoubleGripperLatest extends OpMode {
         }
 //extend slides to collect cone
         if (gamepad1.left_trigger > 0) {
-
             Extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             Extend.setPower(-1);
             conefound = colour.blue() > 150;
@@ -336,7 +336,7 @@ public class DoubleGripperLatest extends OpMode {
                 Extend.setPower(0);
             }
         }
-//bring slides back to botom
+//bring slides back to bottom
         if(gamepad1.right_trigger > 0){
             Top_Gripper.setPosition(0.4);
             if(Top_Gripper.getPosition() == 0.4) {
@@ -380,6 +380,7 @@ public class DoubleGripperLatest extends OpMode {
 
     }
 
+    //init
     @Override
     public void init() {
         colour = hardwareMap.get(ColorSensor.class, "colour");
