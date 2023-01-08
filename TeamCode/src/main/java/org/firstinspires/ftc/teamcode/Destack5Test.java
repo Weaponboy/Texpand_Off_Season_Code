@@ -28,7 +28,8 @@ public class Destack5Test extends LinearOpMode {
     public Servo Base_Pivot = null;
     public Servo Top_Gripper = null;
     public Servo Top_Pivot = null;
-    public Servo Destacker = null;
+    public Servo Destacker_Left = null;
+    public Servo Destacker_Right = null;
 
     private double vertical;
     private double horizontal;
@@ -42,6 +43,7 @@ public class Destack5Test extends LinearOpMode {
     private boolean extending = false;
     private double slow = 1;
     private boolean lowering = false;
+    private double Destack_position = 0;
 
 
     @Override
@@ -58,12 +60,14 @@ public class Destack5Test extends LinearOpMode {
 
         Extend = hardwareMap.get(DcMotor.class, "Extend");
 
-        Base_Gripper = hardwareMap.get(Servo.class,"Base_Gripper");
-        Base_Pivot = hardwareMap.get(Servo.class,"Base_Pivot");
-        Top_Gripper = hardwareMap.get(Servo.class,"Top_Gripper");
-        Top_Pivot = hardwareMap.get(Servo.class,"Top_Pivot");
-        Destacker = hardwareMap.get(Servo.class,"Destacker");
+        Base_Gripper = hardwareMap.get(Servo.class, "Base_Gripper");
+        Base_Pivot = hardwareMap.get(Servo.class, "Base_Pivot");
+        Top_Gripper = hardwareMap.get(Servo.class, "Top_Gripper");
+        Top_Pivot = hardwareMap.get(Servo.class, "Top_Pivot");
+        Destacker_Left = hardwareMap.get(Servo.class, "Destacker Left");
+        Destacker_Right = hardwareMap.get(Servo.class, "Destacker Right");
 
+        Destacker_Left.setDirection(Servo.Direction.REVERSE);
         Base_Gripper.setDirection(Servo.Direction.FORWARD);
         Base_Pivot.setDirection(Servo.Direction.FORWARD);
         Top_Gripper.setDirection(Servo.Direction.FORWARD);
@@ -89,953 +93,184 @@ public class Destack5Test extends LinearOpMode {
         RB.setPower(0);
         LB.setPower(0);
         Top_Gripper.setPosition(0.4);
-        Base_Pivot.setPosition(0.35);
-        Base_Gripper.setPosition(0.45);
-        Destacker.setPosition(0.2);
+        Base_Gripper.setPosition(0.4);
+        Base_Pivot.setPosition(0);
 
         telemetry.addData("Status:", "Initialized");
         telemetry.update();
 
         waitForStart();
         //top cone
-        Destacker.setPosition(0.6);
-        basepos = 0.1;
-        Base_Pivot.setPosition(0.0);
+        Destacker_Left.setPosition(0.47);
+        Destacker_Right.setPosition(0.47);
+        Destack_position = 0.47;
+        Destack();
 
-        Extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        Extend.setPower(-1);
-        conefound = colour.blue() > 150;
-
-        while(!conefound && Extend.getCurrentPosition() > -1900){
-            if(Right_Slide.getCurrentPosition() < 50 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 50 && !Left_Slide.isBusy()){
-                Right_Slide.setPower(0);
-                Left_Slide.setPower(0);
-
-                Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                lowering = false;
-            }else if(lowering){
-                Right_Slide.setPower(-0.9);
-                Left_Slide.setPower(-0.9);
-            }
-            conefound = colour.blue() > 150;
-            Extend.setPower(-1);
-            try {
-                Thread.sleep(10);
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
-            telemetry.addData("Blue:", colour.blue());
-            telemetry.addData("motor ticks:", Extend.getCurrentPosition());
-            telemetry.addData("Cone found:", conefound);
-            telemetry.update();
-        }
-
-        Extend.setPower(0);
-        if(conefound) {
-            Base_Gripper.setPosition(0);
-            Top_Pivot.setPosition(1);
-            Top_Gripper.setPosition(0.45);
-
-            if(Right_Slide.getCurrentPosition() < 50 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 50 && !Left_Slide.isBusy()){
-                Right_Slide.setPower(0);
-                Left_Slide.setPower(0);
-
-                Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                lowering = false;
-            }else if(lowering){
-                Right_Slide.setPower(-0.9);
-                Left_Slide.setPower(-0.9);
-            }
-
-            if(Base_Gripper.getPosition() <= 0.01){
-                try {
-                    Thread.sleep(50);
-                }catch (Exception e){
-                    System.out.println(e.getMessage());
-                }
-                Base_Pivot.setPosition(1);
-                while(Base_Pivot.getPosition() < 0.95){
-                    try {
-                        Thread.sleep(10);
-                    }catch (Exception e){
-                        System.out.println(e.getMessage());
-                    }
-                    telemetry.addData("base pivot", Base_Pivot.getPosition());
-                    telemetry.update();
-
-                }
-
-                Extend.setTargetPosition(0);
-                Extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                Extend.setPower(1);
-                try {
-                    Thread.sleep(400);
-                }catch (Exception e){
-                    System.out.println(e.getMessage());
-                }
-                Destacker.setPosition(0.2);
-
-                while (Extend.isBusy()) {
-                    if(Right_Slide.getCurrentPosition() < 50 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 50 && !Left_Slide.isBusy()){
-                        Right_Slide.setPower(0);
-                        Left_Slide.setPower(0);
-
-                        Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                        Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                        lowering = false;
-                    }else if(lowering){
-                        Right_Slide.setPower(-0.9);
-                        Left_Slide.setPower(-0.9);
-                    }
-
-
-
-                }
-
-                if(Right_Slide.getCurrentPosition() < 50 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 50 && !Left_Slide.isBusy()){
-                    Right_Slide.setPower(0);
-                    Left_Slide.setPower(0);
-
-                    Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                    Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                    lowering = false;
-                }else if(lowering){
-                    Right_Slide.setPower(-0.9);
-                    Left_Slide.setPower(-0.9);
-                }
-                Extend.setPower(0);
-                if(Base_Pivot.getPosition() > 0.9) {
-                    try {
-                        Thread.sleep(70);
-                    }catch (Exception e){
-                        System.out.println(e.getMessage());
-                    }
-                    Top_Gripper.setPosition(0);
-                    if (Top_Gripper.getPosition() <= 0.01) {
-                        Base_Gripper.setPosition(0.45);
-                        try {
-                            Thread.sleep(50);
-                        }catch (Exception e){
-                            System.out.println(e.getMessage());
-                        }
-
-                        telemetry.addData("got", "here");
-                        telemetry.update();
-                        Top_Pivot.setPosition(0.3);
-                        Base_Pivot.setPosition(0.35);
-
-                    }
-                }
-
-            }
-
-            Extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        }else{
-            Extend.setTargetPosition(0);
-            Extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            while (Extend.isBusy()) {
-                if(Right_Slide.getCurrentPosition() < 50 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 50 && !Left_Slide.isBusy()){
-                    Right_Slide.setPower(0);
-                    Left_Slide.setPower(0);
-
-                    Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                    Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                    lowering = false;
-                }else if(lowering){
-                    Right_Slide.setPower(-0.9);
-                    Left_Slide.setPower(-0.9);
-                }
-                Extend.setPower(0.8);
-            }
-            Extend.setPower(0);
-        }
-        Base_Pivot.setPosition(0.35);
-        Right_Slide.setTargetPosition(1900);
-        Left_Slide.setTargetPosition(1900);
-        Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        while(Right_Slide.isBusy() && Left_Slide.isBusy()){
-            Right_Slide.setPower(1);
-            Left_Slide.setPower(1);
-        }
-        Right_Slide.setPower(0);
-        Left_Slide.setPower(0);
-
-        Top_Pivot.setPosition(0.3);
-
-        Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        try {
-            Thread.sleep(700);
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-        }
-        Top_Gripper.setPosition(0.45);
-        if(Top_Gripper.getPosition() == 0.45) {
-            Right_Slide.setTargetPosition(0);
-            Left_Slide.setTargetPosition(0);
-            Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            Top_Pivot.setPosition(1);
-            Right_Slide.setPower(-0.9);
-            Left_Slide.setPower(-0.9);
-            lowering = true;
-        }
         //4th cone
-        Top_Gripper.setPosition(0.45);
+        Destacker_Left.setPosition(0.55);
+        Destacker_Right.setPosition(0.55);
+        Destack_position = 0.55;
+        Destack();
 
-        Destacker.setPosition(0.52);
-        basepos = 0.12;
-        Base_Pivot.setPosition(0.14);
-
-        Extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        Extend.setPower(-1);
-        conefound = colour.blue() > 150;
-
-        while(!conefound && Extend.getCurrentPosition() > -1900){
-            if(Right_Slide.getCurrentPosition() < 50 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 50 && !Left_Slide.isBusy()){
-                Right_Slide.setPower(0);
-                Left_Slide.setPower(0);
-
-                Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                lowering = false;
-            }else if(lowering){
-                Right_Slide.setPower(-0.9);
-                Left_Slide.setPower(-0.9);
-            }
-            conefound = colour.blue() > 150;
-            Extend.setPower(-1);
-            try {
-                Thread.sleep(10);
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
-            telemetry.addData("Blue:", colour.blue());
-            telemetry.addData("motor ticks:", Extend.getCurrentPosition());
-            telemetry.addData("Cone found:", conefound);
-            telemetry.update();
-        }
-
-        Extend.setPower(0);
-        if(conefound) {
-            Base_Gripper.setPosition(0);
-            Top_Pivot.setPosition(1);
-            Top_Gripper.setPosition(0.45);
-
-            if(Right_Slide.getCurrentPosition() < 50 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 50 && !Left_Slide.isBusy()){
-                Right_Slide.setPower(0);
-                Left_Slide.setPower(0);
-
-                Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                lowering = false;
-            }else if(lowering){
-                Right_Slide.setPower(-0.9);
-                Left_Slide.setPower(-0.9);
-            }
-
-            if(Base_Gripper.getPosition() <= 0.01){
-                try {
-                    Thread.sleep(50);
-                }catch (Exception e){
-                    System.out.println(e.getMessage());
-                }
-                Base_Pivot.setPosition(1);
-                while(Base_Pivot.getPosition() < 0.95){
-                    try {
-                        Thread.sleep(10);
-                    }catch (Exception e){
-                        System.out.println(e.getMessage());
-                    }
-                    telemetry.addData("base pivot", Base_Pivot.getPosition());
-                    telemetry.update();
-
-                }
-
-                Extend.setTargetPosition(0);
-                Extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                Extend.setPower(1);
-                try {
-                    Thread.sleep(400);
-                }catch (Exception e){
-                    System.out.println(e.getMessage());
-                }
-                Destacker.setPosition(0.2);
-
-                while (Extend.isBusy()) {
-                    if(Right_Slide.getCurrentPosition() < 50 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 50 && !Left_Slide.isBusy()){
-                        Right_Slide.setPower(0);
-                        Left_Slide.setPower(0);
-
-                        Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                        Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                        lowering = false;
-                    }else if(lowering){
-                        Right_Slide.setPower(-0.9);
-                        Left_Slide.setPower(-0.9);
-                    }
-
-
-
-                }
-
-                if(Right_Slide.getCurrentPosition() < 50 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 50 && !Left_Slide.isBusy()){
-                    Right_Slide.setPower(0);
-                    Left_Slide.setPower(0);
-
-                    Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                    Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                    lowering = false;
-                }else if(lowering){
-                    Right_Slide.setPower(-0.9);
-                    Left_Slide.setPower(-0.9);
-                }
-                Extend.setPower(0);
-                if(Base_Pivot.getPosition() > 0.9) {
-                    try {
-                        Thread.sleep(70);
-                    }catch (Exception e){
-                        System.out.println(e.getMessage());
-                    }
-                    Top_Gripper.setPosition(0);
-                    if (Top_Gripper.getPosition() <= 0.01) {
-                        Base_Gripper.setPosition(0.45);
-                        try {
-                            Thread.sleep(50);
-                        }catch (Exception e){
-                            System.out.println(e.getMessage());
-                        }
-
-                        telemetry.addData("got", "here");
-                        telemetry.update();
-                        Top_Pivot.setPosition(0.3);
-                        Base_Pivot.setPosition(0.35);
-
-                    }
-                }
-
-            }
-
-            Extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        }else{
-            Extend.setTargetPosition(0);
-            Extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            while (Extend.isBusy()) {
-                if(Right_Slide.getCurrentPosition() < 50 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 50 && !Left_Slide.isBusy()){
-                    Right_Slide.setPower(0);
-                    Left_Slide.setPower(0);
-
-                    Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                    Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                    lowering = false;
-                }else if(lowering){
-                    Right_Slide.setPower(-0.9);
-                    Left_Slide.setPower(-0.9);
-                }
-                Extend.setPower(0.8);
-            }
-            Extend.setPower(0);
-        }
-        Base_Pivot.setPosition(0.35);
-        Right_Slide.setTargetPosition(1900);
-        Left_Slide.setTargetPosition(1900);
-        Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        while(Right_Slide.isBusy() && Left_Slide.isBusy()){
-            Right_Slide.setPower(1);
-            Left_Slide.setPower(1);
-        }
-        Right_Slide.setPower(0);
-        Left_Slide.setPower(0);
-
-        Top_Pivot.setPosition(0.3);
-
-        Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        try {
-            Thread.sleep(700);
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-        }
-        Top_Gripper.setPosition(0.45);
-        if(Top_Gripper.getPosition() == 0.45) {
-            Right_Slide.setTargetPosition(0);
-            Left_Slide.setTargetPosition(0);
-            Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            Top_Pivot.setPosition(1);
-            Right_Slide.setPower(-0.9);
-            Left_Slide.setPower(-0.9);
-            lowering = true;
-        }
         //3rd cone
-        Top_Gripper.setPosition(0.45);
+        Destacker_Left.setPosition(0.65);
+        Destacker_Right.setPosition(0.65);
+        Destack_position = 0.65;
+        Destack();
 
-        Destacker.setPosition(0.45);
-        basepos = 0.22;
-        Base_Pivot.setPosition(0.23);
-
-        Extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        Extend.setPower(-1);
-        conefound = colour.blue() > 150;
-
-        while(!conefound && Extend.getCurrentPosition() > -1900){
-            if(Right_Slide.getCurrentPosition() < 50 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 50 && !Left_Slide.isBusy()){
-                Right_Slide.setPower(0);
-                Left_Slide.setPower(0);
-
-                Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                lowering = false;
-            }else if(lowering){
-                Right_Slide.setPower(-0.9);
-                Left_Slide.setPower(-0.9);
-            }
-            conefound = colour.blue() > 150;
-            Extend.setPower(-1);
-            try {
-                Thread.sleep(10);
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
-            telemetry.addData("Blue:", colour.blue());
-            telemetry.addData("motor ticks:", Extend.getCurrentPosition());
-            telemetry.addData("Cone found:", conefound);
-            telemetry.update();
-        }
-
-        Extend.setPower(0);
-        if(conefound) {
-            Base_Gripper.setPosition(0);
-            Top_Pivot.setPosition(1);
-            Top_Gripper.setPosition(0.45);
-
-            if(Right_Slide.getCurrentPosition() < 50 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 50 && !Left_Slide.isBusy()){
-                Right_Slide.setPower(0);
-                Left_Slide.setPower(0);
-
-                Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                lowering = false;
-            }else if(lowering){
-                Right_Slide.setPower(-0.9);
-                Left_Slide.setPower(-0.9);
-            }
-
-            if(Base_Gripper.getPosition() <= 0.01){
-                try {
-                    Thread.sleep(50);
-                }catch (Exception e){
-                    System.out.println(e.getMessage());
-                }
-                Base_Pivot.setPosition(1);
-                while(Base_Pivot.getPosition() < 0.95){
-                    try {
-                        Thread.sleep(10);
-                    }catch (Exception e){
-                        System.out.println(e.getMessage());
-                    }
-                    telemetry.addData("base pivot", Base_Pivot.getPosition());
-                    telemetry.update();
-
-                }
-
-                Extend.setTargetPosition(0);
-                Extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                Extend.setPower(1);
-                try {
-                    Thread.sleep(400);
-                }catch (Exception e){
-                    System.out.println(e.getMessage());
-                }
-                Destacker.setPosition(0.2);
-
-                while (Extend.isBusy()) {
-                    if(Right_Slide.getCurrentPosition() < 50 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 50 && !Left_Slide.isBusy()){
-                        Right_Slide.setPower(0);
-                        Left_Slide.setPower(0);
-
-                        Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                        Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                        lowering = false;
-                    }else if(lowering){
-                        Right_Slide.setPower(-0.9);
-                        Left_Slide.setPower(-0.9);
-                    }
-
-
-
-                }
-
-                if(Right_Slide.getCurrentPosition() < 50 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 50 && !Left_Slide.isBusy()){
-                    Right_Slide.setPower(0);
-                    Left_Slide.setPower(0);
-
-                    Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                    Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                    lowering = false;
-                }else if(lowering){
-                    Right_Slide.setPower(-0.9);
-                    Left_Slide.setPower(-0.9);
-                }
-                Extend.setPower(0);
-                if(Base_Pivot.getPosition() > 0.9) {
-                    try {
-                        Thread.sleep(70);
-                    }catch (Exception e){
-                        System.out.println(e.getMessage());
-                    }
-                    Top_Gripper.setPosition(0);
-                    if (Top_Gripper.getPosition() <= 0.01) {
-                        Base_Gripper.setPosition(0.45);
-                        try {
-                            Thread.sleep(50);
-                        }catch (Exception e){
-                            System.out.println(e.getMessage());
-                        }
-
-                        telemetry.addData("got", "here");
-                        telemetry.update();
-                        Top_Pivot.setPosition(0.3);
-                        Base_Pivot.setPosition(0.35);
-
-                    }
-                }
-
-            }
-
-            Extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        }else{
-            Extend.setTargetPosition(0);
-            Extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            while (Extend.isBusy()) {
-                if(Right_Slide.getCurrentPosition() < 50 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 50 && !Left_Slide.isBusy()){
-                    Right_Slide.setPower(0);
-                    Left_Slide.setPower(0);
-
-                    Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                    Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                    lowering = false;
-                }else if(lowering){
-                    Right_Slide.setPower(-0.9);
-                    Left_Slide.setPower(-0.9);
-                }
-                Extend.setPower(0.8);
-            }
-            Extend.setPower(0);
-        }
-        Base_Pivot.setPosition(0.35);
-        Right_Slide.setTargetPosition(1900);
-        Left_Slide.setTargetPosition(1900);
-        Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        while(Right_Slide.isBusy() && Left_Slide.isBusy()){
-            Right_Slide.setPower(1);
-            Left_Slide.setPower(1);
-        }
-        Right_Slide.setPower(0);
-        Left_Slide.setPower(0);
-
-        Top_Pivot.setPosition(0.3);
-
-        Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        try {
-            Thread.sleep(700);
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-        }
-        Top_Gripper.setPosition(0.45);
-        if(Top_Gripper.getPosition() == 0.45) {
-            Right_Slide.setTargetPosition(0);
-            Left_Slide.setTargetPosition(0);
-            Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            Top_Pivot.setPosition(1);
-            Right_Slide.setPower(-0.9);
-            Left_Slide.setPower(-0.9);
-            lowering = true;
-        }
         //2nd cone
-        Top_Gripper.setPosition(0.45);
+        Destacker_Left.setPosition(0.7);
+        Destacker_Right.setPosition(0.7);
+        Destack_position = 0.7;
+        Destack();
 
-        Destacker.setPosition(0.4);
-        basepos = 0.28;
-        Base_Pivot.setPosition(0.28);
-
-        Extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        Extend.setPower(-1);
-        conefound = colour.blue() > 150;
-
-        while(!conefound && Extend.getCurrentPosition() > -1900){
-            if(Right_Slide.getCurrentPosition() < 50 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 50 && !Left_Slide.isBusy()){
-                Right_Slide.setPower(0);
-                Left_Slide.setPower(0);
-
-                Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                lowering = false;
-            }else if(lowering){
-                Right_Slide.setPower(-0.9);
-                Left_Slide.setPower(-0.9);
-            }
-            conefound = colour.blue() > 150;
-            Extend.setPower(-1);
-            try {
-                Thread.sleep(10);
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
-            telemetry.addData("Blue:", colour.blue());
-            telemetry.addData("motor ticks:", Extend.getCurrentPosition());
-            telemetry.addData("Cone found:", conefound);
-            telemetry.update();
-        }
-
-        Extend.setPower(0);
-        if(conefound) {
-            Base_Gripper.setPosition(0);
-            Top_Pivot.setPosition(1);
-            Top_Gripper.setPosition(0.45);
-
-            if(Right_Slide.getCurrentPosition() < 50 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 50 && !Left_Slide.isBusy()){
-                Right_Slide.setPower(0);
-                Left_Slide.setPower(0);
-
-                Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                lowering = false;
-            }else if(lowering){
-                Right_Slide.setPower(-0.9);
-                Left_Slide.setPower(-0.9);
-            }
-
-            if(Base_Gripper.getPosition() <= 0.01){
-                try {
-                    Thread.sleep(50);
-                }catch (Exception e){
-                    System.out.println(e.getMessage());
-                }
-                Base_Pivot.setPosition(1);
-                while(Base_Pivot.getPosition() < 0.95){
-                    try {
-                        Thread.sleep(10);
-                    }catch (Exception e){
-                        System.out.println(e.getMessage());
-                    }
-                    telemetry.addData("base pivot", Base_Pivot.getPosition());
-                    telemetry.update();
-
-                }
-
-                Extend.setTargetPosition(0);
-                Extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                Extend.setPower(1);
-                try {
-                    Thread.sleep(400);
-                }catch (Exception e){
-                    System.out.println(e.getMessage());
-                }
-                Destacker.setPosition(0.2);
-
-                while (Extend.isBusy()) {
-                    if(Right_Slide.getCurrentPosition() < 50 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 50 && !Left_Slide.isBusy()){
-                        Right_Slide.setPower(0);
-                        Left_Slide.setPower(0);
-
-                        Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                        Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                        lowering = false;
-                    }else if(lowering){
-                        Right_Slide.setPower(-0.9);
-                        Left_Slide.setPower(-0.9);
-                    }
-
-
-
-                }
-
-                if(Right_Slide.getCurrentPosition() < 50 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 50 && !Left_Slide.isBusy()){
-                    Right_Slide.setPower(0);
-                    Left_Slide.setPower(0);
-
-                    Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                    Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                    lowering = false;
-                }else if(lowering){
-                    Right_Slide.setPower(-0.9);
-                    Left_Slide.setPower(-0.9);
-                }
-                Extend.setPower(0);
-                if(Base_Pivot.getPosition() > 0.9) {
-                    try {
-                        Thread.sleep(70);
-                    }catch (Exception e){
-                        System.out.println(e.getMessage());
-                    }
-                    Top_Gripper.setPosition(0);
-                    if (Top_Gripper.getPosition() <= 0.01) {
-                        Base_Gripper.setPosition(0.45);
-                        try {
-                            Thread.sleep(50);
-                        }catch (Exception e){
-                            System.out.println(e.getMessage());
-                        }
-
-                        telemetry.addData("got", "here");
-                        telemetry.update();
-                        Top_Pivot.setPosition(0.3);
-                        Base_Pivot.setPosition(0.35);
-
-                    }
-                }
-
-            }
-
-            Extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        }else{
-            Extend.setTargetPosition(0);
-            Extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            while (Extend.isBusy()) {
-                if(Right_Slide.getCurrentPosition() < 50 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 50 && !Left_Slide.isBusy()){
-                    Right_Slide.setPower(0);
-                    Left_Slide.setPower(0);
-
-                    Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                    Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                    lowering = false;
-                }else if(lowering){
-                    Right_Slide.setPower(-0.9);
-                    Left_Slide.setPower(-0.9);
-                }
-                Extend.setPower(0.8);
-            }
-            Extend.setPower(0);
-        }
-        Base_Pivot.setPosition(0.35);
-        Right_Slide.setTargetPosition(1900);
-        Left_Slide.setTargetPosition(1900);
-        Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        while(Right_Slide.isBusy() && Left_Slide.isBusy()){
-            Right_Slide.setPower(1);
-            Left_Slide.setPower(1);
-        }
-        Right_Slide.setPower(0);
-        Left_Slide.setPower(0);
-
-        Top_Pivot.setPosition(0.3);
-
-        Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        try {
-            Thread.sleep(700);
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-        }
-        Top_Gripper.setPosition(0.45);
-        if(Top_Gripper.getPosition() == 0.45) {
-            Right_Slide.setTargetPosition(0);
-            Left_Slide.setTargetPosition(0);
-            Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            Top_Pivot.setPosition(1);
-            Right_Slide.setPower(-0.9);
-            Left_Slide.setPower(-0.9);
-            lowering = true;
-        }
         //1st cone
-        Top_Gripper.setPosition(0.45);
-
-        Destacker.setPosition(0.2);
-        basepos = 0.35;
-        Base_Pivot.setPosition(0.35);
-
-        Extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        Extend.setPower(-1);
-        conefound = colour.blue() > 150;
-
-        while(!conefound && Extend.getCurrentPosition() > -1900){
-            if(Right_Slide.getCurrentPosition() < 50 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 50 && !Left_Slide.isBusy()){
-                Right_Slide.setPower(0);
-                Left_Slide.setPower(0);
-
-                Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                lowering = false;
-            }else if(lowering){
-                Right_Slide.setPower(-0.9);
-                Left_Slide.setPower(-0.9);
-            }
-            conefound = colour.blue() > 150;
-            Extend.setPower(-1);
-            try {
-                Thread.sleep(10);
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
-            telemetry.addData("Blue:", colour.blue());
-            telemetry.addData("motor ticks:", Extend.getCurrentPosition());
-            telemetry.addData("Cone found:", conefound);
-            telemetry.update();
-        }
-
-        Extend.setPower(0);
-        if(conefound) {
-            Base_Gripper.setPosition(0);
-            Top_Pivot.setPosition(1);
-            Top_Gripper.setPosition(0.45);
-
-            if(Right_Slide.getCurrentPosition() < 50 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 50 && !Left_Slide.isBusy()){
-                Right_Slide.setPower(0);
-                Left_Slide.setPower(0);
-
-                Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                lowering = false;
-            }else if(lowering){
-                Right_Slide.setPower(-0.9);
-                Left_Slide.setPower(-0.9);
-            }
-
-            if(Base_Gripper.getPosition() <= 0.01){
-                try {
-                    Thread.sleep(50);
-                }catch (Exception e){
-                    System.out.println(e.getMessage());
-                }
-                Base_Pivot.setPosition(1);
-                while(Base_Pivot.getPosition() < 0.95){
-                    try {
-                        Thread.sleep(10);
-                    }catch (Exception e){
-                        System.out.println(e.getMessage());
-                    }
-                    telemetry.addData("base pivot", Base_Pivot.getPosition());
-                    telemetry.update();
-
-                }
-
-                Extend.setTargetPosition(0);
-                Extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                Extend.setPower(1);
-                try {
-                    Thread.sleep(400);
-                }catch (Exception e){
-                    System.out.println(e.getMessage());
-                }
-                Destacker.setPosition(0.2);
-
-                while (Extend.isBusy()) {
-                    if(Right_Slide.getCurrentPosition() < 50 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 50 && !Left_Slide.isBusy()){
-                        Right_Slide.setPower(0);
-                        Left_Slide.setPower(0);
-
-                        Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                        Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                        lowering = false;
-                    }else if(lowering){
-                        Right_Slide.setPower(-0.9);
-                        Left_Slide.setPower(-0.9);
-                    }
-
-
-
-                }
-
-                if(Right_Slide.getCurrentPosition() < 50 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 50 && !Left_Slide.isBusy()){
-                    Right_Slide.setPower(0);
-                    Left_Slide.setPower(0);
-
-                    Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                    Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                    lowering = false;
-                }else if(lowering){
-                    Right_Slide.setPower(-0.9);
-                    Left_Slide.setPower(-0.9);
-                }
-                Extend.setPower(0);
-                if(Base_Pivot.getPosition() > 0.9) {
-                    try {
-                        Thread.sleep(70);
-                    }catch (Exception e){
-                        System.out.println(e.getMessage());
-                    }
-                    Top_Gripper.setPosition(0);
-                    if (Top_Gripper.getPosition() <= 0.01) {
-                        Base_Gripper.setPosition(0.45);
-                        try {
-                            Thread.sleep(50);
-                        }catch (Exception e){
-                            System.out.println(e.getMessage());
-                        }
-
-                        telemetry.addData("got", "here");
-                        telemetry.update();
-                        Top_Pivot.setPosition(0.3);
-                        Base_Pivot.setPosition(0.35);
-
-                    }
-                }
-
-            }
-
-            Extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        }else{
-            Extend.setTargetPosition(0);
-            Extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            while (Extend.isBusy()) {
-                if(Right_Slide.getCurrentPosition() < 50 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 50 && !Left_Slide.isBusy()){
-                    Right_Slide.setPower(0);
-                    Left_Slide.setPower(0);
-
-                    Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                    Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                    lowering = false;
-                }else if(lowering){
-                    Right_Slide.setPower(-0.9);
-                    Left_Slide.setPower(-0.9);
-                }
-                Extend.setPower(0.8);
-            }
-            Extend.setPower(0);
-        }
-        Base_Pivot.setPosition(0.35);
-        Right_Slide.setTargetPosition(1900);
-        Left_Slide.setTargetPosition(1900);
-        Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        while(Right_Slide.isBusy() && Left_Slide.isBusy()){
-            Right_Slide.setPower(1);
-            Left_Slide.setPower(1);
-        }
-        Right_Slide.setPower(0);
-        Left_Slide.setPower(0);
-
-        Top_Pivot.setPosition(0.3);
-
-        Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        try {
-            Thread.sleep(700);
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-        }
-        Top_Gripper.setPosition(0.45);
-        if(Top_Gripper.getPosition() == 0.45) {
-            Right_Slide.setTargetPosition(0);
-            Left_Slide.setTargetPosition(0);
-            Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            Top_Pivot.setPosition(1);
-            Right_Slide.setPower(-0.9);
-            Left_Slide.setPower(-0.9);
-            lowering = true;
+        Destacker_Left.setPosition(1);
+        Destacker_Right.setPosition(1);
+        Destack_position = 1;
+        Destack();
+        while (lowering) {
+            CheckVSlidePos();
         }
 
     }
+    public void CheckVSlidePos() {
+        if(Right_Slide.getCurrentPosition() < 10 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 10 && !Left_Slide.isBusy()){
+            Right_Slide.setPower(0);
+            Left_Slide.setPower(0);
 
+            Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            lowering = false;
+        }else if(lowering){
+            Right_Slide.setPower(-0.9);
+            Left_Slide.setPower(-0.9);
+        }
+    }
+
+    public void Destack() {
+        Top_Pivot.setPosition(0.75);
+        Base_Pivot.setPosition(0);
+        Extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Extend.setPower(-1);
+        conefound = colour.blue() > 130;
+
+        while(!conefound && Extend.getCurrentPosition() > -1700){
+            CheckVSlidePos();
+            conefound = colour.blue() > 130;
+            Extend.setPower(-1);
+        }
+        Extend.setPower(0);
+        if(conefound) {
+            Base_Gripper.setPosition(0);
+            CheckVSlidePos();
+
+            Top_Gripper.setPosition(0.4);
+
+            try {
+                Thread.sleep(100);
+            }catch (Exception e){
+                System.out.println(e.getMessage());
+            }
+
+            Base_Pivot.setPosition(1);
+            try {
+                Thread.sleep(400);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+
+            //if the base gripper is closed retract the horizontal slides
+            if(Base_Gripper.getPosition() == 0){
+                Extend.setTargetPosition(0);
+                Extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                while (Extend.isBusy()) {
+                    CheckVSlidePos();
+
+                    Destacker_Left.setPosition(1);
+                    Destacker_Right.setPosition(1);
+                    Base_Pivot.setPosition(1);
+                    Extend.setPower(1);
+
+                }
+                Extend.setPower(0);
+                while (lowering) {
+                    CheckVSlidePos();
+                }
+                Top_Pivot.setPosition(1);
+                Base_Gripper.setPosition(0.4);
+
+                if(Base_Pivot.getPosition() > 0.9) {
+                    try {
+                        Thread.sleep(200);
+                    }catch (Exception e){
+                        System.out.println(e.getMessage());
+                    }
+                    Top_Gripper.setPosition(0);
+                    try {
+                        Thread.sleep(75);
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+
+                    Top_Pivot.setPosition(0.4);
+                    try {
+                        Thread.sleep(25);
+                    }catch (Exception e){
+                        System.out.println(e.getMessage());
+                    }
+                    Base_Pivot.setPosition(0);
+
+                }
+
+            }
+
+            Extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            Base_Pivot.setPosition(0);
+            //Extend vertical slides and drop cone
+            Right_Slide.setTargetPosition(2000);
+            Left_Slide.setTargetPosition(2000);
+            Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            while(Right_Slide.isBusy() && Left_Slide.isBusy()){
+                Right_Slide.setPower(1);
+                Left_Slide.setPower(1);
+            }
+            Right_Slide.setPower(0);
+            Left_Slide.setPower(0);
+
+            Top_Pivot.setPosition(0.3);
+
+            Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            try {
+                Thread.sleep(200);
+            }catch (Exception e){
+                System.out.println(e.getMessage());
+            }
+            Top_Gripper.setPosition(0.4);
+            //TO DO: Insert WHILE loop
+            if(Top_Gripper.getPosition() == 0.4) {
+                Right_Slide.setTargetPosition(0);
+                Left_Slide.setTargetPosition(0);
+                Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                Right_Slide.setPower(-0.9);
+                Left_Slide.setPower(-0.9);
+                lowering = true;
+            }
+        }else{
+            Top_Pivot.setPosition(0.75);
+            Extend.setTargetPosition(0);
+            Extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            while (Extend.isBusy()) {
+                CheckVSlidePos();
+                Extend.setPower(0.8);
+            }
+            Extend.setPower(0);
+            Base_Pivot.setPosition(0);
+        }
+
+
+    }
 }
