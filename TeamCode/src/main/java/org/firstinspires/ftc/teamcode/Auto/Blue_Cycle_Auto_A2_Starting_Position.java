@@ -52,10 +52,12 @@ public class Blue_Cycle_Auto_A2_Starting_Position extends LinearOpMode {
             drive.DriveDistance(119, .75);
             drive.TurnDegrees(105);
             line.runOpMode();
+            B_grip.Base_Gripper.setPosition(0.45);
+            top.Top_Gripper.setPosition(0);
             top.Top_Pivot.setPosition(0.4);
             slide.Top_pole();
             slide.return_Zero();
-            //need destacker here
+            slide.Destack_5();
             drive.TurnDegrees(-15);
             drive.StrafeDistance(15,0.75);
             drive.DriveDistance(-59,0.75);
@@ -65,10 +67,12 @@ public class Blue_Cycle_Auto_A2_Starting_Position extends LinearOpMode {
             drive.DriveDistance(119, .75);
             drive.TurnDegrees(105);
             line.runOpMode();
+            B_grip.Base_Gripper.setPosition(0.45);
+            top.Top_Gripper.setPosition(0);
             top.Top_Pivot.setPosition(0.4);
             slide.Top_pole();
             slide.return_Zero();
-            //need destacker here
+            slide.Destack_5();
             drive.TurnDegrees(-15);
             drive.StrafeDistance(15,0.75);
 
@@ -78,10 +82,12 @@ public class Blue_Cycle_Auto_A2_Starting_Position extends LinearOpMode {
             drive.DriveDistance(119, .75);
             drive.TurnDegrees(105);
             line.runOpMode();
+            B_grip.Base_Gripper.setPosition(0.45);
+            top.Top_Gripper.setPosition(0);
             top.Top_Pivot.setPosition(0.4);
             slide.Top_pole();
             slide.return_Zero();
-            //need destacker here
+            slide.Destack_5();
             drive.TurnDegrees(-15);
             drive.StrafeDistance(15,0.75);
             drive.DriveDistance(59,0.75);
