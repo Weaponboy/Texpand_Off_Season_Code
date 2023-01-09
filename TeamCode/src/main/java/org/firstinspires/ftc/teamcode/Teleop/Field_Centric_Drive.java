@@ -1,3 +1,9 @@
+/** This is the code used for the field-centric driving tutorial
+ This is by no means a perfect code
+ There are a number of improvements that can be made
+ So, feel free to add onto this and make it better
+ */
+
 package org.firstinspires.ftc.teamcode.Teleop;
 
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
@@ -16,13 +22,18 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
+import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
+
 @TeleOp
 public class Field_Centric_Drive extends LinearOpMode {
 
-    private DcMotor LF;
-    private DcMotor RF;
-    private DcMotor RB;
-    private DcMotor LB;
+    /**
+     * make sure to change these motors to your team's preference and configuration
+     */
+    public DcMotor RF = null;
+    public DcMotor LF = null;
+    public DcMotor RB = null;
+    public DcMotor LB = null;
 
     public BNO055IMU imu;
 
@@ -32,9 +43,9 @@ public class Field_Centric_Drive extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        double Pivot;
-        double Vertical;
-        double Horizontal;
+        double driveTurn;
+        //double driveVertical;
+        //double driveHorizontal;
 
         double gamepadXCoordinate;
         double gamepadYCoordinate;
@@ -45,14 +56,19 @@ public class Field_Centric_Drive extends LinearOpMode {
         double gamepadXControl;
         double gamepadYControl;
 
+        /**
+         * make sure to change this to how your robot is configured
+         */
         LF = hardwareMap.dcMotor.get("LF");
         RF = hardwareMap.dcMotor.get("RF");
         RB = hardwareMap.dcMotor.get("RB");
         LB = hardwareMap.dcMotor.get("LB");
 
         //might need to change the motors being reversed
-        RF.setDirection(DcMotorSimple.Direction.REVERSE);
-        RB.setDirection(DcMotorSimple.Direction.REVERSE);
+        RF.setDirection(DcMotorSimple.Direction.FORWARD);
+        LF.setDirection(DcMotorSimple.Direction.REVERSE);
+        RB.setDirection(DcMotorSimple.Direction.FORWARD);
+        LB.setDirection(DcMotorSimple.Direction.REVERSE);
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
@@ -62,7 +78,9 @@ public class Field_Centric_Drive extends LinearOpMode {
         parameters.loggingTag = "IMU";
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
 
-
+        /**
+         * make sure you've configured your imu properly and with the correct device name
+         */
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
 
@@ -74,7 +92,7 @@ public class Field_Centric_Drive extends LinearOpMode {
 
 
         while (opModeIsActive()) {
-            Pivot = -gamepad1.left_stick_x;
+            driveTurn = -gamepad1.left_stick_x;
             //driveVertical = -gamepad1.right_stick_y;
             //driveHorizontal = gamepad1.right_stick_x;
 
@@ -92,17 +110,20 @@ public class Field_Centric_Drive extends LinearOpMode {
             //adjust the angle we need to move at by finding needed movement degree based on gamepad and robot angles
             gamepadXControl = Math.cos(Math.toRadians(movementDegree)) * gamepadHypot;
             //by finding the adjacent side, we can get our needed x value to power our motors
-            gamepadYControl = Math.sin(Math.toRadians(movementDegree)) * gamepadHypot;
+            gamepadYControl = -Math.sin(Math.toRadians(movementDegree)) * gamepadHypot;
             //by finding the opposite side, we can get our needed y value to power our motors
 
+            /**
+             * again, make sure you've changed the motor names and variables to fit your team
+             */
 
             //by mulitplying the gamepadYControl and gamepadXControl by their respective absolute values, we can guarantee that our motor powers will not exceed 1 without any driveTurn
             //since we've maxed out our hypot at 1, the greatest possible value of x+y is (1/sqrt(2)) + (1/sqrt(2)) = sqrt(2)
             //since (1/sqrt(2))^2 = 1/2 = .5, we know that we will not exceed a power of 1 (with no turn), giving us more precision for our driving
-            RF.setPower(gamepadYControl * Math.abs(gamepadYControl) - gamepadXControl * Math.abs(gamepadXControl) + Pivot);
-            RB.setPower(gamepadYControl * Math.abs(gamepadYControl) + gamepadXControl * Math.abs(gamepadXControl) + Pivot);
-            LF.setPower(gamepadYControl * Math.abs(gamepadYControl) + gamepadXControl * Math.abs(gamepadXControl) - Pivot);
-            LB.setPower(gamepadYControl * Math.abs(gamepadYControl) - gamepadXControl * Math.abs(gamepadXControl) - Pivot);
+            RF.setPower(gamepadYControl * Math.abs(gamepadYControl) - gamepadXControl * Math.abs(gamepadXControl) + driveTurn);
+            RB.setPower(gamepadYControl * Math.abs(gamepadYControl) + gamepadXControl * Math.abs(gamepadXControl) + driveTurn);
+            LF.setPower(gamepadYControl * Math.abs(gamepadYControl) + gamepadXControl * Math.abs(gamepadXControl) - driveTurn);
+            LB.setPower(gamepadYControl * Math.abs(gamepadYControl) - gamepadXControl * Math.abs(gamepadXControl) - driveTurn);
 
             /*frontRight.setPower(driveVertical - driveHorizontal + driveTurn);
             backRight.setPower(driveVertical + driveHorizontal + driveTurn);
@@ -116,7 +137,7 @@ public class Field_Centric_Drive extends LinearOpMode {
         telemetry.addAction(new Runnable() {
             @Override
             public void run() {
-                angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
                 gravity = imu.getGravity();
             }
         });
@@ -124,6 +145,6 @@ public class Field_Centric_Drive extends LinearOpMode {
 
     //allows us to quickly get our z angle
     public double getAngle() {
-        return imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+        return imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).firstAngle;
     }
 }

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Vision;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -16,12 +17,10 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
+@Autonomous
 public class Stack_Detection_Blue extends LinearOpMode {
 
     Stack_Pos thresholdPipe = new Stack_Pos();
-    public boolean middle_true = false;
-    public boolean right_true = false;
-    public boolean left_true = false;
 
 
     @Override
@@ -30,7 +29,7 @@ public class Stack_Detection_Blue extends LinearOpMode {
 
         WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
         OpenCvCamera Texpandcamera = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
-        Texpandcamera.setPipeline(new Threshold_Pipeline(telemetry));
+        Texpandcamera.setPipeline(new Stack_Pos(telemetry));
         Texpandcamera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
@@ -45,6 +44,11 @@ public class Stack_Detection_Blue extends LinearOpMode {
             }
         });
 
+        waitForStart();
+
+        //for testing at the moment
+        Texpandcamera.closeCameraDevice();
+
     }
 
 }
@@ -53,15 +57,15 @@ class Stack_Pos extends OpenCvPipeline {
 
     Drivetrain drive = new Drivetrain();
 
-    private static boolean L = false;
-    private static boolean R = false;
-    private static boolean M = false;
+    private boolean L = false;
+    private boolean R = false;
+    private boolean M = false;
 
     Mat workingmatrix = new Mat();
 
-    static final Rect Left = new Rect(new Point(0, 0), new Point(215, 480));
-    static final Rect Middle = new Rect(new Point(0, 215), new Point(430, 480));
-    static final Rect Right = new Rect(new Point(0, 430), new Point(640, 480));
+    static final Rect Left = new Rect(new Point(175, 150), new Point(275, 400));
+    static final Rect Middle = new Rect(new Point(275, 150), new Point(375, 400));
+    static final Rect Right = new Rect(new Point(375, 150), new Point(475, 400));
 
     Telemetry telemetry;
     public Stack_Pos(Telemetry t) {telemetry = t;}
@@ -70,49 +74,66 @@ class Stack_Pos extends OpenCvPipeline {
 
     @Override
     public Mat processFrame(Mat input) {
+
+        L = false;
+        R = false;
+        M = false;
+
         input.copyTo(workingmatrix);
 
         Imgproc.cvtColor(workingmatrix, workingmatrix, Imgproc.COLOR_RGB2HSV_FULL);
-
+        //Middle
+        if(Core.mean(workingmatrix.submat(Middle)).val[0] > 110 && Core.mean(workingmatrix.submat(Middle)).val[0] < 145){
+            M = true;
+        }
         //Left
-        if (Core.mean(workingmatrix.submat(Left)).val[0] > 110 && Core.mean(workingmatrix.submat(Left)).val[0] < 135){
-            telemetry.addData("Colour", "Yellow");
+        if (Core.mean(workingmatrix.submat(Left)).val[0] > 110 && Core.mean(workingmatrix.submat(Left)).val[0] < 145){
             L = true;
         }
         //Right
-        else if(Core.mean(workingmatrix.submat(Right)).val[0] > 110 && Core.mean(workingmatrix.submat(Right)).val[0] < 135){
-            telemetry.addData("Colour", "Blue");
+        if(Core.mean(workingmatrix.submat(Right)).val[0] > 110 && Core.mean(workingmatrix.submat(Right)).val[0] < 145){
             R = true;
         }
-        //Middle
-        else if(Core.mean(workingmatrix.submat(Middle)).val[0] > 110 && Core.mean(workingmatrix.submat(Middle)).val[0] < 135){
-            telemetry.addData("Colour", "Red");
-            M = true;
-        }
+
 
         Scalar blue = new Scalar(319, 100, 100);
-
-        Imgproc.rectangle(input, Right, blue, 10);
-        Imgproc.rectangle(input, Left, blue, 10);
-        Imgproc.rectangle(input, Middle, blue, 10);
+        telemetry.addData("Position Left", L);
+        telemetry.addData("Position Right", R);
+        telemetry.addData("Position Middle", M);
+        telemetry.update();
 
         if (M && !R && !L){
             // What we want
+            telemetry.addData("Position", "Yay!!!!!");
+            telemetry.update();
         }else if(!M && R && !L){
             //Strafe Left 5cm
-            drive.StrafeDistance(-5, .5);
+            drive.StrafeDistance(-5, 0.5);
+            telemetry.addData("Position", "Right");
+            telemetry.update();
         }else if(!M && !R && L){
             //Strafe Right 5cm
-            drive.StrafeDistance(5, .5);
+            drive.StrafeDistance(5, 0.5);
+            telemetry.addData("Position", "Left");
+            telemetry.update();
         }
         else if(M && R && !L){
             //Strafe Right 2.5cm
-            drive.StrafeDistance(-2.5, .5);
+            drive.StrafeDistance(-2.5, 0.5);
+            telemetry.addData("Position", "Mid Right");
+            telemetry.update();
         }
         else if(M && !R && L){
             //Strafe Right 2.5cm
             drive.StrafeDistance(2.5, .5);
+            telemetry.addData("Position", "Mid Left");
+            telemetry.update();
         }
+        telemetry.update();
+
+        Imgproc.rectangle(input, Right, blue, 10);
+        Imgproc.rectangle(input, Left, blue, 10);
+        Imgproc.rectangle(input, Middle, blue, 10);
 
         if (L){
             input.submat(Left);

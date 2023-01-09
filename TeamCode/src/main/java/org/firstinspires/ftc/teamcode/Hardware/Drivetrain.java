@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class Drivetrain {
 
     static double ticksperdegree = 1.493;
-    static double circumference = 30.15;
+    static double circumference = 30.144;
 
     public DcMotor RF = null;
     public DcMotor LF = null;
@@ -57,74 +57,137 @@ public class Drivetrain {
 
     }
 
-    public void DriveDistance(double distance_cm,double power){
-        double wheel_turns_needed = distance_cm/circumference;
-        int encoder_driving_target = (int)(wheel_turns_needed*565);
+    public void DriveDistance(double distance, double speed) {
         ResetEncoders();
+        // Constants for the encoder counts per revolution and gear ratio
+        final int ENCODER_COUNTS_PER_REVOLUTION = 538;
+        final double GEAR_RATIO = 1.0;
 
-        RF.setTargetPosition(encoder_driving_target);
-        LF.setTargetPosition(encoder_driving_target);
-        RB.setTargetPosition(encoder_driving_target);
-        LB.setTargetPosition(encoder_driving_target);
+        // Calculate the number of ticks per revolution
+        int ticksPerRevolution = (int)(ENCODER_COUNTS_PER_REVOLUTION / GEAR_RATIO);
 
-        RF.setPower(power);
-        LF.setPower(power);
-        RB.setPower(power);
-        LB.setPower(power);
+        // Calculate the circumference of the wheel
+        double wheelCircumference = Math.PI * 2 * (9.6 / 2.0);
 
+        // Calculate the number of encoder ticks required to travel the given distance
+        int ticks = (int)(distance * ticksPerRevolution / wheelCircumference);
+
+        // Calculate the correction factor
+        double correctionFactor = 1;
+
+        // Apply the correction factor to the calculated number of encoder ticks
+        ticks = (int)(ticks * (correctionFactor));
+
+        // Set the target position for each motor
+        RF.setTargetPosition(ticks);
+        RB.setTargetPosition(ticks);
+        LF.setTargetPosition(ticks);
+        LB.setTargetPosition(ticks);
+
+        // Set the motors to run to the target position
         RF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        LF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         RB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        LF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         LB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        while (RF.isBusy()){
-            try {
-                Thread.sleep(50);
-            }catch (Exception e){
-                System.out.println(e.getMessage());
-            }
-        }
+        // Set the power of each motor
+        RF.setPower(speed);
+        RB.setPower(speed);
+        LF.setPower(speed);
+        LB.setPower(speed);
 
+        // Wait for the motors to reach their target positions
+        while (RF.isBusy() && RB.isBusy() && LF.isBusy() && LB.isBusy()) {
+            // Do nothing
+        }
+        // Reset the motors to the run without encoders mode
+        RF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        RB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        LF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        LB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //Reverse the motors to stop the robot sooner
+        RF.setPower(-speed);
+        RB.setPower(-speed);
+        LF.setPower(-speed);
+        LB.setPower(-speed);
+        try {
+            Thread.sleep(50);
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+        // Stop the motors
         RF.setPower(0);
-        LF.setPower(0);
         RB.setPower(0);
+        LF.setPower(0);
         LB.setPower(0);
+
 
     }
 
-    public void StrafeDistance(double Strafe_cm,double power) {
-        double wheel_turns_needed = Strafe_cm / circumference;
-        int encoder_driving_target = (int) (1.2 * wheel_turns_needed * 565);
+    public void StrafeDistance(double Strafe_cm, double power) {
         ResetEncoders();
+        // Constants for the encoder counts per revolution and gear ratio
+        final int ENCODER_COUNTS_PER_REVOLUTION = 538;
+        final double GEAR_RATIO = 1.0;
 
-        RF.setTargetPosition(-encoder_driving_target);
-        LF.setTargetPosition(encoder_driving_target);
-        RB.setTargetPosition(encoder_driving_target);
-        LB.setTargetPosition(-encoder_driving_target);
+        // Calculate the number of ticks per revolution
+        int ticksPerRevolution = (int)(ENCODER_COUNTS_PER_REVOLUTION / GEAR_RATIO);
 
-        RF.setPower(power);
-        LF.setPower(power);
-        RB.setPower(power);
-        LB.setPower(power);
+        // Calculate the circumference of the wheel
+        double wheelCircumference = Math.PI * 2 * (9.6 / 2.0);
 
+        // Calculate the number of encoder ticks required to travel the given distance
+        int ticks = Math.toIntExact((long) (Strafe_cm * ticksPerRevolution / wheelCircumference));
+
+//        // Calculate the correction factor
+//        double correctionFactor = 1;
+//
+//        // Apply the correction factor to the calculated number of encoder ticks
+//        ticks = (int)(ticks * (correctionFactor));
+
+        // Set the target position for each motor
+        RF.setTargetPosition(-ticks);
+        RB.setTargetPosition(ticks);
+        LF.setTargetPosition(ticks);
+        LB.setTargetPosition(-ticks);
+
+        // Set the motors to run to the target position
         RF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        LF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         RB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        LF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         LB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        while (RF.isBusy()) {
-            try {
-                Thread.sleep(50);
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
+        // Set the power of each motor
+        RF.setPower(-power);
+        RB.setPower(power);
+        LF.setPower(power);
+        LB.setPower(-power);
+
+        // Wait for the motors to reach their target positions
+        while (RF.isBusy() && RB.isBusy() && LF.isBusy() && LB.isBusy()) {
+            // Do nothing
         }
+        // Reset the motors to the run without encoders mode
+        RF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        RB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        LF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        LB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        //Reverse the motors to stop the robot sooner
+        RF.setPower(power);
+        RB.setPower(-power);
+        LF.setPower(-power);
+        LB.setPower(power);
+        try {
+            Thread.sleep(50);
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+        // Stop the motors
         RF.setPower(0);
-        LF.setPower(0);
         RB.setPower(0);
+        LF.setPower(0);
         LB.setPower(0);
-
 
     }
 
@@ -138,9 +201,14 @@ public class Drivetrain {
         LB = hardwareMap.get(DcMotor.class, "LB");
 
         RF.setDirection(DcMotorSimple.Direction.FORWARD);
-        LF.setDirection(DcMotorSimple.Direction.FORWARD);
+        LF.setDirection(DcMotorSimple.Direction.REVERSE);
         RB.setDirection(DcMotorSimple.Direction.FORWARD);
         LB.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        RF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        LF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        RB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        LB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         RF.setPower(0);
         LF.setPower(0);
