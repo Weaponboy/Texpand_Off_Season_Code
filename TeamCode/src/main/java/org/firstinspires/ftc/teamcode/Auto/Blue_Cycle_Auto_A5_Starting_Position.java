@@ -62,7 +62,7 @@ public class Blue_Cycle_Auto_A5_Starting_Position extends LinearOpMode {
             top.Top_Pivot.setPosition(0.4);
             slide.Top_pole();
             slide.return_Zero();
-            //need destacker here
+            slide.Destack_5();
             drive.TurnDegrees(15);
             drive.StrafeDistance(-15,0.75);
             drive.DriveDistance(59,0.75);
@@ -77,7 +77,7 @@ public class Blue_Cycle_Auto_A5_Starting_Position extends LinearOpMode {
             top.Top_Pivot.setPosition(0.4);
             slide.Top_pole();
             slide.return_Zero();
-            //need destacker here
+            slide.Destack_5();
             drive.TurnDegrees(15);
             drive.StrafeDistance(-15,0.75);
 
@@ -91,7 +91,7 @@ public class Blue_Cycle_Auto_A5_Starting_Position extends LinearOpMode {
             top.Top_Pivot.setPosition(0.4);
             slide.Top_pole();
             slide.return_Zero();
-            //need destacker here
+            slide.Destack_5();
             drive.TurnDegrees(15);
             drive.StrafeDistance(-15,0.75);
             drive.DriveDistance(-59,0.75);
