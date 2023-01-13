@@ -48,18 +48,36 @@ public class OpenCVPipelinetest extends LinearOpMode {
             }
         });
 
-
         waitForStart();
 
-//        if (thresholdPipe.Pos_1 = true){
-//            Pos_1 = true;
-//        }else if(thresholdPipe.Pos_2 = true){
-//            Pos_2 = true;
-//        }else if(thresholdPipe.Pos_3 = true){
-//            Pos_3 = true;
-//        }
+        thresholdPipe.Get_Pos_1();
+        thresholdPipe.Get_Pos_2();
+        thresholdPipe.Get_Pos_3();
+
+        if (thresholdPipe.Pos_1) {
+            telemetry.addData("Colour", "Yellow");
+            Pos_1 = true;
+        } else if (thresholdPipe.Pos_2) {
+            telemetry.addData("Colour", "Blue");
+            Pos_2 = true;
+        } else if (thresholdPipe.Pos_3) {
+            telemetry.addData("Colour", "Red");
+            Pos_3 = true;
+        }
 
         Texpandcamera.closeCameraDevice();
+    }
+    public Boolean Get_Pos_1(){
+        return Pos_2;
+    }
+
+    public Boolean Get_Pos_2(){
+        return Pos_3;
+    }
+
+    public Boolean Get_Pos_3(){
+
+        return Pos_1;
     }
 }
 
@@ -126,6 +144,19 @@ class Threshold_Pipeline extends OpenCvPipeline {
 
         Imgproc.rectangle(input, center, blue, 10);
         return input.submat(center);
+    }
+
+    public Boolean Get_Pos_1(){
+        return Pos_2;
+    }
+
+    public Boolean Get_Pos_2(){
+        return Pos_3;
+    }
+
+    public Boolean Get_Pos_3(){
+
+        return Pos_1;
     }
 }
 

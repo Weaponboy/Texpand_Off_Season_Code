@@ -7,9 +7,15 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class Drivetrain {
 
-    static double ticksperdegree = 1.493;
+    private int ticks = 0;
+    static double ticksperdegree = 11.111;
     static double circumference = 30.144;
 
     public DcMotor RF = null;
@@ -23,30 +29,49 @@ public class Drivetrain {
 
     public Drivetrain() { }
 
-    public void TurnDegrees(int degrees){
-        int ticks = (int) (ticksperdegree*degrees);
+    public void stopMotors(){
+        RF.setPower(0);
+        LF.setPower(0);
+        RB.setPower(0);
+        LB.setPower(0);
+    }
+    public int getTicks() {
+        return ticks;
+    }
+
+    public void TurnDegreesLeft(int degrees){
+
+        ticks = (int) (ticksperdegree*degrees);
         ResetEncoders();
 
-        RF.setTargetPosition(-ticks);
-        LF.setTargetPosition(ticks);
-        RB.setTargetPosition(-ticks);
-        LB.setTargetPosition(ticks);
+        RF.setTargetPosition(ticks);
+        LF.setTargetPosition(-ticks);
+        RB.setTargetPosition(ticks);
+        LB.setTargetPosition(-ticks);
 
-        RF.setPower(0.75);
-        LF.setPower(0.75);
-        RB.setPower(0.75);
-        LB.setPower(0.75);
+        RF.setPower(0.7);
+        LF.setPower(-0.7);
+        RB.setPower(0.7);
+        LB.setPower(-0.7);
 
         RF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         LF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         RB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         LB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        while (RF.isBusy()){
-            try {
-                Thread.sleep(50);
-            }catch (Exception e){
-                System.out.println(e.getMessage());
+        while (RF.getCurrentPosition() < ticks - 5 || RB.getCurrentPosition() < ticks - 5 || LF.getCurrentPosition() > ticks + 5 || LB.getCurrentPosition() > ticks + 5) {
+
+            if(RB.getCurrentPosition() > ticks){
+                RB.setPower(0);
+            }
+            if(LF.getCurrentPosition() < -ticks){
+                LF.setPower(0);
+            }
+            if(LB.getCurrentPosition() < -ticks){
+                LB.setPower(0);
+            }
+            if(RF.getCurrentPosition() > ticks){
+                RF.setPower(0);
             }
         }
 
@@ -57,10 +82,56 @@ public class Drivetrain {
 
     }
 
-    public void DriveDistance(double distance, double speed) {
+    public void TurnDegrees(int degrees){
+
+        ticks = (int) (ticksperdegree*degrees);
+        ResetEncoders();
+
+        RF.setTargetPosition(-ticks);
+        LF.setTargetPosition(ticks);
+        RB.setTargetPosition(-ticks);
+        LB.setTargetPosition(ticks);
+
+        RF.setPower(-0.7);
+        LF.setPower(0.7);
+        RB.setPower(-0.7);
+        LB.setPower(0.7);
+
+        RF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        LF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        RB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        LB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        while (RF.getCurrentPosition() > ticks + 5 || RB.getCurrentPosition() > ticks + 5 || LF.getCurrentPosition() < ticks - 5 || LB.getCurrentPosition() < ticks - 5) {
+
+            if(RB.getCurrentPosition() < -ticks){
+                RB.setPower(0);
+            }
+            if(LF.getCurrentPosition() > ticks){
+                LF.setPower(0);
+            }
+            if(LB.getCurrentPosition() > ticks){
+                LB.setPower(0);
+            }
+            if(RF.getCurrentPosition() < -ticks){
+                RF.setPower(0);
+            }
+        }
+
+        RF.setPower(0);
+        LF.setPower(0);
+        RB.setPower(0);
+        LB.setPower(0);
+
+    }
+
+    public void DriveDistanceLong(double distance, double speed) {
+
+        double Ramp_Down_point = 0;
+
         ResetEncoders();
         // Constants for the encoder counts per revolution and gear ratio
-        final int ENCODER_COUNTS_PER_REVOLUTION = 538;
+        final int ENCODER_COUNTS_PER_REVOLUTION = 510;
         final double GEAR_RATIO = 1.0;
 
         // Calculate the number of ticks per revolution
@@ -70,13 +141,80 @@ public class Drivetrain {
         double wheelCircumference = Math.PI * 2 * (9.6 / 2.0);
 
         // Calculate the number of encoder ticks required to travel the given distance
-        int ticks = (int)(distance * ticksPerRevolution / wheelCircumference);
+        int ticks = Math.toIntExact((long) (distance * ticksPerRevolution / wheelCircumference));
 
-        // Calculate the correction factor
-        double correctionFactor = 1;
 
-        // Apply the correction factor to the calculated number of encoder ticks
-        ticks = (int)(ticks * (correctionFactor));
+        // Set the target position for each motor
+        RF.setTargetPosition(ticks);
+        RB.setTargetPosition(ticks);
+        LF.setTargetPosition(ticks);
+        LB.setTargetPosition(ticks);
+
+        // Set the motors to run to the target position
+        RF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        RB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        LF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        LB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        Ramp_Down_point = 0.8*ticks;
+
+        // Set the power of each motor
+        RF.setPower(speed);
+        RB.setPower(speed);
+        LF.setPower(speed);
+        LB.setPower(speed);
+
+        // Wait for the motors to reach their target positions
+        while (RF.getCurrentPosition() < ticks - 20 || RB.getCurrentPosition() < ticks - 20 || LF.getCurrentPosition() < ticks - 20 || LB.getCurrentPosition() < ticks - 20) {
+
+            if(RB.getCurrentPosition() > ticks){
+                RB.setPower(0);
+            }else if(RB.getCurrentPosition() >= Ramp_Down_point){
+                RB.setPower(0.2);
+            }
+
+            if(LF.getCurrentPosition() > ticks){
+                LF.setPower(0);
+            }else if(LF.getCurrentPosition() >= Ramp_Down_point){
+                LF.setPower(0.2);
+            }
+
+            if(LB.getCurrentPosition() > ticks){
+                LB.setPower(0);
+            }else if(LB.getCurrentPosition() >= Ramp_Down_point){
+                LB.setPower(0.2);
+            }
+
+            if(RF.getCurrentPosition() > ticks){
+                RF.setPower(0);
+            }else if(RF.getCurrentPosition() >= Ramp_Down_point){
+                RF.setPower(0.2);
+            }
+        }
+
+        // Stop the motors
+        RF.setPower(0);
+        RB.setPower(0);
+        LF.setPower(0);
+        LB.setPower(0);
+
+    }
+
+    public void DriveDistance(double distance, double speed) {
+        ResetEncoders();
+        // Constants for the encoder counts per revolution and gear ratio
+        final int ENCODER_COUNTS_PER_REVOLUTION = 510;
+        final double GEAR_RATIO = 1.0;
+
+        // Calculate the number of ticks per revolution
+        int ticksPerRevolution = (int)(ENCODER_COUNTS_PER_REVOLUTION / GEAR_RATIO);
+
+        // Calculate the circumference of the wheel
+        double wheelCircumference = Math.PI * 2 * (9.6 / 2.0);
+
+        // Calculate the number of encoder ticks required to travel the given distance
+        int ticks = Math.toIntExact((long) (distance * ticksPerRevolution / wheelCircumference));
+
 
         // Set the target position for each motor
         RF.setTargetPosition(ticks);
@@ -97,24 +235,22 @@ public class Drivetrain {
         LB.setPower(speed);
 
         // Wait for the motors to reach their target positions
-        while (RF.isBusy() && RB.isBusy() && LF.isBusy() && LB.isBusy()) {
-            // Do nothing
+        while (RF.getCurrentPosition() < ticks - 20 || RB.getCurrentPosition() < ticks - 20 || LF.getCurrentPosition() < ticks - 20 || LB.getCurrentPosition() < ticks - 20) {
+
+            if(RB.getCurrentPosition() > ticks){
+                RB.setPower(0);
+            }
+            if(LF.getCurrentPosition() > ticks){
+                LF.setPower(0);
+            }
+            if(LB.getCurrentPosition() > ticks){
+                LB.setPower(0);
+            }
+            if(RF.getCurrentPosition() > ticks){
+                RF.setPower(0);
+            }
         }
-        // Reset the motors to the run without encoders mode
-        RF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        RB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        LF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        LB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        //Reverse the motors to stop the robot sooner
-        RF.setPower(-speed);
-        RB.setPower(-speed);
-        LF.setPower(-speed);
-        LB.setPower(-speed);
-        try {
-            Thread.sleep(50);
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-        }
+
         // Stop the motors
         RF.setPower(0);
         RB.setPower(0);
@@ -127,7 +263,7 @@ public class Drivetrain {
     public void StrafeDistance(double Strafe_cm, double power) {
         ResetEncoders();
         // Constants for the encoder counts per revolution and gear ratio
-        final int ENCODER_COUNTS_PER_REVOLUTION = 538;
+        final int ENCODER_COUNTS_PER_REVOLUTION = 510;
         final double GEAR_RATIO = 1.0;
 
         // Calculate the number of ticks per revolution
@@ -137,14 +273,14 @@ public class Drivetrain {
         double wheelCircumference = Math.PI * 2 * (9.6 / 2.0);
 
         // Calculate the number of encoder ticks required to travel the given distance
-        int ticks = Math.toIntExact((long) (Strafe_cm * ticksPerRevolution / wheelCircumference));
+        int ticks = Math.toIntExact((long) (1.2*Strafe_cm * ticksPerRevolution / wheelCircumference));
 
-//        // Calculate the correction factor
-//        double correctionFactor = 1;
-//
-//        // Apply the correction factor to the calculated number of encoder ticks
-//        ticks = (int)(ticks * (correctionFactor));
 
+        try {
+            Thread.sleep(1000);
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
         // Set the target position for each motor
         RF.setTargetPosition(-ticks);
         RB.setTargetPosition(ticks);
@@ -158,37 +294,106 @@ public class Drivetrain {
         LB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         // Set the power of each motor
-        RF.setPower(-power);
+        RF.setPower(power);
         RB.setPower(power);
         LF.setPower(power);
-        LB.setPower(-power);
+        LB.setPower(power);
 
         // Wait for the motors to reach their target positions
-        while (RF.isBusy() && RB.isBusy() && LF.isBusy() && LB.isBusy()) {
-            // Do nothing
-        }
-        // Reset the motors to the run without encoders mode
-        RF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        RB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        LF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        LB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        while (RF.getCurrentPosition() > (-ticks) + 20 || RB.getCurrentPosition() < ticks - 20 || LF.getCurrentPosition() < ticks - 20 || LB.getCurrentPosition() > (-ticks) + 20) {
 
-        //Reverse the motors to stop the robot sooner
-        RF.setPower(power);
-        RB.setPower(-power);
-        LF.setPower(-power);
-        LB.setPower(power);
-        try {
-            Thread.sleep(50);
-        }catch (Exception e){
-            System.out.println(e.getMessage());
+
+            if(RB.getCurrentPosition() > ticks){
+                RB.setPower(0);
+            }
+            if(LF.getCurrentPosition() > ticks){
+                LF.setPower(0);
+            }
+            if(LB.getCurrentPosition() > ticks){
+                LB.setPower(0);
+            }
+            if(RF.getCurrentPosition() > ticks){
+                RF.setPower(0);
+            }
         }
-        // Stop the motors
+
         RF.setPower(0);
         RB.setPower(0);
         LF.setPower(0);
         LB.setPower(0);
 
+    }
+
+    public void StrafeDistance_Left(double Strafe_cm, double power) {
+        ResetEncoders();
+        // Constants for the encoder counts per revolution and gear ratio
+        final int ENCODER_COUNTS_PER_REVOLUTION = 510;
+        final double GEAR_RATIO = 1.0;
+
+        // Calculate the number of ticks per revolution
+        int ticksPerRevolution = (int)(ENCODER_COUNTS_PER_REVOLUTION / GEAR_RATIO);
+
+        // Calculate the circumference of the wheel
+        double wheelCircumference = Math.PI * 2 * (9.6 / 2.0);
+
+        // Calculate the number of encoder ticks required to travel the given distance
+        int ticks = Math.toIntExact((long) (1.2*Strafe_cm * ticksPerRevolution / wheelCircumference));
+
+
+        try {
+            Thread.sleep(1000);
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+        // Set the target position for each motor
+        RF.setTargetPosition(ticks);
+        RB.setTargetPosition(-ticks);
+        LF.setTargetPosition(-ticks);
+        LB.setTargetPosition(ticks);
+
+        // Set the motors to run to the target position
+        RF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        RB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        LF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        LB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        // Set the power of each motor
+        RF.setPower(power);
+        RB.setPower(-power);
+        LF.setPower(-power);
+        LB.setPower(power);
+
+        // Wait for the motors to reach their target positions
+        while (RF.getCurrentPosition() < (ticks) - 20 || RB.getCurrentPosition() > (-ticks) + 20 || LF.getCurrentPosition() > (-ticks) + 20 || LB.getCurrentPosition() < (ticks) - 20) {
+
+
+            if(RB.getCurrentPosition() < -ticks){
+                RB.setPower(0);
+            }
+            if(LF.getCurrentPosition() < -ticks){
+                LF.setPower(0);
+            }
+            if(LB.getCurrentPosition() > ticks){
+                LB.setPower(0);
+            }
+            if(RF.getCurrentPosition() > ticks){
+                RF.setPower(0);
+            }
+        }
+
+        RF.setPower(0);
+        RB.setPower(0);
+        LF.setPower(0);
+        LB.setPower(0);
+
+    }
+
+    public void ResetEncoders(){
+        //stop and reset the driving encoders
+        RF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        LF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        RB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        LB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     public void init(HardwareMap hwMap) {
@@ -205,22 +410,12 @@ public class Drivetrain {
         RB.setDirection(DcMotorSimple.Direction.FORWARD);
         LB.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        RF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        LF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        RB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        LB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
         RF.setPower(0);
         LF.setPower(0);
         RB.setPower(0);
         LB.setPower(0);
     }
 
-    public void ResetEncoders(){
-        //stop and reset the driving encoders
-        RF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        LF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        RB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        LB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-    }
+
+
 }
