@@ -13,6 +13,8 @@ public class Top_gripper {
     private int stakerpos = 0;
     private int TopgripperPos = 0;
 
+
+
     public Servo Top_Gripper = null;
     public Servo Top_Pivot = null;
 

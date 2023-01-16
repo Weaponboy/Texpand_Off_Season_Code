@@ -1,12 +1,14 @@
 package org.firstinspires.ftc.teamcode.Hardware;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 @Autonomous
+@Disabled
 public class EncoderTest extends LinearOpMode {
     // Declare variables for the motors
     private DcMotor RF;
@@ -45,6 +47,7 @@ public class EncoderTest extends LinearOpMode {
 
         // Send the encoder count of each motor to the driver station
         while (opModeIsActive()) {
+
             telemetry.addData("RF encoder", RF.getCurrentPosition());
             telemetry.addData("RB encoder", RB.getCurrentPosition());
             telemetry.addData("LF encoder", LF.getCurrentPosition());

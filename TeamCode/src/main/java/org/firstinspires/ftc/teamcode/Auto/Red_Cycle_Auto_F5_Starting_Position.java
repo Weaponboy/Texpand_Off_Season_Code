@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -18,6 +19,7 @@ import org.firstinspires.ftc.teamcode.Vision.Stack_Detection_Blue;
 import org.firstinspires.ftc.teamcode.Vision.Stack_Detection_Red;
 
 @Autonomous
+@Disabled
 public class Red_Cycle_Auto_F5_Starting_Position extends LinearOpMode {
 
     public DcMotor RF = null;

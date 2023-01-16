@@ -1,12 +1,14 @@
 package org.firstinspires.ftc.teamcode.Auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Hardware.Drivetrain;
 import org.firstinspires.ftc.teamcode.Vision.OpenCVPipelinetest;
 
 @Autonomous
+@Disabled
 public class Test_Cone_Detection extends LinearOpMode {
 
     Drivetrain drive = new Drivetrain();
