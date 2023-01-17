@@ -21,6 +21,7 @@ public class Josh_Test_Pipeline extends OpenCvPipeline {
     //create matrix's
     Mat workingMatrix = new Mat();
     Mat Purple = new Mat();
+
     Mat Yellow = new Mat();
     Mat Green = new Mat();
 

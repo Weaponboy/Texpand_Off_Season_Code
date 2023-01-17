@@ -1,21 +1,26 @@
 package org.firstinspires.ftc.teamcode.Auto;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+@Autonomous
+@Disabled
 public class StrafeDistance extends LinearOpMode {
-
 
     public DcMotor RF = null;
     public DcMotor LF = null;
     public DcMotor RB = null;
     public DcMotor LB = null;
 
-    HardwareMap hardwareMap = null;
     @Override
     public void runOpMode() throws InterruptedException {
+
+
         //Driving motors config
         RF = hardwareMap.get(DcMotor.class, "RF");
         LF = hardwareMap.get(DcMotor.class, "LF");
@@ -44,7 +49,7 @@ public class StrafeDistance extends LinearOpMode {
         RB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         LB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         // Constants for the encoder counts per revolution and gear ratio
-        final int ENCODER_COUNTS_PER_REVOLUTION = 538;
+        final int ENCODER_COUNTS_PER_REVOLUTION = 510;
         final double GEAR_RATIO = 1.0;
 
         // Calculate the number of ticks per revolution
@@ -54,7 +59,7 @@ public class StrafeDistance extends LinearOpMode {
         double wheelCircumference = Math.PI * 2 * (9.6 / 2.0);
 
         // Calculate the number of encoder ticks required to travel the given distance
-        int ticks = Math.toIntExact((long) (50 * ticksPerRevolution / wheelCircumference));
+        int ticks = Math.toIntExact((long) (1.2*60 * ticksPerRevolution / wheelCircumference));
 
 //        // Calculate the correction factor
 //        double correctionFactor = 1;
@@ -87,27 +92,34 @@ public class StrafeDistance extends LinearOpMode {
         LB.setPower(0.5);
 
         // Wait for the motors to reach their target positions
-        while (RF.getCurrentPosition() > ticks || RB.getCurrentPosition() < ticks || LF.getCurrentPosition() < ticks || LB.getCurrentPosition() > ticks) {
+        while (RF.getCurrentPosition() > (-ticks) + 20 || RB.getCurrentPosition() < ticks - 20 || LF.getCurrentPosition() < ticks - 20 || LB.getCurrentPosition() > (-ticks) + 20) {
+            telemetry.addData("Target Position:", ticks);
             telemetry.addData("RF Motor Power:", RF.getPower());
-            telemetry.addData("RF Motor Ticks:", RF.getCurrentPosition());
-            telemetry.addData("RF Motor Power:", RB.getPower());
-            telemetry.addData("RF Motor Ticks:", RB.getCurrentPosition());
-            telemetry.addData("RF Motor Power:", LF.getPower());
-            telemetry.addData("RF Motor Ticks:", LF.getCurrentPosition());
-            telemetry.addData("RF Motor Power:", LB.getPower());
-            telemetry.addData("RF Motor Ticks:", LB.getCurrentPosition());
+            telemetry.addData("RF Motor Pos:", RF.getCurrentPosition());
+            telemetry.addData("RF Target Motor Pos:", RF.getTargetPosition());
+            telemetry.addData("RB Motor Power:", RB.getPower());
+            telemetry.addData("RB Motor Pos:", RB.getCurrentPosition());
+            telemetry.addData("RF Target Motor Pos:", RB.getTargetPosition());
+            telemetry.addData("LF Motor Power:", LF.getPower());
+            telemetry.addData("LF Motor Pos:", LF.getCurrentPosition());
+            telemetry.addData("RF Target Motor Pos:", LF.getTargetPosition());
+            telemetry.addData("LB Motor Power:", LB.getPower());
+            telemetry.addData("LB Motor Pos:", LB.getCurrentPosition());
+            telemetry.addData("RF Target Motor Pos:", LB.getTargetPosition());
             telemetry.update();
-            if(RF.getCurrentPosition() < ticks){
-                RF.setPower(0);
-            }
+
+
             if(RB.getCurrentPosition() > ticks){
                 RB.setPower(0);
             }
             if(LF.getCurrentPosition() > ticks){
                 LF.setPower(0);
             }
-            if(LB.getCurrentPosition() < ticks){
+            if(LB.getCurrentPosition() > ticks){
                 LB.setPower(0);
+            }
+            if(RF.getCurrentPosition() > ticks){
+                RF.setPower(0);
             }
         }
 
@@ -116,6 +128,11 @@ public class StrafeDistance extends LinearOpMode {
         RB.setPower(0);
         LF.setPower(0);
         LB.setPower(0);
+//        try {
+//            Thread.sleep(10000);
+//        }catch (Exception e){
+//            System.out.println(e.getMessage());
+//        }
         try {
             Thread.sleep(10000);
         }catch (Exception e){

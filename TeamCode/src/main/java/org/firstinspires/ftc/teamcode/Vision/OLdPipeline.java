@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Vision;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -17,6 +18,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 @Autonomous
+@Disabled
 public class OLdPipeline extends LinearOpMode {
 
     Threshold_Pipeline thresholdPipe = new Threshold_Pipeline();
@@ -73,7 +75,6 @@ class Threshold_Pipe extends OpenCvPipeline {
         Right_pos,
         Middle_pos;
 
-        
     }
     double color = 0;
     final double Threshold = 0.01;

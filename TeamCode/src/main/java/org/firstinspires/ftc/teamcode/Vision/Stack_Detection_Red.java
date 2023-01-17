@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Vision;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -16,6 +18,8 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
+@Autonomous
+@Disabled
 public class Stack_Detection_Red extends LinearOpMode {
 
     Stack_Pos_Red thresholdPipe = new Stack_Pos_Red();
@@ -40,6 +44,10 @@ public class Stack_Detection_Red extends LinearOpMode {
 
             }
         });
+
+        waitForStart();
+
+        Texpandcamera.closeCameraDevice();
 
     }
 
@@ -92,23 +100,7 @@ class Stack_Pos_Red extends OpenCvPipeline {
         Imgproc.rectangle(input, Left, Red, 10);
         Imgproc.rectangle(input, Middle, Red, 10);
 
-        if (M && !R && !L){
-            // What we want
-        }else if(!M && R && !L){
-            //Strafe Left 5cm
-            drive.StrafeDistance(-5, .5);
-        }else if(!M && !R && L){
-            //Strafe Right 5cm
-            drive.StrafeDistance(5, .5);
-        }
-        else if(M && R && !L){
-            //Strafe Right 2.5cm
-            drive.StrafeDistance(-2.5, .5);
-        }
-        else if(M && !R && L){
-            //Strafe Right 2.5cm
-            drive.StrafeDistance(2.5, .5);
-        }
+
 
         if (L){
             input.submat(Left);
@@ -120,5 +112,7 @@ class Stack_Pos_Red extends OpenCvPipeline {
 
         return input;
     }
+
+
 
 }
