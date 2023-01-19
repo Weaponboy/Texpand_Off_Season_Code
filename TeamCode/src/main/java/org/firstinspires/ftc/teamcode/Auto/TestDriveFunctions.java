@@ -16,19 +16,19 @@ import org.firstinspires.ftc.teamcode.Hardware.Drivetrain;
 
 @Autonomous
 public class TestDriveFunctions extends LinearOpMode {
-
+    Drivetrain TestTrain = new Drivetrain();
     Orientation yawAngle;
 
-    static final double     HEADING_THRESHOLD       = 1.0 ;
+    static final double HEADING_THRESHOLD = 1.0 ;
 
-    static final double     P_TURN_GAIN            = 0.02;
-    static final double     P_DRIVE_GAIN           = 0.03;
+    static final double P_TURN_GAIN = 0.02;
+    static final double P_DRIVE_GAIN = 0.03;
 
-    private BNO055IMU imu         = null;      // Control/Expansion Hub IMU
+    private BNO055IMU imu = null;      // Control/Expansion Hub IMU
 
-    private double          robotHeading  = 0;
-    private double          headingOffset = 0;
-    private double          headingError  = 0;
+    private double robotHeading  = 0;
+    private double headingOffset = 0;
+    private double headingError  = 0;
 
     private double  Current_Heading = 0;
 
@@ -37,13 +37,11 @@ public class TestDriveFunctions extends LinearOpMode {
     public DcMotor RB = null;
     public DcMotor LB = null;
 
-    HardwareMap hardwareMap = null;
-    public ElapsedTime runtime = new ElapsedTime();
 
     @Override
     public void runOpMode() throws InterruptedException {
 
-//        TestTrain.init(hardwareMap);
+        TestTrain.init(hardwareMap);
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
@@ -70,6 +68,10 @@ public class TestDriveFunctions extends LinearOpMode {
         LF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         LB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        RF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        RB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        LF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        LB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         RF.setPower(0);
         LF.setPower(0);
         RB.setPower(0);
@@ -78,26 +80,39 @@ public class TestDriveFunctions extends LinearOpMode {
         waitForStart();
 
 
-        while (opModeIsActive()){
-            yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            double firstAngle = yawAngle.secondAngle;
-            firstAngle = Current_Heading;
 
-            if(Current_Heading > 5){
-                RB.setPower(0.3);
-                LF.setPower(0.3);
-            }
 
-            if(Current_Heading < -5){
-                RF.setPower(0.3);
-                LB.setPower(0.3);
-            }
-        }
-
-        RF.setPower(0);
-        LF.setPower(0);
-        RB.setPower(0);
-        LB.setPower(0);
+//        yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+//        double Start_angle = yawAngle.firstAngle;
+//        while (opModeIsActive()){
+//
+//            telemetry.addData("Current Heading:",Current_Heading);
+//            telemetry.addData("YawAngle:",yawAngle);
+//            telemetry.update();
+//            yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+//            Current_Heading = yawAngle.firstAngle;
+//
+//            if(Current_Heading > (Start_angle + 1)){
+//                LF.setPower(0.15);
+//                LB.setPower(0.15);
+//                RB.setPower(-0.15);
+//                RF.setPower(-0.15);
+//                telemetry.addData("Turning:","Left");
+//                telemetry.update();
+//            }else if(Current_Heading < (Start_angle - 1)){
+//                RB.setPower(0.15);
+//                RF.setPower(0.15);
+//                LF.setPower(-0.15);
+//                LB.setPower(-0.15);
+//                telemetry.addData("Turning:","Right");
+//                telemetry.update();
+//            }else{
+//                RB.setPower(0);
+//                RF.setPower(0);
+//                LF.setPower(0);
+//                LB.setPower(0);
+//            }
+//        }
 
 //        TestTrain.DriveDistanceLong(136, 0.6);
 //
@@ -113,3 +128,4 @@ public class TestDriveFunctions extends LinearOpMode {
 
     }
 }
+

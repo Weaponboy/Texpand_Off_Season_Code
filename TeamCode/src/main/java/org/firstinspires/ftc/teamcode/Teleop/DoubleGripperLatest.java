@@ -20,11 +20,11 @@ public class DoubleGripperLatest extends OpMode {
     public DcMotor RB = null;
     public DcMotor LB = null;
 
-    double De_Pos_1 = 0.2;
-    double De_Pos_2 = 0.4;
-    double De_Pos_3 = 0.45;
-    double De_Pos_4 = 0.48;
-    double De_Pos_5 = 0.65;
+    double De_Pos_1 = 0.0;
+    double De_Pos_2 = 0.05;
+    double De_Pos_3 = 0.4;
+    double De_Pos_4 = 0.65;
+    double De_Pos_5 = 0.75;
 
     public ColorSensor colour = null;
 

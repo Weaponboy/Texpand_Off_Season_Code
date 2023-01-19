@@ -19,7 +19,7 @@
  * SOFTWARE.
  */
 
-package org.firstinspires.ftc.teamcode.Auto;
+package org.firstinspires.ftc.teamcode.Auto.Red_Auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -29,7 +29,6 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Hardware.Drivetrain;
@@ -42,7 +41,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 
 @Autonomous
-public class Blue_Auto_A2_Start extends LinearOpMode {
+public class Red_PARK_ONLY extends LinearOpMode {
     private DistanceSensor sensorRange;
 
     public DcMotor RF = null;
@@ -213,60 +212,24 @@ public class Blue_Auto_A2_Start extends LinearOpMode {
             //Position 3
             telemetry.addData("Stop Position", "3");
             telemetry.update();
-
-//            Drive_To_Destack();
-
-//            while (sensorRange.getDistance(DistanceUnit.MM) > 370){
-//                drive.StrafeDistance(0.5, 0.4);
-//                telemetry.addData("Distance", sensorRange.getDistance(DistanceUnit.MM));
-//                telemetry.update();
-//            }
-
-//            DropPreLoad();
-
-            Destack_5();
-
-//            Drive_To_Pos_3();
+            drive.DriveDistance(50,0.6);
+            drive.StrafeDistance(50,0.6);
 
         } else if (tagOfInterest.id == LEFT) {
             //Position 1
             telemetry.addData("Stop Position", "1");
             telemetry.update();
+            drive.DriveDistance(50,0.6);
+            drive.StrafeDistance_Left(50,0.6);
 
-//            Drive_To_Destack();
-
-//            while (sensorRange.getDistance(DistanceUnit.MM) > 370){
-//
-//                drive.StrafeDistance(1, 0.4);
-//
-//                telemetry.addData("Distance", sensorRange.getDistance(DistanceUnit.MM));
-//                telemetry.update();
-//            }
-
-//            DropPreLoad();
-
-            Destack_5();
-
-//            Drive_To_Pos_1();
 
         } else if (tagOfInterest.id == MIDDLE) {
             //Position 2
             telemetry.addData("Stop Position", "2");
             telemetry.update();
+            drive.DriveDistance(50,0.6);
 
-//            Drive_To_Destack();
 
-//            while (sensorRange.getDistance(DistanceUnit.MM) > 370){
-//                drive.StrafeDistance(0.5, 0.4);
-//                telemetry.addData("Distance", sensorRange.getDistance(DistanceUnit.MM));
-//                telemetry.update();
-//            }
-
-//            DropPreLoad();
-
-            Destack_5();
-
-//            Drive_To_Pos_2();
 
         }
 

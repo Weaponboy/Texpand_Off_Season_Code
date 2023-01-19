@@ -19,7 +19,7 @@
  * SOFTWARE.
  */
 
-package org.firstinspires.ftc.teamcode.Auto;
+package org.firstinspires.ftc.teamcode.Auto.Blue_Auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -29,7 +29,6 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Hardware.Drivetrain;
@@ -42,7 +41,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 
 @Autonomous
-public class Blue_Auto_A2_Start extends LinearOpMode {
+public class Blue_A2_Start_CYCLE extends LinearOpMode {
     private DistanceSensor sensorRange;
 
     public DcMotor RF = null;

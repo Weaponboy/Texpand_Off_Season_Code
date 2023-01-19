@@ -5,7 +5,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -13,12 +12,7 @@ import org.firstinspires.ftc.teamcode.Hardware.Drivetrain;
 import org.firstinspires.ftc.teamcode.Hardware.Slides;
 import org.firstinspires.ftc.teamcode.Hardware.Top_gripper;
 import org.firstinspires.ftc.teamcode.Hardware.Bottom_Gripper_Assembly;
-import org.firstinspires.ftc.teamcode.Teleop.Destack5Test;
-import org.firstinspires.ftc.teamcode.Teleop.Driver_Blue;
 import org.firstinspires.ftc.teamcode.Vision.AprilTagDetectionPipeline;
-import org.firstinspires.ftc.teamcode.Vision.OpenCVPipelinetest;
-import org.firstinspires.ftc.teamcode.Vision.Stack_Detection_Blue;
-import org.firstinspires.ftc.teamcode.Vision.Stack_Detection_Red;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -118,8 +112,6 @@ public class Blue_Cycle_Auto_A2_Starting_Position extends LinearOpMode {
         telemetry.setMsTransmissionInterval(50);
 
         Top_Gripper.setPosition(0);
-        Base_Gripper.setPosition(0.4);
-        Base_Pivot.setPosition(0);
         Top_Pivot.setPosition(0.4);
 
         drive.init(hardwareMap);
@@ -231,7 +223,7 @@ public class Blue_Cycle_Auto_A2_Starting_Position extends LinearOpMode {
     }
 
     public void Drive_To_Pos_1(){
-        drive.TurnDegreesLeft(14);
+        drive.TurnToHeading(0);
 
         drive.StrafeDistance(40, .5);
 
@@ -239,7 +231,7 @@ public class Blue_Cycle_Auto_A2_Starting_Position extends LinearOpMode {
     }
 
     public void Drive_To_Pos_2(){
-        drive.TurnDegreesLeft(14);
+        drive.TurnToHeading(0);
 
         drive.StrafeDistance(40, .5);
 
@@ -247,7 +239,7 @@ public class Blue_Cycle_Auto_A2_Starting_Position extends LinearOpMode {
     }
 
     public void Drive_To_Pos_3(){
-        drive.TurnDegreesLeft(14);
+        drive.TurnToHeading(0);
 
         drive.StrafeDistance(40, .5);
 
@@ -257,17 +249,17 @@ public class Blue_Cycle_Auto_A2_Starting_Position extends LinearOpMode {
     public void Drive_To_Destack(){
         drive.DriveDistanceLong(140, 0.6);
 
-        drive.TurnDegrees(90);
+        drive.TurnToHeading(-90);
 
         drive.StrafeDistance_Left(25, 0.6);
 
-        drive.DriveDistance(20, 0.6);
+        drive.DriveDistanceLong(20, 0.6);
 
-        drive.TurnDegrees(14);
+        drive.TurnToHeading(-104);
 
         drive.StrafeDistance(14, 0.6);
 
-        drive.DriveDistance(5, 0.6);
+        drive.DriveDistanceLong(5, 0.6);
     }
 
     public void DropPreLoad(){
@@ -1336,13 +1328,14 @@ public class Blue_Cycle_Auto_A2_Starting_Position extends LinearOpMode {
                 Extend.setPower(0.8);
             }
             Extend.setPower(0);
-            Base_Pivot.setPosition(0);
+            Base_Pivot.setPosition(1);
         }
         try {
             Thread.sleep(20);
         }catch (Exception e){
             System.out.println(e.getMessage());
         }
+
 
     }
 

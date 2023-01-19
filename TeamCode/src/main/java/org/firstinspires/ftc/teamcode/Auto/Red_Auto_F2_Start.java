@@ -387,7 +387,7 @@ public class Red_Auto_F2_Start extends LinearOpMode {
 
         Base_Pivot.setPosition(1);
 
-        drive.TurnDegrees(90);
+        drive.TurnToHeading(90);
 
         drive.DriveDistance(20, 0.6);
 
@@ -395,7 +395,7 @@ public class Red_Auto_F2_Start extends LinearOpMode {
 
         drive.StrafeDistance_Left(15, 0.6);
 
-        drive.TurnDegrees(18);
+        drive.TurnToHeading(18);
     }
 
     public void DropPreLoad() {

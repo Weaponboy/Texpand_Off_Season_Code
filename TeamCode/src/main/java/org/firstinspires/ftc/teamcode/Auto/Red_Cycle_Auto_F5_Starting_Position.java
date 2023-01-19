@@ -9,14 +9,6 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Hardware.Drivetrain;
-import org.firstinspires.ftc.teamcode.Hardware.Slides;
-import org.firstinspires.ftc.teamcode.Hardware.Top_gripper;
-import org.firstinspires.ftc.teamcode.Hardware.Bottom_Gripper_Assembly;
-import org.firstinspires.ftc.teamcode.Teleop.Destack5Test;
-import org.firstinspires.ftc.teamcode.Teleop.Driver_Blue;
-import org.firstinspires.ftc.teamcode.Vision.OpenCVPipelinetest;
-import org.firstinspires.ftc.teamcode.Vision.Stack_Detection_Blue;
-import org.firstinspires.ftc.teamcode.Vision.Stack_Detection_Red;
 
 @Autonomous
 @Disabled
@@ -123,13 +115,13 @@ public class Red_Cycle_Auto_F5_Starting_Position extends LinearOpMode {
 
         drive.DriveDistanceLong(140, 0.6);
 
-        drive.TurnDegrees(90);
+        drive.TurnToHeading(90);
 
         drive.StrafeDistance_Left(25, 0.6);
 
         drive.DriveDistance(20, 0.6);
 
-        drive.TurnDegrees(14);
+        drive.TurnToHeading(14);
 
         drive.StrafeDistance(14, 0.6);
 
