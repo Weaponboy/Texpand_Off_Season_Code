@@ -38,8 +38,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
 import java.util.List;
-
-
+@Disabled
 @TeleOp
 public class ConceptTensorFlowObjectDetection extends LinearOpMode {
 

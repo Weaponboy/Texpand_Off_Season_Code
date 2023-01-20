@@ -41,7 +41,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 
 @Autonomous
-public class Blue_A2_Start_CYCLE extends LinearOpMode {
+public class Blue_A2_Start_Preloaded extends LinearOpMode {
     private DistanceSensor sensorRange;
 
     public DcMotor RF = null;
@@ -138,10 +138,6 @@ public class Blue_A2_Start_CYCLE extends LinearOpMode {
 
         drive.init(hardwareMap);
 
-        /*
-         * The INIT-loop:
-         * This REPLACES waitForStart!
-         */
 
         while (!isStarted() && !isStopRequested()) {
             ArrayList<AprilTagDetection> currentDetections = aprilTagDetectionPipeline.getLatestDetections();
@@ -187,10 +183,6 @@ public class Blue_A2_Start_CYCLE extends LinearOpMode {
             sleep(20);
         }
 
-        /*
-         * The START command just came in: now work off the latest snapshot acquired
-         * during the init loop.
-         */
 
         /* Update the telemetry */
         if (tagOfInterest != null) {
@@ -213,7 +205,7 @@ public class Blue_A2_Start_CYCLE extends LinearOpMode {
             telemetry.addData("Stop Position", "3");
             telemetry.update();
 
-//            Drive_To_Destack();
+            Drive_To_Destack();
 
 //            while (sensorRange.getDistance(DistanceUnit.MM) > 370){
 //                drive.StrafeDistance(0.5, 0.4);
@@ -221,18 +213,18 @@ public class Blue_A2_Start_CYCLE extends LinearOpMode {
 //                telemetry.update();
 //            }
 
-//            DropPreLoad();
+            DropPreLoad();
 
-            Destack_5();
+//            Destack_5();
 
-//            Drive_To_Pos_3();
+            Drive_To_Pos_3();
 
         } else if (tagOfInterest.id == LEFT) {
             //Position 1
             telemetry.addData("Stop Position", "1");
             telemetry.update();
 
-//            Drive_To_Destack();
+            Drive_To_Destack();
 
 //            while (sensorRange.getDistance(DistanceUnit.MM) > 370){
 //
@@ -242,18 +234,18 @@ public class Blue_A2_Start_CYCLE extends LinearOpMode {
 //                telemetry.update();
 //            }
 
-//            DropPreLoad();
+            DropPreLoad();
 
-            Destack_5();
+//            Destack_5();
 
-//            Drive_To_Pos_1();
+            Drive_To_Pos_1();
 
         } else if (tagOfInterest.id == MIDDLE) {
             //Position 2
             telemetry.addData("Stop Position", "2");
             telemetry.update();
 
-//            Drive_To_Destack();
+            Drive_To_Destack();
 
 //            while (sensorRange.getDistance(DistanceUnit.MM) > 370){
 //                drive.StrafeDistance(0.5, 0.4);
@@ -261,18 +253,12 @@ public class Blue_A2_Start_CYCLE extends LinearOpMode {
 //                telemetry.update();
 //            }
 
-//            DropPreLoad();
+            DropPreLoad();
 
-            Destack_5();
+//            Destack_5();
 
-//            Drive_To_Pos_2();
+            Drive_To_Pos_2();
 
-        }
-
-
-        /* You wouldn't have this in your autonomous, this is just to prevent the sample from ending */
-        while (opModeIsActive()) {
-            sleep(20);
         }
     }
 
@@ -340,91 +326,103 @@ public class Blue_A2_Start_CYCLE extends LinearOpMode {
     }
 
     public void Drive_To_Pos_1() {
-        drive.TurnDegreesLeft(14);
 
+        drive.TurnToHeading(0);
         Top_Pivot.setPosition(0.4);
-        Base_Pivot.setPosition(0.72);
-
-        drive.StrafeDistance(18, .5);
-
-        drive.DriveDistanceLongReverse(-20, .5);
-
-        drive.StrafeDistance(60, .5);
-
-        drive.TurnDegreesLeft(90);
-
-        drive.StrafeDistance_Left(60, .5);
+        drive.DriveDistanceLongReverse(48,0.5);
+        telemetry.addData("Finished", "driving");
+        telemetry.update();
+        drive.StrafeDistance_Left(70,0.5);
+//        telemetry.addData("Finished", "placing");
+//        telemetry.update();
+//        drive.TurnToHeading(-90);
+//        drive.StrafeDistance(10, .5);
+//        Top_Pivot.setPosition(0.4);
+//        Base_Pivot.setPosition(0.72);
+//
+//        drive.DriveDistanceLongReverse(20, .5);
+//
+//        drive.StrafeDistance(68, 0.5);
+//
+//        drive.TurnToHeading(0);
+//        drive.StrafeDistance_Left(65, 0.5);
     }
 
     public void Drive_To_Pos_2() {
-        drive.TurnToHeading(-90);
-
-        Top_Pivot.setPosition(0.4);
-        Base_Pivot.setPosition(0.72);
-
-        drive.StrafeDistance(18, .5);
-
-        drive.DriveDistanceLongReverse(-25, .5);
-
-        drive.StrafeDistance(60, .5);
-
         drive.TurnToHeading(0);
+        Top_Pivot.setPosition(0.4);
+        drive.DriveDistanceLongReverse(55,0.5);
+        drive.StrafeDistance_Left(5,0.4);
+
+//        telemetry.addData("Finished", "placing");
+//        telemetry.update();
+//        drive.TurnToHeading(-90);
+//        drive.StrafeDistance(10, .5);
+//
+//        Top_Pivot.setPosition(0.4);
+//        Base_Pivot.setPosition(0.72);
+//
+//        drive.DriveDistanceLongReverse(20, .5);
+//
+//        drive.StrafeDistance(68, 0.5);
+//
+//        drive.TurnToHeading(0);
     }
 
     public void Drive_To_Pos_3() {
-        drive.TurnToHeading(-90);
-
-        Top_Pivot.setPosition(0.4);
-        Base_Pivot.setPosition(0.72);
-
-        drive.StrafeDistance(18, .5);
-
-        drive.DriveDistanceLongReverse(-20, .5);
-
-        drive.StrafeDistance(60, .5);
 
         drive.TurnToHeading(0);
+        Top_Pivot.setPosition(0.4);
+        drive.DriveDistanceLongReverse(48,0.5);
+        drive.StrafeDistance(55,0.5);
 
-        drive.StrafeDistance(50, .5);
+
+//        telemetry.addData("Finished", "placing");
+//        telemetry.update();
+//        drive.TurnToHeading(-90);
+//        drive.StrafeDistance(10, .5);
+//        Top_Pivot.setPosition(0.4);
+//        Base_Pivot.setPosition(0.72);
+//
+//        drive.DriveDistanceLongReverse(20, .5);
+//
+//        drive.StrafeDistance(68, 0.5);
+//
+//        drive.TurnToHeading(0);
+//
+//        drive.StrafeDistance(65, 0.5);
     }
 
     public void Drive_To_Destack() {
-//        drive.DriveDistanceLong(140, 0.6);
-//        Base_Pivot.setPosition(1);
-//        drive.TurnDegrees(90);
+
+        drive.DriveDistanceLong(116,0.5);
+        drive.StrafeDistance_Left(4,0.5);
+        drive.TurnToHeading(-142);
+//        drive.DriveDistanceLong(135, 0.5);
 //
-//        drive.StrafeDistance_Left(25, 0.6);
+//        Base_Pivot.setPosition(0.72);
 //
-//        drive.DriveDistance(24, 0.6);
+//        drive.TurnToHeading(-89);
 //
-//        drive.TurnDegrees(16);
+//        Base_Pivot.setPosition(0.8);
 //
-//        drive.StrafeDistance(15, 0.6);
+//        drive.DriveDistanceLong(25, 0.4);
+//        RF.setPower(0);
+//        RB.setPower(0);
+//        LF.setPower(0);
+//        LB.setPower(0);
 //
-//        drive.DriveDistance(4, 0.6);
-
-        drive.DriveDistanceLong(130, 0.6);
-
-        Base_Pivot.setPosition(0.72);
-
-        drive.TurnToHeading(-89);
-        telemetry.addData("Finished", "Turning");
-        telemetry.update();
-        Base_Pivot.setPosition(0.8);
-
-        drive.DriveDistanceLong(25.5, 0.4);
-        RF.setPower(0);
-        RB.setPower(0);
-        LF.setPower(0);
-        LB.setPower(0);
-
-        drive.ResetEncoders();
-
-        drive.StrafeDistance_Left(17, 0.6);
-
-
-        drive.TurnToHeading(-102);
-
+//        drive.ResetEncoders();
+//
+//        drive.StrafeDistance_Left(21, 0.5);
+//
+//
+//
+//        drive.TurnToHeading(-102);
+//
+//        drive.DriveDistanceLongReverse(8, 0.4);
+//        telemetry.addData("Finished", "Turning");
+//        telemetry.update();
     }
 
     public void DropPreLoad() {

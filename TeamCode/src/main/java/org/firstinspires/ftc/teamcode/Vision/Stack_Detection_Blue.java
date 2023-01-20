@@ -49,22 +49,20 @@ public class Stack_Detection_Blue extends LinearOpMode {
         });
 
         waitForStart();
-//        thresholdPipe.Get_Pos_L();
-//        thresholdPipe.Get_Pos_R();
-//        thresholdPipe.Get_Pos_M();
-//
-//
+
+        thresholdPipe.Get_Pos_L();
+        thresholdPipe.Get_Pos_R();
+        thresholdPipe.Get_Pos_M();
+
+
 //        if (thresholdPipe.L){
-//            // What we want
-////        }else if(!M && R && !L){
-////            //Strafe Left 5cm
-////            drive.StrafeDistance(-5, .5);
-////        }else if(!M && !R && L){
-////            //Strafe Right 5cm
-////            drive.StrafeDistance(5, .5);
-////        }
-////        switch (thresholdPipe.Get_Pos_L()){
 //
+//        }else if(!M && R && !L){
+//            //Strafe Left 5cm
+//            drive.StrafeDistance(-5, .5);
+//        }else if(!M && !R && L){
+//            //Strafe Right 5cm
+//            drive.StrafeDistance(5, .5);
 //        }
 //        telemetry.update();
 

@@ -43,7 +43,7 @@ import java.util.List;
 
 
 @TeleOp
-
+@Disabled
 public class ConceptTensorFlowObjectDetectionWebcam extends LinearOpMode {
 
     /*

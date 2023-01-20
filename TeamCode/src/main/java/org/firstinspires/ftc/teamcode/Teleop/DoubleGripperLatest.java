@@ -22,7 +22,7 @@ public class DoubleGripperLatest extends OpMode {
 
     double De_Pos_1 = 0.0;
     double De_Pos_2 = 0.05;
-    double De_Pos_3 = 0.4;
+    double De_Pos_3 = 0.37;
     double De_Pos_4 = 0.65;
     double De_Pos_5 = 0.75;
 
@@ -50,6 +50,10 @@ public class DoubleGripperLatest extends OpMode {
 
     private double Base_Pivot_Collect = 0.05;
 
+    private double Base_Pivot_Flip = 0.78;
+
+    private double Base_Pivot_Out_Way = 1;
+
     private double Top_Pivot_Collect = 0.33;
 
     private double Top_Gripper_Collect_Wide = 0.36;
@@ -61,6 +65,7 @@ public class DoubleGripperLatest extends OpMode {
     private double Destack_position = 0;
 
     private boolean conefound = false;
+    private boolean conefoundDe = false;
     private double slow = 0.4;
     private boolean lowering = false;
 
@@ -87,14 +92,19 @@ public class DoubleGripperLatest extends OpMode {
 
             if(stakerpos == 1){
                 Destack_position = De_Pos_1;
+                Base_Pivot.setPosition(0.12);
             } else if(stakerpos == 2) {
                 Destack_position = De_Pos_2;
+                Base_Pivot.setPosition(Base_Pivot_Collect);
             } else if(stakerpos == 3) {
                 Destack_position = De_Pos_3;
+                Base_Pivot.setPosition(Base_Pivot_Collect);
             } else if(stakerpos == 4) {
                 Destack_position = De_Pos_4;
+                Base_Pivot.setPosition(Base_Pivot_Collect);
             } else if(stakerpos == 5) {
                 Destack_position = De_Pos_5;
+                Base_Pivot.setPosition(Base_Pivot_Collect);
             }
             if(stakerpos > 5){
                 stakerpos = 0;
@@ -119,11 +129,6 @@ public class DoubleGripperLatest extends OpMode {
             rumble = true;
         }
 
-        try {
-            Thread.sleep(10);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
 
 //        public void Destack(double De_pos) {
 //
@@ -343,8 +348,6 @@ public class DoubleGripperLatest extends OpMode {
 
         if(gamepad1.back || gamepad2.back){
 
-            Base_Pivot.setPosition(Base_Pivot_Collect);
-
             RF.setPower(0);
             RB.setPower(0);
             LF.setPower(0);
@@ -353,7 +356,7 @@ public class DoubleGripperLatest extends OpMode {
             Extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             Extend.setPower(-1);
 
-            conefound = sensorRange.getDistance(DistanceUnit.MM) < 60;
+            conefound = sensorRange.getDistance(DistanceUnit.MM) < 50;
 
 
             while(!conefound && Extend.getCurrentPosition() > -1900){
@@ -391,6 +394,13 @@ public class DoubleGripperLatest extends OpMode {
                 }
 
                 Base_Gripper.setPosition(0);
+
+                try {
+                    Thread.sleep(200);
+                }catch (Exception e){
+                    System.out.println(e.getMessage());
+                }
+
                 if(Right_Slide.getCurrentPosition() < 10 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 10 && !Left_Slide.isBusy()){
                     Right_Slide.setPower(0);
                     Left_Slide.setPower(0);
@@ -406,6 +416,18 @@ public class DoubleGripperLatest extends OpMode {
                 Top_Pivot.setPosition(0.6);
 
                 Top_Gripper.setPosition(Top_Gripper_Collect_Wide);
+
+                Base_Pivot.setPosition(Base_Pivot_Flip);
+
+                if (Destacker_Left.getPosition() < 0.6){
+
+                    try {
+                        Thread.sleep(200);
+                    }catch (Exception e){
+                        System.out.println(e.getMessage());
+                    }
+
+                }
 
                 try {
                     Thread.sleep(125);
@@ -430,11 +452,21 @@ public class DoubleGripperLatest extends OpMode {
                             Right_Slide.setPower(-0.9);
                             Left_Slide.setPower(-0.9);
                         }
+
                         Base_Gripper.setPosition(0);
 
-                        Base_Pivot.setPosition(1);
+                        Base_Pivot.setPosition(Base_Pivot_Flip);
 
                         Extend.setPower(1);
+
+                        conefoundDe = colour.blue() > 3000;
+
+                        if (conefoundDe || Extend.getCurrentPosition() < -700){
+                            Base_Gripper.setPosition(0.4);
+
+                            Destacker_Left.setPosition(De_Pos_5);
+                            Destacker_Right.setPosition(De_Pos_5);
+                        }
                     }
 
                     if(Right_Slide.getCurrentPosition() < 10 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 10 && !Left_Slide.isBusy()){
@@ -454,7 +486,7 @@ public class DoubleGripperLatest extends OpMode {
                     Destacker_Left.setPosition(0.8);
                     Destacker_Right.setPosition(0.8);
 
-                    if(Base_Pivot.getPosition() > 0.9) {
+                    if(Base_Pivot.getPosition() > 0.7) {
 
                         try {
                             Thread.sleep(200);
@@ -465,6 +497,8 @@ public class DoubleGripperLatest extends OpMode {
                         Top_Pivot.setPosition(1);
 
                         Base_Gripper.setPosition(0.4);
+
+                        Base_Pivot.setPosition(Base_Pivot_Out_Way);
 
                         try {
                             Thread.sleep(250);
@@ -507,8 +541,8 @@ public class DoubleGripperLatest extends OpMode {
         }
 
         //toggle possition of base pivot
-        if(gamepad1.a || gamepad2.a && Base_Pivot.getPosition() != 1){
-            Base_Pivot.setPosition(1); //open base gripper if it is closed
+        if(gamepad1.a || gamepad2.a && Base_Pivot.getPosition() != 0.85){
+            Base_Pivot.setPosition(0.85); //open base gripper if it is closed
         }else if(gamepad1.a || gamepad2.a && Base_Pivot.getPosition() != Base_Pivot_Collect ){
             Base_Pivot.setPosition(Base_Pivot_Collect); //close base gripper if it is open
         }
@@ -536,12 +570,6 @@ public class DoubleGripperLatest extends OpMode {
             Base_Gripper.setPosition(0.4); //open base gripper if it is closed
         }else if(gamepad1.b || gamepad2.b && Base_Gripper.getPosition() > 0){
             Base_Gripper.setPosition(0); //close base gripper if it is open
-        }
-
-        try {
-            Thread.sleep(10);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
         }
 
         //toggle possition of top pivot
@@ -624,12 +652,6 @@ public class DoubleGripperLatest extends OpMode {
         if(lowering){
             Right_Slide.setPower(-0.9);
             Left_Slide.setPower(-0.9);
-        }
-
-        try {
-            Thread.sleep(10);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
         }
 
         //Stop slides if finished running
@@ -730,7 +752,7 @@ public class DoubleGripperLatest extends OpMode {
                         }
                         Base_Gripper.setPosition(0);
 
-                        Base_Pivot.setPosition(1);
+                        Base_Pivot.setPosition(Base_Pivot_Flip);
 
                         Top_Pivot.setPosition(0.6);
 
@@ -753,7 +775,7 @@ public class DoubleGripperLatest extends OpMode {
                     Destacker_Left.setPosition(0.8);
                     Destacker_Right.setPosition(0.8);
 
-                    if(Base_Pivot.getPosition() > 0.9) {
+                    if(Base_Pivot.getPosition() > Base_Pivot_Flip) {
 
                         try {
                             Thread.sleep(200);
@@ -762,6 +784,8 @@ public class DoubleGripperLatest extends OpMode {
                         }
 
                         Base_Gripper.setPosition(0.4);
+
+                        Base_Pivot.setPosition(Base_Pivot_Out_Way);
 
                         try {
                             Thread.sleep(250);
@@ -852,20 +876,20 @@ public class DoubleGripperLatest extends OpMode {
             Left_Slide.setPower(-0.9);
         }
 
-            telemetry.addData("Rumble:", rumble);
-            telemetry.addData("Destacker Left:", Destacker_Left.getPosition());
-            telemetry.addData("Destacker Right:", Destacker_Right.getPosition());
-            telemetry.addData("Base Pivot:", Base_Pivot.getPosition());
-            telemetry.addData("Stacker pos:", stakerpos);
-            telemetry.addData("MM range:", sensorRange.getDistance(DistanceUnit.MM));
-            telemetry.addData("Blue:", colour.blue());
-            telemetry.addData("RF Power:", RF.getPower());
-            telemetry.addData("RB Power:", RB.getPower());
-            telemetry.addData("LF Power:", LF.getPower());
-            telemetry.addData("LB Power:", LB.getPower());
-            telemetry.addData("motor ticks extend:", Extend.getCurrentPosition());
+        telemetry.addData("Rumble:", rumble);
+        telemetry.addData("Destacker Left:", Destacker_Left.getPosition());
+        telemetry.addData("Destacker Right:", Destacker_Right.getPosition());
+        telemetry.addData("Base Pivot:", Base_Pivot.getPosition());
+        telemetry.addData("Stacker pos:", stakerpos);
+        telemetry.addData("MM range:", sensorRange.getDistance(DistanceUnit.MM));
+        telemetry.addData("Blue:", colour.blue());
+        telemetry.addData("RF Power:", RF.getPower());
+        telemetry.addData("RB Power:", RB.getPower());
+        telemetry.addData("LF Power:", LF.getPower());
+        telemetry.addData("LB Power:", LB.getPower());
+        telemetry.addData("motor ticks extend:", Extend.getCurrentPosition());
 
-            telemetry.update();
+        telemetry.update();
 
     }
 

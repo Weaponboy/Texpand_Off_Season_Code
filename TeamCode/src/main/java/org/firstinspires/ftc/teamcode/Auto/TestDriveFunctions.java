@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.Hardware.Drivetrain;
 
@@ -23,6 +24,8 @@ public class TestDriveFunctions extends LinearOpMode {
 
     static final double P_TURN_GAIN = 0.02;
     static final double P_DRIVE_GAIN = 0.03;
+
+    public double count = 0;
 
     private BNO055IMU imu = null;      // Control/Expansion Hub IMU
 
@@ -79,7 +82,128 @@ public class TestDriveFunctions extends LinearOpMode {
 
         waitForStart();
 
+        TestTrain.DriveDistanceLong(130, 0.6);
 
+        TestTrain.TurnToHeading(-87);
+
+        TestTrain.DriveDistanceLong(25.5, 0.4);
+
+        RF.setPower(0);
+        RB.setPower(0);
+        LF.setPower(0);
+        LB.setPower(0);
+
+        TestTrain.ResetEncoders();
+
+        TestTrain.StrafeDistance_Left(10, 0.6);
+
+        TestTrain.TurnToHeading(-96);
+
+        TestTrain.Distance_1 = TestTrain.sensorRange.getDistance(DistanceUnit.MM);
+
+        TestTrain.Distance_000 = TestTrain.sensorRange.getDistance(DistanceUnit.MM);
+
+        TestTrain.Distance_00 = TestTrain.sensorRange.getDistance(DistanceUnit.MM);
+
+        TestTrain.Distance_0 = TestTrain.sensorRange.getDistance(DistanceUnit.MM);
+
+            TestTrain.StrafeDistance_Left(3.5, 0.4);
+
+            TestTrain.Distance_2 = TestTrain.sensorRange.getDistance(DistanceUnit.MM);
+
+            TestTrain.StrafeDistance_Left(3.5, 0.4);
+
+            TestTrain.Distance_3 = TestTrain.sensorRange.getDistance(DistanceUnit.MM);
+
+            TestTrain.StrafeDistance_Left(3.5, 0.4);
+
+            TestTrain.Distance_4 = TestTrain.sensorRange.getDistance(DistanceUnit.MM);
+
+            TestTrain.StrafeDistance_Left(3.5, 0.4);
+
+            TestTrain.Distance_5 = TestTrain.sensorRange.getDistance(DistanceUnit.MM);
+
+            TestTrain.StrafeDistance_Left(3.5, 0.4);
+
+            TestTrain.Distance_6 = TestTrain.sensorRange.getDistance(DistanceUnit.MM);
+
+            TestTrain.StrafeDistance_Left(3.5, 0.4);
+
+            TestTrain.Distance_7 = TestTrain.sensorRange.getDistance(DistanceUnit.MM);
+
+
+
+
+        TestTrain.Av_Distance_1 = (TestTrain.Distance_1 + TestTrain.Distance_0 + TestTrain.Distance_00 + TestTrain.Distance_000)/4;
+
+        TestTrain.Av_Distance_2 = (TestTrain.Distance_2 + TestTrain.Distance_1 + TestTrain.Distance_0 + TestTrain.Distance_00)/4;
+
+        TestTrain.Av_Distance_3 = (TestTrain.Distance_3 + TestTrain.Distance_2 + TestTrain.Distance_1 + TestTrain.Distance_0)/4;
+
+        TestTrain.Av_Distance_4 = (TestTrain.Distance_4 + TestTrain.Distance_3 + TestTrain.Distance_2 + TestTrain.Distance_1)/4;
+
+        TestTrain.Av_Distance_5 = (TestTrain.Distance_5 + TestTrain.Distance_4 + TestTrain.Distance_3 + TestTrain.Distance_2)/4;
+
+        TestTrain.Av_Distance_6 = (TestTrain.Distance_6 + TestTrain.Distance_5 + TestTrain.Distance_4 + TestTrain.Distance_3)/4;
+
+        TestTrain.Av_Distance_7 = (TestTrain.Distance_7 + TestTrain.Distance_6 + TestTrain.Distance_5 + TestTrain.Distance_4)/4;
+
+        if ( TestTrain.Av_Distance_7 >  TestTrain.Av_Distance_6){
+            TestTrain.StrafeDistance(3.4, 0.4);
+        }
+        if ( TestTrain.Av_Distance_6 >  TestTrain.Av_Distance_5){
+            TestTrain.StrafeDistance(3.4, 0.4);
+        }
+        if ( TestTrain.Av_Distance_5 >  TestTrain.Av_Distance_4){
+            TestTrain.StrafeDistance(3.4, 0.4);
+        }
+        if ( TestTrain.Av_Distance_4 >  TestTrain.Av_Distance_3){
+            TestTrain.StrafeDistance(3.4, 0.4);
+        }
+        if ( TestTrain.Av_Distance_3 >  TestTrain.Av_Distance_2){
+            TestTrain.StrafeDistance(3.4, 0.4);
+        }
+        if ( TestTrain.Av_Distance_2 >  TestTrain.Av_Distance_1){
+            TestTrain.StrafeDistance(3.4, 0.4);
+        }
+
+        telemetry.addData("Dis 1", TestTrain.Distance_1);
+        telemetry.addData("Dis 1", TestTrain.Distance_2);
+        telemetry.addData("Dis 1", TestTrain.Distance_3);
+        telemetry.addData("Dis 1", TestTrain.Distance_4);
+        telemetry.addData("Dis 1", TestTrain.Distance_5);
+        telemetry.addData("Dis 1", TestTrain.Distance_6);
+        telemetry.addData("Dis 1", TestTrain.Distance_7);
+
+        telemetry.addData("Dis 1 av", TestTrain.Av_Distance_1);
+        telemetry.addData("Dis 1 av", TestTrain.Av_Distance_2);
+        telemetry.addData("Dis 1 av", TestTrain.Av_Distance_3);
+        telemetry.addData("Dis 1 av", TestTrain.Av_Distance_4);
+        telemetry.addData("Dis 1 av", TestTrain.Av_Distance_5);
+        telemetry.addData("Dis 1 av", TestTrain.Av_Distance_6);
+        telemetry.addData("Dis 1 av", TestTrain.Av_Distance_7);
+        telemetry.update();
+
+            try {
+                Thread.sleep(500);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+
+            }
+
+
+        try {
+            Thread.sleep(50000);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+
+//        TestTrain.DriveDistanceLongReverse(60,0.5);
+//        while(opModeIsActive()){
+//            telemetry.addData("motor ticks", RF.getCurrentPosition());
+//            telemetry.update();
+//        }
 
 
 //        yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);

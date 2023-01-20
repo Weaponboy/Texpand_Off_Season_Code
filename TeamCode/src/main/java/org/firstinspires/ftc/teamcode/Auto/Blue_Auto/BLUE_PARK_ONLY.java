@@ -212,22 +212,22 @@ public class BLUE_PARK_ONLY extends LinearOpMode {
             //Position 3
             telemetry.addData("Stop Position", "3");
             telemetry.update();
-            drive.DriveDistance(50,0.6);
-            drive.StrafeDistance(50,0.6);
+            drive.DriveDistance(65,0.5);
+            drive.StrafeDistance(65,0.5);
 
         } else if (tagOfInterest.id == LEFT) {
             //Position 1
             telemetry.addData("Stop Position", "1");
             telemetry.update();
-            drive.DriveDistance(50,0.6);
-            drive.StrafeDistance_Left(50,0.6);
+            drive.DriveDistance(65,0.5);
+            drive.StrafeDistance_Left(65,0.5);
 
 
         } else if (tagOfInterest.id == MIDDLE) {
             //Position 2
             telemetry.addData("Stop Position", "2");
             telemetry.update();
-            drive.DriveDistance(50,0.6);
+            drive.DriveDistance(65,0.5);
 
 
 

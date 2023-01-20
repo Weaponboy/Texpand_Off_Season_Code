@@ -19,10 +19,7 @@ public class Stack_Pos_2 extends OpenCvPipeline {
     public boolean R = false;
     public boolean M = false;
 
-
     Mat workingmatrix = new Mat();
-
-
 
     static final Rect Left = new Rect(new Point(175, 150), new Point(275, 400));
     static final Rect Middle = new Rect(new Point(275, 150), new Point(375, 400));
