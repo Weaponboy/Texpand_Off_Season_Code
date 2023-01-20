@@ -19,10 +19,9 @@
  * SOFTWARE.
  */
 
-package org.firstinspires.ftc.teamcode.Auto;
+package org.firstinspires.ftc.teamcode.Auto.Red_Auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -30,7 +29,6 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Hardware.Drivetrain;
@@ -43,7 +41,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 
 @Autonomous
-public class Blue_Auto_A2_Start extends LinearOpMode {
+public class Red_F5_Start_Preloaded extends LinearOpMode {
     private DistanceSensor sensorRange;
 
     public DcMotor RF = null;
@@ -74,10 +72,6 @@ public class Blue_Auto_A2_Start extends LinearOpMode {
     public Servo Destacker_Left;
     public Servo Destacker_Right;
 
-    private double Distance_1 = 0;
-    private double Distance_2 = 0;
-    private boolean Cone = false;
-
     private boolean Nest_Occupied = false;
     private boolean conefound = false;
     private boolean extending = false;
@@ -88,8 +82,8 @@ public class Blue_Auto_A2_Start extends LinearOpMode {
 
     // destacker positions
     double De_Pos_1 = 0.0;
-    double De_Pos_2 = 0.05;
-    double De_Pos_3 = 0.37;
+    double De_Pos_2 = 0.5;
+    double De_Pos_3 = 0.45;
     double De_Pos_4 = 0.65;
     double De_Pos_5 = 0.75;
 
@@ -144,10 +138,6 @@ public class Blue_Auto_A2_Start extends LinearOpMode {
 
         drive.init(hardwareMap);
 
-        /*
-         * The INIT-loop:
-         * This REPLACES waitForStart!
-         */
 
         while (!isStarted() && !isStopRequested()) {
             ArrayList<AprilTagDetection> currentDetections = aprilTagDetectionPipeline.getLatestDetections();
@@ -193,10 +183,6 @@ public class Blue_Auto_A2_Start extends LinearOpMode {
             sleep(20);
         }
 
-        /*
-         * The START command just came in: now work off the latest snapshot acquired
-         * during the init loop.
-         */
 
         /* Update the telemetry */
         if (tagOfInterest != null) {
@@ -229,7 +215,7 @@ public class Blue_Auto_A2_Start extends LinearOpMode {
 
             DropPreLoad();
 
-            Destack_5();
+//            Destack_5();
 
             Drive_To_Pos_3();
 
@@ -250,7 +236,7 @@ public class Blue_Auto_A2_Start extends LinearOpMode {
 
             DropPreLoad();
 
-            Destack_5();
+//            Destack_5();
 
             Drive_To_Pos_1();
 
@@ -269,16 +255,10 @@ public class Blue_Auto_A2_Start extends LinearOpMode {
 
             DropPreLoad();
 
-            Destack_5();
+//            Destack_5();
 
             Drive_To_Pos_2();
 
-        }
-
-
-        /* You wouldn't have this in your autonomous, this is just to prevent the sample from ending */
-        while (opModeIsActive()) {
-            sleep(20);
         }
     }
 
@@ -346,156 +326,103 @@ public class Blue_Auto_A2_Start extends LinearOpMode {
     }
 
     public void Drive_To_Pos_1() {
-        drive.TurnDegreesLeft(14);
 
+        drive.TurnToHeading(0);
         Top_Pivot.setPosition(0.4);
-        Base_Pivot.setPosition(0.72);
-
-        drive.StrafeDistance(18, .5);
-
-        drive.DriveDistanceLongReverse(-20, .5);
-
-        drive.StrafeDistance(60, .5);
-
-        drive.TurnDegreesLeft(90);
-
-        drive.StrafeDistance_Left(60, .5);
+        drive.DriveDistanceLongReverse(48,0.5);
+        telemetry.addData("Finished", "driving");
+        telemetry.update();
+        drive.StrafeDistance_Left(70,0.5);
+//        telemetry.addData("Finished", "placing");
+//        telemetry.update();
+//        drive.TurnToHeading(-90);
+//        drive.StrafeDistance(10, .5);
+//        Top_Pivot.setPosition(0.4);
+//        Base_Pivot.setPosition(0.72);
+//
+//        drive.DriveDistanceLongReverse(20, .5);
+//
+//        drive.StrafeDistance(68, 0.5);
+//
+//        drive.TurnToHeading(0);
+//        drive.StrafeDistance_Left(65, 0.5);
     }
 
     public void Drive_To_Pos_2() {
-        drive.TurnToHeading(-90);
-
-        Top_Pivot.setPosition(0.4);
-        Base_Pivot.setPosition(0.72);
-
-        drive.StrafeDistance(18, .5);
-
-        drive.DriveDistanceLongReverse(25, .5);
-
-        drive.StrafeDistance(60, .5);
-
         drive.TurnToHeading(0);
+        Top_Pivot.setPosition(0.4);
+        drive.DriveDistanceLongReverse(55,0.5);
+        drive.StrafeDistance_Left(5,0.4);
+
+//        telemetry.addData("Finished", "placing");
+//        telemetry.update();
+//        drive.TurnToHeading(-90);
+//        drive.StrafeDistance(10, .5);
+//
+//        Top_Pivot.setPosition(0.4);
+//        Base_Pivot.setPosition(0.72);
+//
+//        drive.DriveDistanceLongReverse(20, .5);
+//
+//        drive.StrafeDistance(68, 0.5);
+//
+//        drive.TurnToHeading(0);
     }
 
     public void Drive_To_Pos_3() {
-        drive.TurnToHeading(-90);
-
-        Top_Pivot.setPosition(0.4);
-        Base_Pivot.setPosition(0.72);
-
-        drive.StrafeDistance(18, .5);
-
-        drive.DriveDistanceLongReverse(-20, .5);
-
-        drive.StrafeDistance(60, .5);
 
         drive.TurnToHeading(0);
+        Top_Pivot.setPosition(0.4);
+        drive.DriveDistanceLongReverse(48,0.5);
+        drive.StrafeDistance(55,0.5);
 
-        drive.StrafeDistance(50, .5);
+
+//        telemetry.addData("Finished", "placing");
+//        telemetry.update();
+//        drive.TurnToHeading(-90);
+//        drive.StrafeDistance(10, .5);
+//        Top_Pivot.setPosition(0.4);
+//        Base_Pivot.setPosition(0.72);
+//
+//        drive.DriveDistanceLongReverse(20, .5);
+//
+//        drive.StrafeDistance(68, 0.5);
+//
+//        drive.TurnToHeading(0);
+//
+//        drive.StrafeDistance(65, 0.5);
     }
 
     public void Drive_To_Destack() {
-//        drive.DriveDistanceLong(140, 0.6);
-//        Base_Pivot.setPosition(1);
-//        drive.TurnDegrees(90);
+
+        drive.DriveDistanceLong(116,0.5);
+        drive.StrafeDistance_Left(4,0.5);
+        drive.TurnToHeading(-142);
+//        drive.DriveDistanceLong(135, 0.5);
 //
-//        drive.StrafeDistance_Left(25, 0.6);
+//        Base_Pivot.setPosition(0.72);
 //
-//        drive.DriveDistance(24, 0.6);
+//        drive.TurnToHeading(-89);
 //
-//        drive.TurnDegrees(16);
+//        Base_Pivot.setPosition(0.8);
 //
-//        drive.StrafeDistance(15, 0.6);
+//        drive.DriveDistanceLong(25, 0.4);
+//        RF.setPower(0);
+//        RB.setPower(0);
+//        LF.setPower(0);
+//        LB.setPower(0);
 //
-//        drive.DriveDistance(4, 0.6);
-
-        drive.DriveDistanceLong(130, 0.6);
-
-        drive.TurnToHeading(-87);
-
-        Base_Pivot.setPosition(0.12);
-        Base_Gripper.setPosition(0.4);
-
-        drive.DriveDistanceLong(25.5, 0.4);
-
-        RF.setPower(0);
-        RB.setPower(0);
-        LF.setPower(0);
-        LB.setPower(0);
-
-        drive.ResetEncoders();
-
-        drive.StrafeDistance_Left(10, 0.6);
-
-        drive.TurnToHeading(-97);
-
-        drive.Distance_1 = drive.sensorRange.getDistance(DistanceUnit.MM);
-
-        drive.Distance_000 = drive.sensorRange.getDistance(DistanceUnit.MM);
-
-        drive.Distance_00 = drive.sensorRange.getDistance(DistanceUnit.MM);
-
-        drive.Distance_0 = drive.sensorRange.getDistance(DistanceUnit.MM);
-
-        drive.StrafeDistance_Left(3.5, 0.4);
-
-        drive.Distance_2 = drive.sensorRange.getDistance(DistanceUnit.MM);
-
-        drive.StrafeDistance_Left(3.5, 0.4);
-
-        drive.Distance_3 = drive.sensorRange.getDistance(DistanceUnit.MM);
-
-        drive.StrafeDistance_Left(3.5, 0.4);
-
-        drive.Distance_4 = drive.sensorRange.getDistance(DistanceUnit.MM);
-
-        drive.StrafeDistance_Left(3.5, 0.4);
-
-        drive.Distance_5 = drive.sensorRange.getDistance(DistanceUnit.MM);
-
-        drive.StrafeDistance_Left(3.5, 0.4);
-
-        drive.Distance_6 = drive.sensorRange.getDistance(DistanceUnit.MM);
-
-        drive.StrafeDistance_Left(3.5, 0.4);
-
-        drive.Distance_7 = drive.sensorRange.getDistance(DistanceUnit.MM);
-
-
-
-
-        drive.Av_Distance_1 = (drive.Distance_1 + drive.Distance_0 + drive.Distance_00 + drive.Distance_000)/4;
-
-        drive.Av_Distance_2 = (drive.Distance_2 + drive.Distance_1 + drive.Distance_0 + drive.Distance_00)/4;
-
-        drive.Av_Distance_3 = (drive.Distance_3 + drive.Distance_2 + drive.Distance_1 + drive.Distance_0)/4;
-
-        drive.Av_Distance_4 = (drive.Distance_4 + drive.Distance_3 + drive.Distance_2 + drive.Distance_1)/4;
-
-        drive.Av_Distance_5 = (drive.Distance_5 + drive.Distance_4 + drive.Distance_3 + drive.Distance_2)/4;
-
-        drive.Av_Distance_6 = (drive.Distance_6 + drive.Distance_5 + drive.Distance_4 + drive.Distance_3)/4;
-
-        drive.Av_Distance_7 = (drive.Distance_7 + drive.Distance_6 + drive.Distance_5 + drive.Distance_4)/4;
-
-        if ( drive.Av_Distance_7 >  drive.Av_Distance_6){
-            drive.StrafeDistance(3.4, 0.4);
-        }
-        if ( drive.Av_Distance_6 >  drive.Av_Distance_5){
-            drive.StrafeDistance(3.4, 0.4);
-        }
-        if ( drive.Av_Distance_5 >  drive.Av_Distance_4){
-            drive.StrafeDistance(3.4, 0.4);
-        }
-        if ( drive.Av_Distance_4 >  drive.Av_Distance_3){
-            drive.StrafeDistance(3.4, 0.4);
-        }
-        if ( drive.Av_Distance_3 >  drive.Av_Distance_2){
-            drive.StrafeDistance(3.4, 0.4);
-        }
-        if ( drive.Av_Distance_2 >  drive.Av_Distance_1){
-            drive.StrafeDistance(3.4, 0.4);
-        }
+//        drive.ResetEncoders();
+//
+//        drive.StrafeDistance_Left(21, 0.5);
+//
+//
+//
+//        drive.TurnToHeading(-102);
+//
+//        drive.DriveDistanceLongReverse(8, 0.4);
+//        telemetry.addData("Finished", "Turning");
+//        telemetry.update();
     }
 
     public void DropPreLoad() {
@@ -764,7 +691,6 @@ public class Blue_Auto_A2_Start extends LinearOpMode {
 
         //cone 1
         Destack(De_Pos_1);
-        Base_Pivot.setPosition(0.12);
 
         if (abort){
             //Drive to position
@@ -772,38 +698,38 @@ public class Blue_Auto_A2_Start extends LinearOpMode {
             Base_Pivot.setPosition(0.72);
         }else {
 
-//            //cone 2
-//            Destack(De_Pos_2);
-//
-//            if (abort){
-//                //Drive to position
-//                Top_Pivot.setPosition(Top_Pivot_Waiting);
-//                Base_Pivot.setPosition(0.72);
-//            }else {
-//
-//                //cone 3
-//                Destack(De_Pos_3);
-//
-//                if (abort){
-//                    //Drive to position
-//                    Top_Pivot.setPosition(Top_Pivot_Waiting);
-//                    Base_Pivot.setPosition(0.72);
-//                }else {
-//                    //cone 4
-//                    Destack(De_Pos_4);
-//
-//                    if (abort){
-//                        //Drive to position
-//                        Top_Pivot.setPosition(Top_Pivot_Waiting);
-//                        Base_Pivot.setPosition(0.72);
-//                    }else {
-//
-//                        //cone 5
-//                        Destack(De_Pos_5);
-//                    }
-//                }
-//
-//            }
+            //cone 2
+            Destack(De_Pos_2);
+
+            if (abort){
+                //Drive to position
+                Top_Pivot.setPosition(Top_Pivot_Waiting);
+                Base_Pivot.setPosition(0.72);
+            }else {
+
+                //cone 3
+                Destack(De_Pos_3);
+
+                if (abort){
+                    //Drive to position
+                    Top_Pivot.setPosition(Top_Pivot_Waiting);
+                    Base_Pivot.setPosition(0.72);
+                }else {
+                    //cone 4
+                    Destack(De_Pos_4);
+
+                    if (abort){
+                        //Drive to position
+                        Top_Pivot.setPosition(Top_Pivot_Waiting);
+                        Base_Pivot.setPosition(0.72);
+                    }else {
+
+                        //cone 5
+                        Destack(De_Pos_5);
+                    }
+                }
+
+            }
 
         }
 
