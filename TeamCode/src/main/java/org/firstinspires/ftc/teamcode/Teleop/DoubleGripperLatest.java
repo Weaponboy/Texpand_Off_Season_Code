@@ -661,7 +661,6 @@ public class DoubleGripperLatest extends OpMode {
                         Right_Slide.setPower(-0.9);
                         Left_Slide.setPower(-0.9);
                     }
-                    conefound = sensorRange.getDistance(DistanceUnit.MM) < 70;
 
                     Extend.setPower(-1);
 

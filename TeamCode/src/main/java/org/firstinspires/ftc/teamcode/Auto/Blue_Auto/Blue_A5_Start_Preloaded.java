@@ -352,7 +352,7 @@ public class Blue_A5_Start_Preloaded extends LinearOpMode {
         drive.TurnToHeading(0);
         Top_Pivot.setPosition(0.4);
         drive.DriveDistanceLongReverse(55,0.5);
-        drive.StrafeDistance_Left(5,0.4);
+        drive.StrafeDistance(5,0.4);
 
 //        telemetry.addData("Finished", "placing");
 //        telemetry.update();
@@ -374,7 +374,7 @@ public class Blue_A5_Start_Preloaded extends LinearOpMode {
         drive.TurnToHeading(0);
         Top_Pivot.setPosition(0.4);
         drive.DriveDistanceLongReverse(48,0.5);
-        drive.StrafeDistance(55,0.5);
+        drive.StrafeDistance(60,0.5);
 
 
 //        telemetry.addData("Finished", "placing");
@@ -395,9 +395,9 @@ public class Blue_A5_Start_Preloaded extends LinearOpMode {
 
     public void Drive_To_Destack() {
 
-        drive.DriveDistanceLong(116,0.5);
+        drive.DriveDistanceLong(118,0.5);
         drive.StrafeDistance(4,0.5);
-        drive.TurnToHeading(142);
+        drive.TurnToHeading(138);
 //        drive.DriveDistanceLong(135, 0.5);
 //
 //        Base_Pivot.setPosition(0.72);
@@ -429,8 +429,8 @@ public class Blue_A5_Start_Preloaded extends LinearOpMode {
         Top_Pivot.setPosition(0.5);
 
         //Extend vertical slides and drop cone
-        Right_Slide.setTargetPosition(2100);
-        Left_Slide.setTargetPosition(2100);
+        Right_Slide.setTargetPosition(1900);
+        Left_Slide.setTargetPosition(1900);
         Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         while (Right_Slide.isBusy() && Left_Slide.isBusy()) {
