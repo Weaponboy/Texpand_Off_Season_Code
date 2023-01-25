@@ -329,10 +329,10 @@ public class Red_F2_Start_Preloaded extends LinearOpMode {
 
         drive.TurnToHeading(0);
         Top_Pivot.setPosition(0.4);
-        drive.DriveDistanceLongReverse(48,0.5);
+        drive.DriveDistanceLong(10,0.5);
         telemetry.addData("Finished", "driving");
         telemetry.update();
-        drive.StrafeDistance_Left(70,0.5);
+        drive.StrafeDistance_Left(60,0.5);
 //        telemetry.addData("Finished", "placing");
 //        telemetry.update();
 //        drive.TurnToHeading(-90);
@@ -351,7 +351,7 @@ public class Red_F2_Start_Preloaded extends LinearOpMode {
     public void Drive_To_Pos_2() {
         drive.TurnToHeading(0);
         Top_Pivot.setPosition(0.4);
-        drive.DriveDistanceLongReverse(55,0.5);
+        drive.DriveDistanceLong(4,0.5);
         drive.StrafeDistance_Left(5,0.4);
 
 //        telemetry.addData("Finished", "placing");
@@ -373,7 +373,7 @@ public class Red_F2_Start_Preloaded extends LinearOpMode {
 
         drive.TurnToHeading(0);
         Top_Pivot.setPosition(0.4);
-        drive.DriveDistanceLongReverse(48,0.5);
+        drive.DriveDistanceLong(10,0.5);
         drive.StrafeDistance(60,0.5);
 
 
