@@ -4,12 +4,11 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.teamcode.Hardware.Bottom_Gripper_Assembly;
-import org.firstinspires.ftc.teamcode.Hardware.Drivetrain;
-import org.firstinspires.ftc.teamcode.Hardware.Slides;
-import org.firstinspires.ftc.teamcode.Hardware.Top_gripper;
+import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Bottom_Gripper_Assembly;
+import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Drivetrain;
+import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Slides;
+import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Top_gripper;
 @Disabled
 @TeleOp
 public class Driver_Blue extends OpMode {

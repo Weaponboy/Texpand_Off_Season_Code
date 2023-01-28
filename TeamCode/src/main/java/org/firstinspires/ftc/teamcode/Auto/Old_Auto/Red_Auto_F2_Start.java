@@ -19,9 +19,10 @@
  * SOFTWARE.
  */
 
-package org.firstinspires.ftc.teamcode.Auto.Red_Auto;
+package org.firstinspires.ftc.teamcode.Auto.Old_Auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -39,9 +40,9 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
-
+@Disabled
 @Autonomous
-public class Red_F2_Start_Preloaded extends LinearOpMode {
+public class Red_Auto_F2_Start extends LinearOpMode {
     private DistanceSensor sensorRange;
 
     public DcMotor RF = null;
@@ -81,11 +82,11 @@ public class Red_F2_Start_Preloaded extends LinearOpMode {
 
 
     // destacker positions
-    double De_Pos_1 = 0.0;
-    double De_Pos_2 = 0.5;
-    double De_Pos_3 = 0.45;
-    double De_Pos_4 = 0.65;
-    double De_Pos_5 = 0.75;
+    double De_Pos_1 = 0.34;
+    double De_Pos_2 = 0.44;
+    double De_Pos_3 = 0.54;
+    double De_Pos_4 = 0.64;
+    double De_Pos_5 = 0.84;
 
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
@@ -138,6 +139,10 @@ public class Red_F2_Start_Preloaded extends LinearOpMode {
 
         drive.init(hardwareMap);
 
+        /*
+         * The INIT-loop:
+         * This REPLACES waitForStart!
+         */
 
         while (!isStarted() && !isStopRequested()) {
             ArrayList<AprilTagDetection> currentDetections = aprilTagDetectionPipeline.getLatestDetections();
@@ -183,6 +188,10 @@ public class Red_F2_Start_Preloaded extends LinearOpMode {
             sleep(20);
         }
 
+        /*
+         * The START command just came in: now work off the latest snapshot acquired
+         * during the init loop.
+         */
 
         /* Update the telemetry */
         if (tagOfInterest != null) {
@@ -207,15 +216,9 @@ public class Red_F2_Start_Preloaded extends LinearOpMode {
 
             Drive_To_Destack();
 
-//            while (sensorRange.getDistance(DistanceUnit.MM) > 370){
-//                drive.StrafeDistance(0.5, 0.4);
-//                telemetry.addData("Distance", sensorRange.getDistance(DistanceUnit.MM));
-//                telemetry.update();
-//            }
-
             DropPreLoad();
 
-//            Destack_5();
+            Destack_5();
 
             Drive_To_Pos_3();
 
@@ -226,17 +229,9 @@ public class Red_F2_Start_Preloaded extends LinearOpMode {
 
             Drive_To_Destack();
 
-//            while (sensorRange.getDistance(DistanceUnit.MM) > 370){
-//
-//                drive.StrafeDistance(1, 0.4);
-//
-//                telemetry.addData("Distance", sensorRange.getDistance(DistanceUnit.MM));
-//                telemetry.update();
-//            }
-
             DropPreLoad();
 
-//            Destack_5();
+            Destack_5();
 
             Drive_To_Pos_1();
 
@@ -247,18 +242,18 @@ public class Red_F2_Start_Preloaded extends LinearOpMode {
 
             Drive_To_Destack();
 
-//            while (sensorRange.getDistance(DistanceUnit.MM) > 370){
-//                drive.StrafeDistance(0.5, 0.4);
-//                telemetry.addData("Distance", sensorRange.getDistance(DistanceUnit.MM));
-//                telemetry.update();
-//            }
-
             DropPreLoad();
 
-//            Destack_5();
+            Destack_5();
 
             Drive_To_Pos_2();
 
+        }
+
+
+        /* You wouldn't have this in your autonomous, this is just to prevent the sample from ending */
+        while (opModeIsActive()) {
+            sleep(20);
         }
     }
 
@@ -321,116 +316,95 @@ public class Red_F2_Start_Preloaded extends LinearOpMode {
 
         Top_Gripper.setPosition(0);
         Base_Gripper.setPosition(0.4);
-        Base_Pivot.setPosition(0.72);
+        Base_Pivot.setPosition(1);
         Top_Pivot.setPosition(0.4);
     }
 
     public void Drive_To_Pos_1() {
+        drive.TurnDegreesLeft(14);
 
-        drive.TurnToHeading(0);
         Top_Pivot.setPosition(0.4);
-        drive.DriveDistanceLong(10,0.5);
-        telemetry.addData("Finished", "driving");
-        telemetry.update();
-        drive.StrafeDistance_Left(60,0.5);
-//        telemetry.addData("Finished", "placing");
-//        telemetry.update();
-//        drive.TurnToHeading(-90);
-//        drive.StrafeDistance(10, .5);
-//        Top_Pivot.setPosition(0.4);
-//        Base_Pivot.setPosition(0.72);
-//
-//        drive.DriveDistanceLongReverse(20, .5);
-//
-//        drive.StrafeDistance(68, 0.5);
-//
-//        drive.TurnToHeading(0);
-//        drive.StrafeDistance_Left(65, 0.5);
+        Base_Pivot.setPosition(1);
+
+        drive.StrafeDistance(18, .5);
+
+        drive.DriveDistanceLongReverse(-22, .5);
+
+        drive.StrafeDistance(60, .5);
+
+        drive.TurnDegreesLeft(90);
+
+        drive.StrafeDistance_Left(60, .5);
     }
 
     public void Drive_To_Pos_2() {
-        drive.TurnToHeading(0);
-        Top_Pivot.setPosition(0.4);
-        drive.DriveDistanceLong(4,0.5);
-        drive.StrafeDistance_Left(5,0.4);
+        drive.TurnDegreesLeft(14);
 
-//        telemetry.addData("Finished", "placing");
-//        telemetry.update();
-//        drive.TurnToHeading(-90);
-//        drive.StrafeDistance(10, .5);
-//
-//        Top_Pivot.setPosition(0.4);
-//        Base_Pivot.setPosition(0.72);
-//
-//        drive.DriveDistanceLongReverse(20, .5);
-//
-//        drive.StrafeDistance(68, 0.5);
-//
-//        drive.TurnToHeading(0);
+        Top_Pivot.setPosition(0.4);
+        Base_Pivot.setPosition(1);
+
+        drive.StrafeDistance(18, .5);
+
+        drive.DriveDistanceLongReverse(-22, .5);
+
+        drive.StrafeDistance(60, .5);
+
+        drive.TurnDegreesLeft(90);
     }
 
     public void Drive_To_Pos_3() {
+        drive.TurnDegreesLeft(14);
 
-        drive.TurnToHeading(0);
         Top_Pivot.setPosition(0.4);
-        drive.DriveDistanceLong(10,0.5);
-        drive.StrafeDistance(60,0.5);
+        Base_Pivot.setPosition(1);
 
+        drive.StrafeDistance(18, .5);
 
-//        telemetry.addData("Finished", "placing");
-//        telemetry.update();
-//        drive.TurnToHeading(-90);
-//        drive.StrafeDistance(10, .5);
-//        Top_Pivot.setPosition(0.4);
-//        Base_Pivot.setPosition(0.72);
-//
-//        drive.DriveDistanceLongReverse(20, .5);
-//
-//        drive.StrafeDistance(68, 0.5);
-//
-//        drive.TurnToHeading(0);
-//
-//        drive.StrafeDistance(65, 0.5);
+        drive.DriveDistanceLongReverse(-22, .5);
+
+        drive.StrafeDistance(60, .5);
+
+        drive.TurnDegreesLeft(90);
+
+        drive.StrafeDistance(50, .5);
     }
 
     public void Drive_To_Destack() {
+//        drive.DriveDistanceLong(140, 0.6);
+//        Base_Pivot.setPosition(1);
+//        drive.TurnDegrees(90);
+//
+//        drive.StrafeDistance_Left(25, 0.6);
+//
+//        drive.DriveDistance(24, 0.6);
+//
+//        drive.TurnDegrees(16);
+//
+//        drive.StrafeDistance(15, 0.6);
+//
+//        drive.DriveDistance(4, 0.6);
 
-        drive.DriveDistanceLong(116,0.5);
-        drive.StrafeDistance(4,0.5);
-        drive.TurnToHeading(138);
-//        drive.DriveDistanceLong(135, 0.5);
-//
-//        Base_Pivot.setPosition(0.72);
-//
-//        drive.TurnToHeading(-89);
-//
-//        Base_Pivot.setPosition(0.8);
-//
-//        drive.DriveDistanceLong(25, 0.4);
-//        RF.setPower(0);
-//        RB.setPower(0);
-//        LF.setPower(0);
-//        LB.setPower(0);
-//
-//        drive.ResetEncoders();
-//
-//        drive.StrafeDistance_Left(21, 0.5);
-//
-//
-//
-//        drive.TurnToHeading(-102);
-//
-//        drive.DriveDistanceLongReverse(8, 0.4);
-//        telemetry.addData("Finished", "Turning");
-//        telemetry.update();
+        drive.DriveDistanceLong(140, 0.6);
+
+        Base_Pivot.setPosition(1);
+
+        drive.TurnToHeading(90);
+
+        drive.DriveDistance(20, 0.6);
+
+        drive.ResetEncoders();
+
+        drive.StrafeDistance_Left(15, 0.6);
+
+        drive.TurnToHeading(18);
     }
 
     public void DropPreLoad() {
         Top_Pivot.setPosition(0.5);
 
         //Extend vertical slides and drop cone
-        Right_Slide.setTargetPosition(1900);
-        Left_Slide.setTargetPosition(1900);
+        Right_Slide.setTargetPosition(2000);
+        Left_Slide.setTargetPosition(2000);
         Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         while (Right_Slide.isBusy() && Left_Slide.isBusy()) {
@@ -451,11 +425,16 @@ public class Red_F2_Start_Preloaded extends LinearOpMode {
         }
 
         Top_Gripper.setPosition(0.3);
+        try {
+            Thread.sleep(100);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
 
         //TO DO: Insert WHILE loop
         if (Top_Gripper.getPosition() == 0.3) {
             try {
-                Thread.sleep(50);
+                Thread.sleep(100);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
@@ -490,16 +469,15 @@ public class Red_F2_Start_Preloaded extends LinearOpMode {
 
         Destacker_Left.setPosition(De_pos);
         Destacker_Right.setPosition(De_pos);
-//        if (De_pos == De_Pos_1){
-//            Base_Pivot.setPosition(0.13);
-//        }else{
-//            Base_Pivot.setPosition(0.1);
-//        }
-        Base_Pivot.setPosition(0.1);
+
+        try {
+            Thread.sleep(100);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
 
         Top_Pivot.setPosition(0.5);
-
-
+        Base_Pivot.setPosition(0.1);
 
         Extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
@@ -508,20 +486,19 @@ public class Red_F2_Start_Preloaded extends LinearOpMode {
         conefound = sensorRange.getDistance(DistanceUnit.MM) < 70;
 
         //extend till we find a cone or get to the slides limit
-        while (!conefound && Extend.getCurrentPosition() > -1850) {
+        while (!conefound && Extend.getCurrentPosition() > -1930) {
 
             CheckVSlidePos();
 
-            conefound = sensorRange.getDistance(DistanceUnit.MM) < 60;
+            conefound = sensorRange.getDistance(DistanceUnit.MM) < 70;
 
             Extend.setPower(-1);
 
         }
+
         Extend.setPower(0);
 
-
-
-
+        if (conefound) {
 
             //close gripper
             Base_Gripper.setPosition(0);
@@ -530,16 +507,11 @@ public class Red_F2_Start_Preloaded extends LinearOpMode {
 
             //make sure gripper is closed
             try {
-                Thread.sleep(300);
+                Thread.sleep(100);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
-            Base_Pivot.setPosition(0.72);
-            try {
-                Thread.sleep(250);
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
+
             //if the base gripper is closed retract the horizontal slides
             if (Base_Gripper.getPosition() == 0) {
 
@@ -548,21 +520,15 @@ public class Red_F2_Start_Preloaded extends LinearOpMode {
 
                 while (Extend.isBusy()) {
                     CheckVSlidePos();
-                    Base_Pivot.setPosition(0.72);
+                    Base_Pivot.setPosition(0.9);
                     Extend.setPower(1);
-                    if(Extend.getCurrentPosition() > - 800){
-                        Destacker_Left.setPosition(0.8);
-                        Destacker_Right.setPosition(0.8);
-                    }
-                    if(Extend.getCurrentPosition() > - 500){
-                        Base_Gripper.setPosition(0.4);
-                    }
                 }
 
                 Extend.setPower(0);
 
                 //bring destacker down
-
+                Destacker_Left.setPosition(0.8);
+                Destacker_Right.setPosition(0.8);
 
                 while (lowering) {
                     CheckVSlidePos();
@@ -572,38 +538,24 @@ public class Red_F2_Start_Preloaded extends LinearOpMode {
                 Base_Gripper.setPosition(0.4);
 
                 try {
-                    Thread.sleep(400);
+                    Thread.sleep(600);
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }
 
-                Nest_Occupied = colour.blue() > 3000;
+                Nest_Occupied = colour.red() > 3000;
 
                 try {
-                    Thread.sleep(200);
+                    Thread.sleep(100);
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }
-                Nest_Occupied = colour.blue() > 3000;
+
 
                 if (Nest_Occupied) {
 
                     //open top gripper
                     Top_Gripper.setPosition(0.35);
-
-                    //take top pivot to pick up the cone
-                    Top_Pivot.setPosition(1);
-
-
-
-                    try {
-                        Thread.sleep(300);
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                    }
-
-                    //close top gripper
-                    Top_Gripper.setPosition(0);
 
                     try {
                         Thread.sleep(100);
@@ -611,19 +563,39 @@ public class Red_F2_Start_Preloaded extends LinearOpMode {
                         System.out.println(e.getMessage());
                     }
 
-                    //take top pivot over
-                    Top_Pivot.setPosition(0.5);
+                    //take top pivot to pick up the cone
+                    Top_Pivot.setPosition(1);
 
-                    try {
-                        Thread.sleep(50);
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
+                    if (Base_Pivot.getPosition() > 0.9) {
+
+                        try {
+                            Thread.sleep(500);
+                        } catch (Exception e) {
+                            System.out.println(e.getMessage());
+                        }
+
+                        //close top gripper
+                        Top_Gripper.setPosition(0);
+
+                        try {
+                            Thread.sleep(120);
+                        } catch (Exception e) {
+                            System.out.println(e.getMessage());
+                        }
+
+                        //take top pivot over
+                        Top_Pivot.setPosition(0.5);
+
+                        try {
+                            Thread.sleep(200);
+                        } catch (Exception e) {
+                            System.out.println(e.getMessage());
+                        }
+
+                        //put base pivot back to zero
+                        Base_Pivot.setPosition(0.1);
+
                     }
-
-                    //put base pivot back to zero
-                    Base_Pivot.setPosition(0.1);
-
-
 
                 }else {
                     //Abort
@@ -631,13 +603,22 @@ public class Red_F2_Start_Preloaded extends LinearOpMode {
 
                 }
 
+                try {
+                    Thread.sleep(400);
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+
+                Nest_Occupied = colour.red() > 3000;
+
+                if(!Nest_Occupied){
                     Extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
                     Base_Pivot.setPosition(0.1);
 
                     //Extend vertical slides and drop cone
-                    Right_Slide.setTargetPosition(2100);
-                    Left_Slide.setTargetPosition(2100);
+                    Right_Slide.setTargetPosition(2000);
+                    Left_Slide.setTargetPosition(2000);
                     Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     while (Right_Slide.isBusy() && Left_Slide.isBusy()) {
@@ -660,10 +641,16 @@ public class Red_F2_Start_Preloaded extends LinearOpMode {
 
                     Top_Gripper.setPosition(0.3);
 
+                    try {
+                        Thread.sleep(400);
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+
                     //TO DO: Insert WHILE loop
                         if (Top_Gripper.getPosition() == 0.3) {
                             try {
-                                Thread.sleep(150);
+                                Thread.sleep(250);
                             } catch (Exception e) {
                                 System.out.println(e.getMessage());
                             }
@@ -683,8 +670,29 @@ public class Red_F2_Start_Preloaded extends LinearOpMode {
                         abort = true;
                     }
 
+                }
 
+            }else {
+                abort = true;
+                Top_Pivot.setPosition(0.5);
+                Extend.setTargetPosition(0);
+                Extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                while (Extend.isBusy()) {
+                    CheckVSlidePos();
+                    Extend.setPower(0.8);
+                }
+                Extend.setPower(0);
+                Base_Pivot.setPosition(0.1);
+                Destacker_Left.setPosition(0.8);
+                Destacker_Right.setPosition(0.8);
             }
+            try {
+                Thread.sleep(20);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+
+        }
 
     public void Destack_5 () {
         Base_Gripper.setPosition(0.4);
@@ -695,7 +703,7 @@ public class Red_F2_Start_Preloaded extends LinearOpMode {
         if (abort){
             //Drive to position
             Top_Pivot.setPosition(Top_Pivot_Waiting);
-            Base_Pivot.setPosition(0.72);
+            Base_Pivot.setPosition(1);
         }else {
 
             //cone 2
@@ -704,7 +712,7 @@ public class Red_F2_Start_Preloaded extends LinearOpMode {
             if (abort){
                 //Drive to position
                 Top_Pivot.setPosition(Top_Pivot_Waiting);
-                Base_Pivot.setPosition(0.72);
+                Base_Pivot.setPosition(1);
             }else {
 
                 //cone 3
@@ -713,7 +721,7 @@ public class Red_F2_Start_Preloaded extends LinearOpMode {
                 if (abort){
                     //Drive to position
                     Top_Pivot.setPosition(Top_Pivot_Waiting);
-                    Base_Pivot.setPosition(0.72);
+                    Base_Pivot.setPosition(1);
                 }else {
                     //cone 4
                     Destack(De_Pos_4);
@@ -721,7 +729,7 @@ public class Red_F2_Start_Preloaded extends LinearOpMode {
                     if (abort){
                         //Drive to position
                         Top_Pivot.setPosition(Top_Pivot_Waiting);
-                        Base_Pivot.setPosition(0.72);
+                        Base_Pivot.setPosition(1);
                     }else {
 
                         //cone 5

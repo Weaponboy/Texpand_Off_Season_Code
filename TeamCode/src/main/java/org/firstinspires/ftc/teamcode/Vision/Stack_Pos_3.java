@@ -9,7 +9,7 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-public class Stack_Pos_2 extends OpenCvPipeline {
+public class Stack_Pos_3 extends OpenCvPipeline {
 
     Stack_Detection_Values open = new Stack_Detection_Values();
 
@@ -17,7 +17,10 @@ public class Stack_Pos_2 extends OpenCvPipeline {
     public boolean R = false;
     public boolean M = false;
 
+
     Mat workingmatrix = new Mat();
+
+
 
     static final Rect Left = new Rect(new Point(175, 150), new Point(275, 400));
     static final Rect Middle = new Rect(new Point(275, 150), new Point(375, 400));
@@ -25,11 +28,11 @@ public class Stack_Pos_2 extends OpenCvPipeline {
 
     Telemetry telemetry;
 
-    public Stack_Pos_2(Telemetry t) {
+    public Stack_Pos_3(Telemetry t) {
         telemetry = t;
     }
 
-    public Stack_Pos_2() {
+    public Stack_Pos_3() {
 
     }
 
