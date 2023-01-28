@@ -590,10 +590,10 @@ public class DoubleGripperLatest extends OpMode {
         }
 
         //Reduce robot speed
-        if(gamepad1.start && slow == 1){
+        if(gamepad1.start && slow == 0.6){
             slow = 0.4;
-        }else if(gamepad1.start && slow < 1){
-            slow = 1;
+        }else if(gamepad1.start && slow < 0.6){
+            slow = 0.6;
         }
 
         //toggle possition of base pivot
@@ -655,11 +655,13 @@ public class DoubleGripperLatest extends OpMode {
             Toppos = Toppos + 1;
 
             if(Toppos == 1){
-                Top_Pivot.setPosition(0.6);
+                Top_Pivot.setPosition(0.22);
             }else if(Toppos == 2){
                 Top_Pivot.setPosition(1);
+            }else if(Toppos == 3){
+                Top_Pivot.setPosition(0.6);
             }
-            if(Toppos > 2){
+            if(Toppos > 3){
                 Toppos = 0;
             }
 
@@ -908,7 +910,7 @@ public class DoubleGripperLatest extends OpMode {
             Right_Slide.setPower(0.005);
             Left_Slide.setPower(0.005);
 
-            Top_Pivot.setPosition(0.1);
+            Top_Pivot.setPosition(0);
 
             Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -951,7 +953,7 @@ public class DoubleGripperLatest extends OpMode {
             Right_Slide.setPower(0.005);
             Left_Slide.setPower(0.005);
 
-            Top_Pivot.setPosition(0.1);
+            Top_Pivot.setPosition(0);
 
             Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -986,7 +988,7 @@ public class DoubleGripperLatest extends OpMode {
             Right_Slide.setPower(0.005);
             Left_Slide.setPower(0.005);
 
-            Top_Pivot.setPosition(0.1);
+            Top_Pivot.setPosition(0);
 
             Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -1304,7 +1306,7 @@ public class DoubleGripperLatest extends OpMode {
         LF.setPower(0);
         RB.setPower(0);
         LB.setPower(0);
-
+        Top_Pivot.setPosition(0.22);
         Top_Gripper.setPosition(0.3);
 //        Base_Pivot.setPosition(Base_Pivot_Collect);
         Base_Gripper.setPosition(0.4);
@@ -1315,6 +1317,7 @@ public class DoubleGripperLatest extends OpMode {
 
 
         telemetry.addData("Status:", "Initialized");
+        telemetry.addData("top pivot:", Top_Pivot.getPosition());
         telemetry.update();
     }
 
