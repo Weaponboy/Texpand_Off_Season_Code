@@ -30,3 +30,7 @@ repositories {
         dirs '../libs'
     }
 }
+
+repositories {
+    mavenCentral()
+}
