@@ -1,46 +1,39 @@
-package org.firstinspires.ftc.teamcode.Vision.Piplines;
+package org.firstinspires.ftc.teamcode.Vision.OpmodesToRunPipelines;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
-import org.opencv.core.Point;
-import org.opencv.core.Rect;
-import org.opencv.core.Scalar;
-import org.opencv.imgproc.Imgproc;
+import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Drivetrain;
+import org.firstinspires.ftc.teamcode.Vision.Piplines.Pole_Pos;
+import org.firstinspires.ftc.teamcode.Vision.Piplines.Stack_Pos_Blue;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvPipeline;
 
 @Autonomous
 @Disabled
-public class OpenCVPipelinetest extends LinearOpMode {
 
-    Threshold_Pipeline thresholdPipe = new Threshold_Pipeline();
+public class Pole_Detection extends LinearOpMode {
 
-    public boolean Pos_1 = false;
-    public boolean Pos_2 = false;
-    public boolean Pos_3 = false;
-
+    Pole_Pos thresholdPipe;
+    Drivetrain drive = new Drivetrain();
 
     @Override
     public void runOpMode() throws InterruptedException {
+
+        thresholdPipe = new Pole_Pos(telemetry);
+
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
 
         WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
-
         OpenCvCamera Texpandcamera = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
-        Texpandcamera.setPipeline(new Threshold_Pipeline(telemetry));
+        Texpandcamera.setPipeline(thresholdPipe);
         Texpandcamera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
                 Texpandcamera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
-
             }
 
             @Override
@@ -51,38 +44,31 @@ public class OpenCVPipelinetest extends LinearOpMode {
         });
 
         waitForStart();
+        while(opModeIsActive()){
 
-        thresholdPipe.Get_Pos_1();
-        thresholdPipe.Get_Pos_2();
-        thresholdPipe.Get_Pos_3();
+            thresholdPipe.Get_Pos_L();
+            thresholdPipe.Get_Pos_R();
+            thresholdPipe.Get_Pos_M();
 
-        if (thresholdPipe.Pos_1) {
-            telemetry.addData("Colour", "Yellow");
-            Pos_1 = true;
-        } else if (thresholdPipe.Pos_2) {
-            telemetry.addData("Colour", "Blue");
-            Pos_2 = true;
-        } else if (thresholdPipe.Pos_3) {
-            telemetry.addData("Colour", "Red");
-            Pos_3 = true;
+            if (thresholdPipe.M){
+                //What we want
+            }else if(thresholdPipe.R){
+                //Strafe Left 5cm
+                drive.StrafeDistance_Left(5, .5);
+            }else if(thresholdPipe.L){
+                //Strafe Right 5cm
+                drive.StrafeDistance(5, .5);
+            }else{
+                //Strafe Right 5cm
+                drive.StrafeDistance_Left(5, .5);
+            }
+            telemetry.update();
         }
 
         Texpandcamera.closeCameraDevice();
-    }
-    public Boolean Get_Pos_1(){
-        return Pos_2;
+
     }
 
-    public Boolean Get_Pos_2(){
-        return Pos_3;
-    }
-
-    public Boolean Get_Pos_3(){
-
-        return Pos_1;
-    }
 }
-
-
 
 

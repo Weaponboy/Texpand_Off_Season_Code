@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Vision.Piplines;
+package org.firstinspires.ftc.teamcode.Vision.OpmodesToRunPipelines;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Drivetrain;
+import org.firstinspires.ftc.teamcode.Vision.Piplines.Stack_Pos_Blue;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -13,15 +14,15 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 @Autonomous
 @Disabled
 
-public class Stack_Detection_Values extends LinearOpMode {
+public class Cone_Stack_Blue extends LinearOpMode {
 
-    Stack_Pos_2 thresholdPipe;
+    Stack_Pos_Blue thresholdPipe;
     Drivetrain drive = new Drivetrain();
 
     @Override
     public void runOpMode() throws InterruptedException {
 
-        thresholdPipe = new Stack_Pos_2(telemetry);
+        thresholdPipe = new Stack_Pos_Blue(telemetry);
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
 
