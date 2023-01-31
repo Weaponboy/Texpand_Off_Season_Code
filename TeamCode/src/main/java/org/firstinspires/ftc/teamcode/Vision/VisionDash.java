@@ -33,6 +33,14 @@ public class VisionDash {
     public static int blue_max_Cr = 230;
     public static int blue_max_Cb = 130;
 
+    //Cone color
+    public static int blue_min_H = 135;
+    public static int blue_min_S = 0;
+    public static int blue_min_V = 0;
+
+    public static int blue_max_H = 165;
+    public static int blue_max_S = 100;
+    public static int blue_max_V = 100;
 
     public static int max_Cb = 255;
     public static int max_Cr = 255;

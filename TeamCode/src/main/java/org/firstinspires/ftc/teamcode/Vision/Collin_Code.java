@@ -5,6 +5,7 @@ import static org.firstinspires.ftc.teamcode.Vision.VisionDash.erode_const;
 import static org.opencv.core.Core.inRange;
 import static org.opencv.core.CvType.CV_8U;
 import static org.opencv.imgproc.Imgproc.CHAIN_APPROX_SIMPLE;
+import static org.opencv.imgproc.Imgproc.COLOR_RGB2HSV;
 import static org.opencv.imgproc.Imgproc.COLOR_RGB2YCrCb;
 import static org.opencv.imgproc.Imgproc.FONT_HERSHEY_COMPLEX;
 import static org.opencv.imgproc.Imgproc.RETR_TREE;
@@ -38,6 +39,7 @@ public class Collin_Code extends OpenCvPipeline {
     // Rectangle settings
     private Scalar orange = new Scalar(252, 186, 3);
     private Scalar lightBlue = new Scalar(3, 252, 227);
+
     private int thickness = 2;
     private int font = FONT_HERSHEY_COMPLEX;
 
@@ -48,10 +50,10 @@ public class Collin_Code extends OpenCvPipeline {
         IMG_HEIGHT = input.rows();
         IMG_WIDTH = input.cols();
 
-        Scalar MIN_THRESH = new Scalar(VisionDash.min_Y, VisionDash.min_Cr, VisionDash.min_Cb);
-        Scalar MAX_THRESH = new Scalar(VisionDash.max_Y, VisionDash.max_Cr, VisionDash.max_Cb);
+        Scalar MIN_THRESH = new Scalar(VisionDash.blue_min_H, VisionDash.blue_min_S, VisionDash.blue_min_V);
+        Scalar MAX_THRESH = new Scalar(VisionDash.blue_max_H, VisionDash.blue_max_S, VisionDash.blue_max_V);
 
-        Imgproc.cvtColor(input, modified, COLOR_RGB2YCrCb);
+        Imgproc.cvtColor(input, modified, COLOR_RGB2HSV);
 
         inRange(input, MIN_THRESH, MAX_THRESH, modified);
 
