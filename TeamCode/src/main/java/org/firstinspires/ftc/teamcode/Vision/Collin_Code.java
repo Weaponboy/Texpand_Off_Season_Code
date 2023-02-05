@@ -2,22 +2,32 @@ package org.firstinspires.ftc.teamcode.Vision;
 
 import static org.firstinspires.ftc.teamcode.Vision.VisionDash.dilate_const;
 import static org.firstinspires.ftc.teamcode.Vision.VisionDash.erode_const;
+import static org.firstinspires.ftc.teamcode.Vision.VisionDash.dilate_const;
+import static org.firstinspires.ftc.teamcode.Vision.VisionDash.erode_const;
 import static org.opencv.core.Core.inRange;
+import static org.opencv.core.CvType.CV_16U;
 import static org.opencv.core.CvType.CV_8U;
 import static org.opencv.imgproc.Imgproc.CHAIN_APPROX_SIMPLE;
 import static org.opencv.imgproc.Imgproc.COLOR_RGB2HSV;
+import static org.opencv.imgproc.Imgproc.COLOR_RGB2HSV_FULL;
 import static org.opencv.imgproc.Imgproc.COLOR_RGB2YCrCb;
 import static org.opencv.imgproc.Imgproc.FONT_HERSHEY_COMPLEX;
 import static org.opencv.imgproc.Imgproc.RETR_TREE;
 import static org.opencv.imgproc.Imgproc.boundingRect;
 import static org.opencv.imgproc.Imgproc.circle;
 import static org.opencv.imgproc.Imgproc.dilate;
+import static org.opencv.imgproc.Imgproc.drawContours;
 import static org.opencv.imgproc.Imgproc.erode;
 import static org.opencv.imgproc.Imgproc.findContours;
+import static org.opencv.imgproc.Imgproc.rectangle;
 
 import org.firstinspires.ftc.teamcode.Vision.VisionDash;
+import org.firstinspires.ftc.teamcode.Vision.VisionUtils;
+import org.firstinspires.ftc.teamcode.Vision.VisionUtils;
+import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
+import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
@@ -31,18 +41,33 @@ public class Collin_Code extends OpenCvPipeline {
     //Initiated variables needed later
     private static int IMG_HEIGHT = 0;
     private static int IMG_WIDTH = 0;
-    private Mat output = new Mat(),
+    public Mat output = new Mat(),
             modified = new Mat();
     private ArrayList<MatOfPoint> contours = new ArrayList<>();
     private Mat hierarchy = new Mat();
-
+    static final Rect center = new Rect(new Point(100, 100), new Point(550, 350));
     // Rectangle settings
-    private Scalar orange = new Scalar(252, 186, 3);
-    private Scalar lightBlue = new Scalar(3, 252, 227);
-
-    private int thickness = 2;
+    private Scalar orange = new Scalar(300, 90, 90);
+    private Scalar lightBlue = new Scalar(200, 90, 90);
+    public int numcontours;
+    public int numrects;
     private int font = FONT_HERSHEY_COMPLEX;
+    public double rectX;
+    public double rectY;
 
+    public double rectCentre;
+
+    public double Distance_To_Travel = 0;
+
+    public double ConversionPixelstoCm = 10;//need to tune this
+
+    public double CenterOfScreen = 640;
+
+    public double rectPositionFromLeft = 0;
+
+    public Scalar MIN_THRESH = new Scalar(135,50,50);
+    public Scalar MAX_THRESH = new Scalar(165,255,255);
+    public Scalar values;
     @Override
     public Mat processFrame(Mat input) {
         input.copyTo(output);
@@ -50,12 +75,12 @@ public class Collin_Code extends OpenCvPipeline {
         IMG_HEIGHT = input.rows();
         IMG_WIDTH = input.cols();
 
-        Scalar MIN_THRESH = new Scalar(VisionDash.blue_min_H, VisionDash.blue_min_S, VisionDash.blue_min_V);
-        Scalar MAX_THRESH = new Scalar(VisionDash.blue_max_H, VisionDash.blue_max_S, VisionDash.blue_max_V);
+//        MIN_THRESH = new Scalar(VisionDash.blue_min_H, VisionDash.blue_min_S, VisionDash.blue_min_V);
+//        MAX_THRESH = new Scalar(VisionDash.blue_max_H, VisionDash.blue_max_S, VisionDash.blue_max_V);
 
-        Imgproc.cvtColor(input, modified, COLOR_RGB2HSV);
-
-        inRange(input, MIN_THRESH, MAX_THRESH, modified);
+        Imgproc.cvtColor(input, modified, COLOR_RGB2HSV_FULL);
+        values = Core.mean(modified.submat(center));
+        inRange(modified, MIN_THRESH, MAX_THRESH, modified);
 
         erode(modified, modified, new Mat(erode_const, erode_const, CV_8U));
         dilate(modified, modified, new Mat(dilate_const, dilate_const, CV_8U));
@@ -67,9 +92,31 @@ public class Collin_Code extends OpenCvPipeline {
             Rect rect = boundingRect(contours.get(i));
             rects.add(rect);
         }
+        numcontours = contours.size();
+        if(rects.size() > 0){
+            Rect largestRect = VisionUtils.sortRectsByMaxOption(1, VisionUtils.RECT_OPTION.AREA, rects).get(0);
+            rectangle(output, largestRect, lightBlue, 30);
 
-        Rect largestRect = VisionUtils.sortRectsByMaxOption(1, VisionUtils.RECT_OPTION.AREA, rects).get(0);
+            rectX = largestRect.x + largestRect.width/2;
+            rectY = largestRect.y + largestRect.height/2;
+
+            Imgproc.circle(output,new Point(rectX,rectY),50,orange,20);
+
+            rectPositionFromLeft = largestRect.x;
+        }
+
+        Distance_To_Travel = rectPositionFromLeft - CenterOfScreen / ConversionPixelstoCm;
+
+        numrects = rects.size();
+
+        drawContours(output, contours, -1, orange);
+
+        contours.clear();
 
         return output;
+    }
+
+    public double TravelDistance(){
+        return Distance_To_Travel;
     }
 }

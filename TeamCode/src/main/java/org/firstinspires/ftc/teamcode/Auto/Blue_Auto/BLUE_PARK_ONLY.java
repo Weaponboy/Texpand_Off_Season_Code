@@ -181,7 +181,7 @@ public class BLUE_PARK_ONLY extends LinearOpMode {
                     tagToTelemetry(tagOfInterest);
                 }
 
-            }
+                }
 
             telemetry.update();
             sleep(20);

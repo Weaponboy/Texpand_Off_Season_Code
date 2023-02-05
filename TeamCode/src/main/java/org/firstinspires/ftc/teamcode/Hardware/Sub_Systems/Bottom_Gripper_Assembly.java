@@ -22,6 +22,12 @@ public class Bottom_Gripper_Assembly {
     private int Bpivotpos = 0;
     private int BGripperpos = 0;
 
+    private double Base_Pivot_Collect = 0.08;
+
+    private double Base_Pivot_Flip = 0.78;
+
+    private double Base_Pivot_Out_Way = 1;
+
 
     public Bottom_Gripper_Assembly() {}
 
@@ -38,7 +44,6 @@ public class Bottom_Gripper_Assembly {
         Base_Pivot.setDirection(Servo.Direction.FORWARD);
         Destacker_Left.setDirection(Servo.Direction.REVERSE);
 
-        Base_Pivot.setPosition(0);
         Base_Gripper.setPosition(0.4);
     }
 
