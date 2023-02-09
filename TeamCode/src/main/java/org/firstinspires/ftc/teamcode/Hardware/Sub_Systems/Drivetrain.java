@@ -79,7 +79,7 @@ public class Drivetrain {
         return ticks;
     }
 
-    public void TurnDegreesLeft(int degrees){
+    public void TurnDegreesLeft(double degrees){
 
         ticks = (int) (ticksperdegree*degrees);
         ResetEncoders();
@@ -111,6 +111,49 @@ public class Drivetrain {
                 LB.setPower(0);
             }
             if(RF.getCurrentPosition() > ticks){
+                RF.setPower(0);
+            }
+        }
+
+        RF.setPower(0);
+        LF.setPower(0);
+        RB.setPower(0);
+        LB.setPower(0);
+
+    }
+
+    public void TurnDegrees(double degrees){
+
+        ticks = (int) (ticksperdegree*degrees);
+        ResetEncoders();
+
+        RF.setTargetPosition(-ticks);
+        LF.setTargetPosition(ticks);
+        RB.setTargetPosition(-ticks);
+        LB.setTargetPosition(ticks);
+
+        RF.setPower(0.7);
+        LF.setPower(-0.7);
+        RB.setPower(0.7);
+        LB.setPower(-0.7);
+
+        RF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        LF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        RB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        LB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        while (RF.getCurrentPosition() > ticks + 5 || RB.getCurrentPosition() > ticks + 5 || LF.getCurrentPosition() < ticks - 5 || LB.getCurrentPosition() < ticks - 5) {
+
+            if(RB.getCurrentPosition() < -ticks){
+                RB.setPower(0);
+            }
+            if(LF.getCurrentPosition() > ticks){
+                LF.setPower(0);
+            }
+            if(LB.getCurrentPosition() > ticks){
+                LB.setPower(0);
+            }
+            if(RF.getCurrentPosition() < -ticks){
                 RF.setPower(0);
             }
         }
@@ -450,8 +493,6 @@ public class Drivetrain {
         // Calculate the number of encoder ticks required to travel the given distance
         int ticks = Math.toIntExact((long) (1.2*Strafe_cm * ticksPerRevolution / wheelCircumference));
 
-
-
         // Set the target position for each motor
         RF.setTargetPosition(-ticks);
         RB.setTargetPosition(ticks);
@@ -472,8 +513,8 @@ public class Drivetrain {
 
         // Wait for the motors to reach their target positions
         while (RF.getCurrentPosition() > (-ticks) + 20 || RB.getCurrentPosition() < ticks - 30 || LF.getCurrentPosition() < ticks - 20 || LB.getCurrentPosition() > (-ticks) + 30) {
-            yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            Current_Heading = yawAngle.firstAngle;
+//            yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+//            Current_Heading = yawAngle.firstAngle;
 
             if(RB.getCurrentPosition() > ticks){
                 RB.setPower(0);
@@ -488,47 +529,50 @@ public class Drivetrain {
                 RF.setPower(0);
             }
 
-            if (Current_Heading > (Start_angle + 1)) {
-                RF.setPower(power + 0.1);
-                LF.setPower(power + 0.1);
-            } else if (Current_Heading < (Start_angle - 1)) {
-                LB.setPower(power + 0.1);
-                RB.setPower(power + 0.1);
-            } else {
-                RB.setPower(power);
-                RF.setPower(power);
-                LF.setPower(power);
-                LB.setPower(power);
-            }
+//            if (Current_Heading > (Start_angle + 1)) {
+//                RF.setPower(power + 0.1);
+//                LF.setPower(power + 0.1);
+//            } else if (Current_Heading < (Start_angle - 1)) {
+//                LB.setPower(power + 0.1);
+//                RB.setPower(power + 0.1);
+//            } else {
+//                RB.setPower(power);
+//                RF.setPower(power);
+//                LF.setPower(power);
+//                LB.setPower(power);
+//            }
         }
 
         RF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         RB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         LF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         LB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         RF.setPower(0);
         RB.setPower(0);
         LF.setPower(0);
         LB.setPower(0);
-        yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        Current_Heading = yawAngle.firstAngle;
-        while (Current_Heading < (Start_angle - 3) || Current_Heading > (Start_angle + 3)) {
-            yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            Current_Heading = yawAngle.firstAngle;
 
-            if (Current_Heading > (Start_angle + 1)) {
-                LF.setPower(0.22);
-                RF.setPower(-0.22);
-            } else if (Current_Heading < (Start_angle - 1)) {
-                RB.setPower(0.22);
-                LB.setPower(-0.22);
-            } else {
-                RB.setPower(0);
-                RF.setPower(0);
-                LF.setPower(0);
-                LB.setPower(0);
-            }
-        }
+//        yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+//        Current_Heading = yawAngle.firstAngle;
+//
+//        while (Current_Heading < (Start_angle - 3) || Current_Heading > (Start_angle + 3)) {
+//            yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+//            Current_Heading = yawAngle.firstAngle;
+//
+//            if (Current_Heading > (Start_angle + 1)) {
+//                LF.setPower(0.22);
+//                RF.setPower(-0.22);
+//            } else if (Current_Heading < (Start_angle - 1)) {
+//                RB.setPower(0.22);
+//                LB.setPower(-0.22);
+//            } else {
+//                RB.setPower(0);
+//                RF.setPower(0);
+//                LF.setPower(0);
+//                LB.setPower(0);
+//            }
+//        }
 
         RF.setPower(0);
         RB.setPower(0);
@@ -608,18 +652,18 @@ public class Drivetrain {
 //                RF.setPower(0.2);
 //            }
 
-            if (Current_Heading > (Start_angle + 1)) {
-                RF.setPower(power + 0.1);
-                LF.setPower(power + 0.1);
-            } else if (Current_Heading < (Start_angle - 1)) {
-                LB.setPower(power + 0.1);
-                RB.setPower(power + 0.1);
-            } else {
-                RB.setPower(power);
-                RF.setPower(power);
-                LF.setPower(power);
-                LB.setPower(power);
-            }
+//            if (Current_Heading > (Start_angle + 1)) {
+//                RF.setPower(power + 0.1);
+//                LF.setPower(power + 0.1);
+//            } else if (Current_Heading < (Start_angle - 1)) {
+//                LB.setPower(power + 0.1);
+//                RB.setPower(power + 0.1);
+//            } else {
+//                RB.setPower(power);
+//                RF.setPower(power);
+//                LF.setPower(power);
+//                LB.setPower(power);
+//            }
         }
 
         RF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -630,27 +674,29 @@ public class Drivetrain {
         RB.setPower(0);
         LF.setPower(0);
         LB.setPower(0);
-        yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        Current_Heading = yawAngle.firstAngle;
-        while (Current_Heading < (Start_angle - 3) || Current_Heading > (Start_angle + 3)) {
-            yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            Current_Heading = yawAngle.firstAngle;
 
-            if (Current_Heading > (Start_angle + 1)) {
-                LF.setPower(0.22);
-                RF.setPower(-0.22);
-
-            } else if (Current_Heading < (Start_angle - 1)) {
-
-                RB.setPower(0.22);
-                LB.setPower(-0.22);
-            } else {
-                RB.setPower(0);
-                RF.setPower(0);
-                LF.setPower(0);
-                LB.setPower(0);
-            }
-        }
+//        yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+//        Current_Heading = yawAngle.firstAngle;
+//
+//        while (Current_Heading < (Start_angle - 3) || Current_Heading > (Start_angle + 3)) {
+//            yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+//            Current_Heading = yawAngle.firstAngle;
+//
+//            if (Current_Heading > (Start_angle + 1)) {
+//                LF.setPower(0.22);
+//                RF.setPower(-0.22);
+//
+//            } else if (Current_Heading < (Start_angle - 1)) {
+//
+//                RB.setPower(0.22);
+//                LB.setPower(-0.22);
+//            } else {
+//                RB.setPower(0);
+//                RF.setPower(0);
+//                LF.setPower(0);
+//                LB.setPower(0);
+//            }
+//        }
         RB.setPower(0);
         RF.setPower(0);
         LF.setPower(0);
@@ -664,6 +710,14 @@ public class Drivetrain {
         LF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         RB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         LB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+
+    public void DriveEncoders(){
+        //stop and reset the driving encoders
+        RF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        LF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        RB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        LB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     public void Hold_Pos() {

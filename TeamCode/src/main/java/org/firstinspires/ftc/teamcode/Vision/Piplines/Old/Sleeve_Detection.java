@@ -20,7 +20,6 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import java.util.ArrayList;
 
 @Autonomous
-@Disabled
 public class Sleeve_Detection extends LinearOpMode {
 
     Threshold_Pipeline_2 thresholdPipe = new Threshold_Pipeline_2();
@@ -76,7 +75,7 @@ class Threshold_Pipeline_2 extends OpenCvPipeline {
     public Mat processFrame(Mat input) {
         input.copyTo(workingmatrix);
 
-        Imgproc.cvtColor(workingmatrix, workingmatrix, Imgproc.COLOR_RGB2HSV_FULL);
+        Imgproc.cvtColor(workingmatrix, workingmatrix, Imgproc.COLOR_RGB2HSV);
 
         if (Core.mean(workingmatrix.submat(center)).val[0] > 30 && Core.mean(workingmatrix.submat(center)).val[0] < 110) {
             telemetry.addData("Colour", "Yellow");
@@ -96,7 +95,7 @@ class Threshold_Pipeline_2 extends OpenCvPipeline {
 
         Imgproc.rectangle(input, center, blue, 10);
 
-        return input.submat(center);
+        return workingmatrix;
     }
 
     public ArrayList<Integer> getLatestDetections()

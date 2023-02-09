@@ -1,33 +1,28 @@
-package org.firstinspires.ftc.teamcode.Vision;
-
-//import static org.firstinspires.ftc.teamcode.zLibraries.Utilities.OpModeUtils.multTelemetry;
-//import static org.firstinspires.ftc.teamcode.zLibraries.Utilities.OpModeUtils.setOpMode;
+package org.firstinspires.ftc.teamcode.Vision.Vision_From_Collin;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Drivetrain;
-import org.firstinspires.ftc.teamcode.Vision.Collin_Code;
-import org.opencv.core.Core;
+import org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.Cone_Stack_Pipeline;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 
-@Autonomous(name="ColorPicker", group="Autonomous")
+@Autonomous
 public class Color_Feedback extends OpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
 
     Drivetrain drive = new Drivetrain();
-    Collin_Code colin = new Collin_Code();
+    Cone_Stack_Pipeline colin = new Cone_Stack_Pipeline();
 
     private OpenCvCamera webcam;
-    private OpenCvPipeline pipe = new org.firstinspires.ftc.teamcode.Vision.Collin_Code();
+    private OpenCvPipeline pipe = new Collin_Code();
 
     public void init() {
 
@@ -49,21 +44,9 @@ public class Color_Feedback extends OpMode {
 
     @Override
     public void init_loop() {
-
-        for (int i = 0; i < 1; i++){
-
-            if (colin.TravelDistance() > 0){
-                drive.StrafeDistance_Left(colin.TravelDistance(), 0.5);
-            }
-
-            if (colin.TravelDistance() < 0){
-                drive.StrafeDistance(colin.TravelDistance()*2, 0.5);
-            }
-
-        }
-
-        telemetry.addData("rect X", colin.rectX);
-        telemetry.addData("rect Y", colin.rectY);
+        telemetry.addData("rect X", colin.getRectX());
+        telemetry.addData("rect Y", colin.getRectY());
+        telemetry.addData("Drive to target ", colin.TravelDistance());
         telemetry.addData("num contours", colin.numcontours);
         telemetry.addData("num rects", colin.numrects);
         telemetry.addData("HSV values", colin.values);
@@ -80,6 +63,22 @@ public class Color_Feedback extends OpMode {
 
     @Override
     public void loop() {
+
+        if (colin.TravelDistance() > 0){
+            drive.StrafeDistance_Left(colin.TravelDistance(), 0.5);
+        }
+
+        if (colin.TravelDistance() < 0){
+            drive.StrafeDistance(colin.TravelDistance(), 0.5);
+        }
+
+
+        telemetry.addData("Drive to target ", colin.TravelDistance());
+        telemetry.addData("X Position", colin.rectPositionFromLeft());
+        telemetry.addData("num contours", colin.numcontours);
+        telemetry.addData("num rects", colin.numrects);
+        telemetry.addData("HSV values", colin.values);
+        telemetry.update();
 
         loopTelemetry();
     }
