@@ -21,6 +21,14 @@
 
 package org.firstinspires.ftc.teamcode.Auto.Blue_Auto;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.arcrobotics.ftclib.drivebase.MecanumDrive;
+import com.arcrobotics.ftclib.geometry.Pose2d;
+import com.arcrobotics.ftclib.geometry.Rotation2d;
+import com.arcrobotics.ftclib.hardware.motors.Motor;
+import com.arcrobotics.ftclib.hardware.motors.MotorEx;
+import com.arcrobotics.ftclib.kinematics.HolonomicOdometry;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -29,7 +37,10 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.FocusControl;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.Blue_Cone_Pipe;
 import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Drivetrain;
@@ -39,8 +50,10 @@ import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvWebcam;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 @Autonomous
 public class Blue_Auto_A2_Start extends LinearOpMode {
@@ -53,11 +66,6 @@ public class Blue_Auto_A2_Start extends LinearOpMode {
     public double CenterOfScreen = 320;
 
     public double rectPositionFromLeft = 0;
-
-    public DcMotor RF = null;
-    public DcMotor LF = null;
-    public DcMotor RB = null;
-    public DcMotor LB = null;
 
     double Top_Open_Wide = 0.36;
     double Top_Open = 0.33;
@@ -92,7 +100,8 @@ public class Blue_Auto_A2_Start extends LinearOpMode {
     private double slow = 1;
     private boolean lowering = false;
 
-    Red_Cone_Pipe colin;
+    Blue_Cone_Pipe colin;
+
     private boolean abort = false;
 
 
@@ -129,32 +138,72 @@ public class Blue_Auto_A2_Start extends LinearOpMode {
 
     AprilTagDetection tagOfInterest = null;
 
+    public static final double TRACKWIDTH = 36.2  ;
+
+    FtcDashboard dashboard = FtcDashboard.getInstance();
+    Telemetry dashboardTelemetry = dashboard.getTelemetry();
+
+    public static final double CENTER_WHEEL_OFFSET = -13;
+
+    public static final double WHEEL_DIAMETER = 3.5;
+
+    // if needed, one can add a gearing term here
+    public static final double TICKS_PER_REV = 8192;
+    public static final double DISTANCE_PER_PULSE = Math.PI * WHEEL_DIAMETER / TICKS_PER_REV;
+
+    private double vertical;
+    private double horizontal;
+    private double pivot;
+
+
+    private MotorEx LF, RF, LB, RB;
+    private MecanumDrive driveTrain;
+    private Motor.Encoder leftOdometer, rightOdometer, centerOdometer;
+    private HolonomicOdometry odometry;
+
     @Override
     public void runOpMode() {
+
         initialize();
 
-        colin = new Red_Cone_Pipe();
+        colin = new Blue_Cone_Pipe();
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+
+        WebcamName webcamName = hardwareMap.get(WebcamName.class, "Backcam");
+
+        OpenCvWebcam Texpandcamera = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
+
         aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
 
-        camera.setPipeline(aprilTagDetectionPipeline);
-        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+        Texpandcamera.setPipeline(aprilTagDetectionPipeline);
+        Texpandcamera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
-                camera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
+                Texpandcamera.getExposureControl().setMode(ExposureControl.Mode.Manual);
+
+                Texpandcamera.getExposureControl().setExposure(30, TimeUnit.MILLISECONDS);
+
+                Texpandcamera.getGainControl().setGain(100);
+
+                FocusControl.Mode focusmode = FocusControl.Mode.Fixed;
+
+                Texpandcamera.getFocusControl().setMode(focusmode);
+
+                if (focusmode == FocusControl.Mode.Fixed){
+                    Texpandcamera.getFocusControl().setFocusLength(500);
+                }
+
+                Texpandcamera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
+
             }
 
             @Override
-            public void onError(int errorCode) {
-
-            }
+            public void onError(int errorCode) { }
         });
 
         telemetry.setMsTransmissionInterval(50);
 
-        drive.init(hardwareMap);
 
         /*
          * The INIT-loop:
@@ -290,13 +339,38 @@ public class Blue_Auto_A2_Start extends LinearOpMode {
     }
 
     public void initialize() {
+
+        LF = new MotorEx(hardwareMap, "LF");
+        LB = new MotorEx(hardwareMap, "LB");
+        RF = new MotorEx(hardwareMap, "RF");
+        RB = new MotorEx(hardwareMap, "RB");
+
+        //Telemetry for dashboard
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
+        driveTrain = new MecanumDrive(RB, RF, LB, LF);
+
+        leftOdometer = LF.encoder.setDistancePerPulse(DISTANCE_PER_PULSE);
+        rightOdometer = RF.encoder.setDistancePerPulse(DISTANCE_PER_PULSE);
+        centerOdometer = RB.encoder.setDistancePerPulse(DISTANCE_PER_PULSE);
+
+        leftOdometer.setDirection(Motor.Direction.FORWARD);
+        rightOdometer.setDirection(Motor.Direction.REVERSE);
+
+        odometry = new HolonomicOdometry(
+                leftOdometer::getDistance,
+                rightOdometer::getDistance,
+                centerOdometer::getDistance,
+                TRACKWIDTH, CENTER_WHEEL_OFFSET
+        );
+
+        odometry.updatePose(new Pose2d(0, 0, new Rotation2d()));
+
+        odometry.update(0, 0, 0);
+
         colour = hardwareMap.get(ColorSensor.class, "colour");
         sensorRange = hardwareMap.get(DistanceSensor.class, "sensor_range");
 
-        RF = hardwareMap.get(DcMotor.class, "RF");
-        LF = hardwareMap.get(DcMotor.class, "LF");
-        RB = hardwareMap.get(DcMotor.class, "RB");
-        LB = hardwareMap.get(DcMotor.class, "LB");
 
         Right_Slide = hardwareMap.get(DcMotor.class, "Right slide");
         Left_Slide = hardwareMap.get(DcMotor.class, "Left slide");
@@ -316,10 +390,6 @@ public class Blue_Auto_A2_Start extends LinearOpMode {
         Top_Gripper.setDirection(Servo.Direction.FORWARD);
         Top_Pivot.setDirection(Servo.Direction.REVERSE);
 
-        RF.setDirection(DcMotorSimple.Direction.FORWARD);
-        LF.setDirection(DcMotorSimple.Direction.REVERSE);
-        RB.setDirection(DcMotorSimple.Direction.FORWARD);
-        LB.setDirection(DcMotorSimple.Direction.REVERSE);
 
         Left_Slide.setDirection(DcMotorSimple.Direction.REVERSE);
         Extend.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -332,15 +402,12 @@ public class Blue_Auto_A2_Start extends LinearOpMode {
         Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        RF.setPower(0);
-        LF.setPower(0);
-        RB.setPower(0);
-        LB.setPower(0);
-
         Top_Gripper.setPosition(0);
         Base_Gripper.setPosition(0.4);
         Base_Pivot.setPosition(0.72);
         Top_Pivot.setPosition(0.4);
+
+        drive.init(hardwareMap);
     }
 
     public void Drive_To_Pos_1() {
@@ -396,20 +463,32 @@ public class Blue_Auto_A2_Start extends LinearOpMode {
 
         drive.DriveDistanceLong(150, 0.4);
 
+        DriveOdometry(-150, 0.6);
+
         drive.DriveDistanceLongReverse(15, 0.4);
+
+        DriveOdometry(15, 0.6);
 
         drive.TurnDegrees(90);
 
+        TurnOdometry(90, 0.4);
+
         drive.DriveDistanceLong(21, 0.4);
+
+        DriveOdometry(21, 0.4);
 
         drive.StrafeDistance(14, 0.4);
 
+        StrafeOdometry(14, 0.4);
+
         drive.TurnDegrees(12);
 
+        TurnOdometry(12, 0.4);
+
         rectPositionFromLeft = 0;
         Distance_To_Travel = 0;
 
-        for (int i = 0;  i < 50; i++){
+        for (int i = 0;  i < 200; i++){
             rectPositionFromLeft = colin.getRectX();
             try {
                 Thread.sleep(5);
@@ -423,11 +502,6 @@ public class Blue_Auto_A2_Start extends LinearOpMode {
 
         Distance_To_Travel = Distance_To_Travel / 20;
 
-        telemetry.addData("Target CM", Distance_To_Travel);
-        telemetry.update();
-
-        telemetry.addData("Target CM", Distance_To_Travel);
-        telemetry.update();
 
         if (Distance_To_Travel > 0){
             drive.StrafeDistance_Left(Distance_To_Travel*1.2, 0.5);
@@ -439,108 +513,685 @@ public class Blue_Auto_A2_Start extends LinearOpMode {
             Distance_To_Travel = 0;
         }
 
-        rectPositionFromLeft = 0;
-        Distance_To_Travel = 0;
-
-        for (int i = 0;  i < 50; i++){
-            rectPositionFromLeft = colin.getRectX();
-            try {
-                Thread.sleep(5);
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
-        }
-
-
-        Distance_To_Travel = rectPositionFromLeft -CenterOfScreen;
-
-        Distance_To_Travel = Distance_To_Travel / 20;
-
-        telemetry.addData("Target CM", Distance_To_Travel);
-        telemetry.update();
-
-        telemetry.addData("Target CM", Distance_To_Travel);
-        telemetry.update();
-
-        if (Distance_To_Travel > 0){
-            drive.StrafeDistance_Left(Distance_To_Travel*1.2, 0.5);
-            drive.stopMotors();
-            Distance_To_Travel = 0;
-        }else if (Distance_To_Travel < 0){
-            drive.StrafeDistance(-Distance_To_Travel*1.2, 0.5);
-            drive.stopMotors();
-            Distance_To_Travel = 0;
-        }
         Base_Pivot.setPosition(0.1);
 
         Base_Gripper.setPosition(0.4);
 
-//        drive.Distance_1 = drive.sensorRange.getDistance(DistanceUnit.MM);
-//
-//        drive.Distance_000 = drive.sensorRange.getDistance(DistanceUnit.MM);
-//
-//        drive.Distance_00 = drive.sensorRange.getDistance(DistanceUnit.MM);
-//
-//        drive.Distance_0 = drive.sensorRange.getDistance(DistanceUnit.MM);
-//
-//        drive.StrafeDistance_Left(3.5, 0.4);
-//
-//        drive.Distance_2 = drive.sensorRange.getDistance(DistanceUnit.MM);
-//
-//        drive.StrafeDistance_Left(3.5, 0.4);
-//
-//        drive.Distance_3 = drive.sensorRange.getDistance(DistanceUnit.MM);
-//
-//        drive.StrafeDistance_Left(3.5, 0.4);
-//
-//        drive.Distance_4 = drive.sensorRange.getDistance(DistanceUnit.MM);
-//
-//        drive.StrafeDistance_Left(3.5, 0.4);
-//
-//        drive.Distance_5 = drive.sensorRange.getDistance(DistanceUnit.MM);
-//
-//        drive.StrafeDistance_Left(3.5, 0.4);
-//
-//        drive.Distance_6 = drive.sensorRange.getDistance(DistanceUnit.MM);
-//
-//        drive.StrafeDistance_Left(3.5, 0.4);
-//
-//        drive.Distance_7 = drive.sensorRange.getDistance(DistanceUnit.MM);
-//
-//
-//        drive.Av_Distance_1 = (drive.Distance_1 + drive.Distance_0 + drive.Distance_00 + drive.Distance_000)/4;
-//
-//        drive.Av_Distance_2 = (drive.Distance_2 + drive.Distance_1 + drive.Distance_0 + drive.Distance_00)/4;
-//
-//        drive.Av_Distance_3 = (drive.Distance_3 + drive.Distance_2 + drive.Distance_1 + drive.Distance_0)/4;
-//
-//        drive.Av_Distance_4 = (drive.Distance_4 + drive.Distance_3 + drive.Distance_2 + drive.Distance_1)/4;
-//
-//        drive.Av_Distance_5 = (drive.Distance_5 + drive.Distance_4 + drive.Distance_3 + drive.Distance_2)/4;
-//
-//        drive.Av_Distance_6 = (drive.Distance_6 + drive.Distance_5 + drive.Distance_4 + drive.Distance_3)/4;
-//
-//        drive.Av_Distance_7 = (drive.Distance_7 + drive.Distance_6 + drive.Distance_5 + drive.Distance_4)/4;
-//
-//
-//        if ( drive.Av_Distance_7 >  drive.Av_Distance_6){
-//            drive.StrafeDistance(3.4, 0.4);
+    }
+
+    public double getXpos() {
+        return odometry.getPose().getX();
+    }
+
+    public double getYpos() {
+        return odometry.getPose().getY();
+    }
+
+    public double getheading() {
+        return odometry.getPose().getHeading();
+    }
+
+    public void StrafeOdometry(double Distance, double power) {
+
+        double CurrentPos = 0;
+
+        double error = 1;
+
+        double StartingHeading = 0;
+
+        double CurrentPosStarting = 0;
+
+        double StartingX = 0;
+
+        double Distance_to_travel = 0;
+
+        CurrentPos = getYpos();
+
+        CurrentPosStarting = getYpos();
+
+        StartingHeading = Math.toDegrees(getheading());
+
+        StartingX = getXpos();
+
+        Distance_to_travel = Distance - error;
+
+
+        // Set the motors to run to the target position
+        drive.RF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        drive.RB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        drive.LF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        drive.LB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        while (CurrentPos < Distance_to_travel - 1 + CurrentPosStarting || CurrentPos > Distance_to_travel + 1 + CurrentPosStarting) {
+
+            telemetry.addData("Robot Position", odometry.getPose());
+            telemetry.update();
+            odometry.updatePose();
+            CurrentPos = getYpos();
+            if (CurrentPos < Distance_to_travel) {
+
+                drive.RF.setPower(1.3*power);
+                drive.RB.setPower(-power);
+                drive.LF.setPower(-1.3*power);
+                drive.LB.setPower(power);
+
+            } else if (CurrentPos > Distance_to_travel) {
+
+                drive.RF.setPower(-1.3*power);
+                drive.RB.setPower(power);
+                drive.LF.setPower(1.3*power);
+                drive.LB.setPower(-power);
+            }
+        }
+        drive.RF.setPower(0);
+        drive.RB.setPower(0);
+        drive.LF.setPower(0);
+        drive.LB.setPower(0);
+        try {
+            Thread.sleep(50);
+        } catch (
+                Exception e) {
+            System.out.println(e.getMessage());
+        }
+        power = 0.2;
+        odometry.updatePose();
+        while (CurrentPos < Distance_to_travel - 0.1 + CurrentPosStarting || CurrentPos > Distance_to_travel + 0.1 + CurrentPosStarting) {
+
+            telemetry.addData("Robot Position", odometry.getPose());
+            telemetry.update();
+            odometry.updatePose();
+            CurrentPos = getYpos();
+            if (CurrentPos < Distance_to_travel) {
+
+                drive.RF.setPower(1.3*power);
+                drive.RB.setPower(-power);
+                drive.LF.setPower(-1.3*power);
+                drive.LB.setPower(power);
+
+            } else if (CurrentPos > Distance_to_travel) {
+
+                drive.RF.setPower(-1.3*power);
+                drive.RB.setPower(power);
+                drive.LF.setPower(1.3*power);
+                drive.LB.setPower(-power);
+            }
+        }
+
+        drive.RF.setPower(0);
+        drive.RB.setPower(0);
+        drive.LF.setPower(0);
+        drive.LB.setPower(0);
+        try {
+            Thread.sleep(100);
+        } catch (
+                Exception e) {
+            System.out.println(e.getMessage());
+        }
+        power = 0.2;
+        odometry.updatePose();
+
+        //turn
+        while(StartingHeading-0.1 > Math.toDegrees(getheading())||StartingHeading+0.1 < Math.toDegrees(getheading())) {
+
+            odometry.updatePose();
+
+            if (StartingHeading > Math.toDegrees(getheading())) {
+                drive.RF.setPower(-power);
+                drive.RB.setPower(-power);
+                drive.LF.setPower(power);
+                drive.LB.setPower(power);
+            } else if (StartingHeading < Math.toDegrees(getheading())) {
+                drive.RF.setPower(power);
+                drive.RB.setPower(power);
+                drive.LF.setPower(-power);
+                drive.LB.setPower(-power);
+            } else {
+                drive.RF.setPower(0);
+                drive.RB.setPower(0);
+                drive.LF.setPower(0);
+                drive.LB.setPower(0);
+            }
+
+        }
+
+        drive.RF.setPower(0);
+        drive.RB.setPower(0);
+        drive.LF.setPower(0);
+        drive.LB.setPower(0);
+
+        power = 0.12;
+        odometry.updatePose();
+
+        //Drive
+        while(StartingX - 0.1 > getXpos() ||StartingX + 0.1 < getXpos()){
+
+            odometry.updatePose();
+
+            if (StartingX > getXpos()) {
+                drive.RF.setPower(power);
+                drive.RB.setPower(power);
+                drive.LF.setPower(power);
+                drive.LB.setPower(power);
+
+            } else if (StartingX < getXpos()) {
+
+                drive.RF.setPower(-power);
+                drive.RB.setPower(-power);
+                drive.LF.setPower(-power);
+                drive.LB.setPower(-power);
+            }else {
+                drive.RF.setPower(0);
+                drive.RB.setPower(0);
+                drive.LF.setPower(0);
+                drive.LB.setPower(0);
+            }
+
+        }
+
+        drive.RF.setPower(0);
+        drive.RB.setPower(0);
+        drive.LF.setPower(0);
+        drive.LB.setPower(0);
+
+        power = 0.2;
+        odometry.updatePose();
+
+        //Turn
+        while(StartingHeading-0.1>Math.toDegrees(getheading())||StartingHeading+0.1 <Math.toDegrees(getheading())) {
+
+            odometry.updatePose();
+
+            if (StartingHeading > Math.toDegrees(getheading())) {
+                drive.RF.setPower(-power);
+                drive.RB.setPower(-power);
+                drive.LF.setPower(power);
+                drive.LB.setPower(power);
+            } else if (StartingHeading < Math.toDegrees(getheading())) {
+                drive.RF.setPower(power);
+                drive.RB.setPower(power);
+                drive.LF.setPower(-power);
+                drive.LB.setPower(-power);
+            } else {
+                drive.RF.setPower(0);
+                drive.RB.setPower(0);
+                drive.LF.setPower(0);
+                drive.LB.setPower(0);
+            }
+
+        }
+
+        drive.RF.setPower(0);
+        drive.RB.setPower(0);
+        drive.LF.setPower(0);
+        drive.LB.setPower(0);
+
+    }
+
+    public void StrafeOdometryNoCorrrection(double Distance, double power) {
+
+        double CurrentPos = 0;
+
+        double error = 1;
+
+        double StartingHeading = 0;
+
+        double CurrentPosStarting = 0;
+
+        double StartingX = 0;
+
+        double Distance_to_travel = 0;
+
+        CurrentPos = getYpos();
+
+        CurrentPosStarting = getYpos();
+
+        StartingHeading = Math.toDegrees(getheading());
+
+        StartingX = getXpos();
+
+        Distance_to_travel = Distance - error;
+
+
+        // Set the motors to run to the target position
+        drive.RF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        drive.RB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        drive.LF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        drive.LB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        while (CurrentPos < Distance_to_travel - 1 + CurrentPosStarting || CurrentPos > Distance_to_travel + 1 + CurrentPosStarting) {
+
+            telemetry.addData("Robot Position", odometry.getPose());
+            telemetry.update();
+            odometry.updatePose();
+            CurrentPos = getYpos();
+            if (CurrentPos < Distance_to_travel) {
+
+                drive.RF.setPower(1.3*power);
+                drive.RB.setPower(-power);
+                drive.LF.setPower(-1.3*power);
+                drive.LB.setPower(power);
+
+            } else if (CurrentPos > Distance_to_travel) {
+
+                drive.RF.setPower(-1.3*power);
+                drive.RB.setPower(power);
+                drive.LF.setPower(1.3*power);
+                drive.LB.setPower(-power);
+            }
+        }
+        drive.RF.setPower(0);
+        drive.RB.setPower(0);
+        drive.LF.setPower(0);
+        drive.LB.setPower(0);
+//        try {
+//            Thread.sleep(50);
+//        } catch (
+//                Exception e) {
+//            System.out.println(e.getMessage());
 //        }
-//        if ( drive.Av_Distance_6 >  drive.Av_Distance_5){
-//            drive.StrafeDistance(3.4, 0.4);
+//        power = 0.2;
+//        odometry.updatePose();
+//        while (CurrentPos < Distance_to_travel - 0.1 + CurrentPosStarting || CurrentPos > Distance_to_travel + 0.1 + CurrentPosStarting) {
+//
+//            telemetry.addData("Robot Position", odometry.getPose());
+//            telemetry.update();
+//            odometry.updatePose();
+//            CurrentPos = getYpos();
+//            if (CurrentPos < Distance_to_travel) {
+//
+//                drive.RF.setPower(1.3*power);
+//                drive.RB.setPower(-power);
+//                drive.LF.setPower(-1.3*power);
+//                drive.LB.setPower(power);
+//
+//            } else if (CurrentPos > Distance_to_travel) {
+//
+//                drive.RF.setPower(-1.3*power);
+//                drive.RB.setPower(power);
+//                drive.LF.setPower(1.3*power);
+//                drive.LB.setPower(-power);
+//            }
 //        }
-//        if ( drive.Av_Distance_5 >  drive.Av_Distance_4){
-//            drive.StrafeDistance(3.4, 0.4);
+//
+//        drive.RF.setPower(0);
+//        drive.RB.setPower(0);
+//        drive.LF.setPower(0);
+//        drive.LB.setPower(0);
+//        try {
+//            Thread.sleep(100);
+//        } catch (
+//                Exception e) {
+//            System.out.println(e.getMessage());
 //        }
-//        if ( drive.Av_Distance_4 >  drive.Av_Distance_3){
-//            drive.StrafeDistance(3.4, 0.4);
+//        power = 0.2;
+//        odometry.updatePose();
+//
+//        //turn
+//        while(StartingHeading-0.1 > Math.toDegrees(getheading())||StartingHeading+0.1 < Math.toDegrees(getheading())) {
+//
+//            odometry.updatePose();
+//
+//            if (StartingHeading > Math.toDegrees(getheading())) {
+//                drive.RF.setPower(-power);
+//                drive.RB.setPower(-power);
+//                drive.LF.setPower(power);
+//                drive.LB.setPower(power);
+//            } else if (StartingHeading < Math.toDegrees(getheading())) {
+//                drive.RF.setPower(power);
+//                drive.RB.setPower(power);
+//                drive.LF.setPower(-power);
+//                drive.LB.setPower(-power);
+//            } else {
+//                drive.RF.setPower(0);
+//                drive.RB.setPower(0);
+//                drive.LF.setPower(0);
+//                drive.LB.setPower(0);
+//            }
+//
 //        }
-//        if ( drive.Av_Distance_3 >  drive.Av_Distance_2){
-//            drive.StrafeDistance(3.4, 0.4);
+//
+//        drive.RF.setPower(0);
+//        drive.RB.setPower(0);
+//        drive.LF.setPower(0);
+//        drive.LB.setPower(0);
+//
+//        power = 0.12;
+//        odometry.updatePose();
+//
+//        //Drive
+//        while(StartingX - 0.1 > getXpos() ||StartingX + 0.1 < getXpos()){
+//
+//            odometry.updatePose();
+//
+//            if (StartingX > getXpos()) {
+//                drive.RF.setPower(power);
+//                drive.RB.setPower(power);
+//                drive.LF.setPower(power);
+//                drive.LB.setPower(power);
+//
+//            } else if (StartingX < getXpos()) {
+//
+//                drive.RF.setPower(-power);
+//                drive.RB.setPower(-power);
+//                drive.LF.setPower(-power);
+//                drive.LB.setPower(-power);
+//            }else {
+//                drive.RF.setPower(0);
+//                drive.RB.setPower(0);
+//                drive.LF.setPower(0);
+//                drive.LB.setPower(0);
+//            }
+//
 //        }
-//        if ( drive.Av_Distance_2 >  drive.Av_Distance_1){
-//            drive.StrafeDistance(3.4, 0.4);
+//
+//        drive.RF.setPower(0);
+//        drive.RB.setPower(0);
+//        drive.LF.setPower(0);
+//        drive.LB.setPower(0);
+//
+//        power = 0.2;
+//        odometry.updatePose();
+//
+//        //Turn
+//        while(StartingHeading-0.1>Math.toDegrees(getheading())||StartingHeading+0.1 <Math.toDegrees(getheading())) {
+//
+//            odometry.updatePose();
+//
+//            if (StartingHeading > Math.toDegrees(getheading())) {
+//                drive.RF.setPower(-power);
+//                drive.RB.setPower(-power);
+//                drive.LF.setPower(power);
+//                drive.LB.setPower(power);
+//            } else if (StartingHeading < Math.toDegrees(getheading())) {
+//                drive.RF.setPower(power);
+//                drive.RB.setPower(power);
+//                drive.LF.setPower(-power);
+//                drive.LB.setPower(-power);
+//            } else {
+//                drive.RF.setPower(0);
+//                drive.RB.setPower(0);
+//                drive.LF.setPower(0);
+//                drive.LB.setPower(0);
+//            }
+//
 //        }
+//
+//        drive.RF.setPower(0);
+//        drive.RB.setPower(0);
+//        drive.LF.setPower(0);
+//        drive.LB.setPower(0);
+
+    }
+
+    public void DriveOdometry(double Distance, double power){
+        double CurrentPos = 0;
+
+        double error = 0;
+
+        double StartingHeading = 0;
+
+        double CurrentPosStarting = 0;
+
+        double StartingY = 0;
+
+        double Distance_to_travel = 0;
+
+        CurrentPos = getXpos();
+
+        CurrentPosStarting = getYpos();
+
+        StartingHeading = Math.toDegrees(getheading());
+
+        StartingY = getYpos();
+
+        Distance_to_travel = Distance - error + 0.48;
+
+
+        // Set the motors to run to the target position
+        drive.RF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        drive.RB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        drive.LF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        drive.LB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        while(CurrentPos < Distance_to_travel - 1 + CurrentPosStarting|| CurrentPos > Distance_to_travel + 1 + CurrentPosStarting){
+
+            telemetry.addData("Robot Position", odometry.getPose());
+            telemetry.update();
+            odometry.updatePose();
+            CurrentPos = getXpos();
+            if(CurrentPos > (Distance_to_travel + CurrentPosStarting)*0.8 || CurrentPos > (Distance_to_travel + CurrentPosStarting)*0.8){
+                power = 0.12;
+            }
+            if (CurrentPos < Distance_to_travel){
+
+                drive.RF.setPower(power);
+                drive.RB.setPower(0.2*power);
+                drive.LF.setPower(power);
+                drive.LB.setPower(0.2*power);
+
+            }else if(CurrentPos > Distance_to_travel){
+
+                drive.RF.setPower(-power);
+                drive.RB.setPower(-power);
+                drive.LF.setPower(-power);
+                drive.LB.setPower(-power);
+            }
+        }
+        drive.RF.setPower(0);
+        drive.RB.setPower(0);
+        drive.LF.setPower(0);
+        drive.LB.setPower(0);
+        try {
+            Thread.sleep(100);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        power = 0.09;
+
+        while(CurrentPos < Distance_to_travel - 0.05 + CurrentPosStarting|| CurrentPos > Distance_to_travel + 0.05 + CurrentPosStarting){
+
+            telemetry.addData("Robot Position", odometry.getPose());
+            telemetry.update();
+            odometry.updatePose();
+            CurrentPos = getXpos();
+            if (CurrentPos < Distance_to_travel){
+
+                drive.RF.setPower(power);
+                drive.RB.setPower(0.2*power);
+                drive.LF.setPower(power);
+                drive.LB.setPower(0.2*power);
+
+            }else if(CurrentPos > Distance_to_travel){
+
+                drive.RF.setPower(-power);
+                drive.RB.setPower(-power);
+                drive.LF.setPower(-power);
+                drive.LB.setPower(-power);
+            }
+        }
+        drive.RF.setPower(0);
+        drive.RB.setPower(0);
+        drive.LF.setPower(0);
+        drive.LB.setPower(0);
+
+        power = 0.25;
+        odometry.updatePose();
+
+        //turn
+        while (StartingHeading-0.1 > Math.toDegrees(getheading()) || StartingHeading+0.1 < Math.toDegrees(getheading())){
+
+            odometry.updatePose();
+
+            if (StartingHeading > Math.toDegrees(getheading())){
+                drive.RF.setPower(-power);
+                drive.RB.setPower(-0.3*power);
+                drive.LF.setPower(power);
+                drive.LB.setPower(0.3*power);
+            }else if (StartingHeading < Math.toDegrees(getheading())){
+                drive.RF.setPower(power);
+                drive.RB.setPower(0.3*power);
+                drive.LF.setPower(-power);
+                drive.LB.setPower(-0.3*power);
+            }else {
+                drive.RF.setPower(0);
+                drive.RB.setPower(0);
+                drive.LF.setPower(0);
+                drive.LB.setPower(0);
+            }
+
+        }
+
+        power = 0.29;
+
+        while (StartingY - 0.1 > getYpos() || StartingY + 0.1 < getYpos()){
+
+            odometry.updatePose();
+
+            if (StartingY > getYpos()){
+                drive.RF.setPower(power);
+                drive.RB.setPower(-power);
+                drive.LF.setPower(-power);
+                drive.LB.setPower(power);
+
+            }else if (StartingY < getYpos()){
+
+                drive.RF.setPower(-power);
+                drive.RB.setPower(power);
+                drive.LF.setPower(power);
+                drive.LB.setPower(-power);
+            }else {
+                drive.RF.setPower(0);
+                drive.RB.setPower(0);
+                drive.LF.setPower(0);
+                drive.LB.setPower(0);
+            }
+
+        }
+
+        power = 0.25;
+        odometry.updatePose();
+
+        while (StartingHeading-0.1 > Math.toDegrees(getheading()) || StartingHeading+0.1 < Math.toDegrees(getheading())){
+
+            odometry.updatePose();
+
+            if (StartingHeading > Math.toDegrees(getheading())){
+                drive.RF.setPower(-power);
+                drive.RB.setPower(-0.3*power);
+                drive.LF.setPower(power);
+                drive.LB.setPower(0.3*power);
+            }else if (StartingHeading < Math.toDegrees(getheading())){
+                drive.RF.setPower(power);
+                drive.RB.setPower(0.3*power);
+                drive.LF.setPower(-power);
+                drive.LB.setPower(-0.3*power);
+            }else {
+                drive.RF.setPower(0);
+                drive.RB.setPower(0);
+                drive.LF.setPower(0);
+                drive.LB.setPower(0);
+            }
+
+        }
+
+        drive.RF.setPower(0);
+        drive.RB.setPower(0);
+        drive.LF.setPower(0);
+        drive.LB.setPower(0);
+
+    }
+
+    public void TurnOdometry(double Degrees, double power){
+        double CurrentPos = 0;
+
+        double error = 0;
+
+        double StartingHeading = 0;
+
+        double CurrentPosStarting = 0;
+
+        double StartingY = 0;
+
+        double Degrees_to_turn = 0;
+
+        CurrentPos = getXpos();
+
+        CurrentPosStarting = getYpos();
+
+        StartingHeading = Math.toDegrees(getheading());
+
+        StartingY = getYpos();
+
+        double StartingX = getXpos();
+
+        Degrees_to_turn = Degrees - error;
+
+
+        // Set the motors to run to the target position
+        drive.RF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        drive.RB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        drive.LF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        drive.LB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        odometry.updatePose();
+
+        while (Degrees_to_turn - 1 > Math.toDegrees(getheading()) +  StartingHeading || Degrees_to_turn + 1 < Math.toDegrees(getheading() + StartingHeading)){
+
+            odometry.updatePose();
+
+            if (Degrees_to_turn > Math.toDegrees(getheading())){
+                drive.RF.setPower(-1.2*power);
+                drive.RB.setPower(-power);
+                drive.LF.setPower(1.2*power);
+                drive.LB.setPower(power);
+            }else if (Degrees_to_turn < Math.toDegrees(getheading())){
+                drive.RF.setPower(1.2*power);
+                drive.RB.setPower(power);
+                drive.LF.setPower(-1.2*power);
+                drive.LB.setPower(-power);
+            }else {
+                drive.RF.setPower(0);
+                drive.RB.setPower(0);
+                drive.LF.setPower(0);
+                drive.LB.setPower(0);
+            }
+
+        }
+
+
+        drive.RF.setPower(0);
+        drive.RB.setPower(0);
+        drive.LF.setPower(0);
+        drive.LB.setPower(0);
+        power = 0.15;
+
+        while (Degrees_to_turn - 0.1 > Math.toDegrees(getheading()) + StartingHeading|| Degrees_to_turn + 0.1 < Math.toDegrees(getheading() + StartingHeading)){
+
+            odometry.updatePose();
+
+            if (Degrees_to_turn > Math.toDegrees(getheading())){
+                drive.RF.setPower(-1.2*power);
+                drive.RB.setPower(-power);
+                drive.LF.setPower(1.2*power);
+                drive.LB.setPower(power);
+            }else if (Degrees_to_turn < Math.toDegrees(getheading())){
+                drive.RF.setPower(1.2*power);
+                drive.RB.setPower(power);
+                drive.LF.setPower(-1.2*power);
+                drive.LB.setPower(-power);
+            }else {
+                drive.RF.setPower(0);
+                drive.RB.setPower(0);
+                drive.LF.setPower(0);
+                drive.LB.setPower(0);
+            }
+
+        }
+
+        drive.RF.setPower(0);
+        drive.RB.setPower(0);
+        drive.LF.setPower(0);
+        drive.LB.setPower(0);
     }
 
     public void DropPreLoad() {

@@ -9,7 +9,6 @@ import static org.opencv.imgproc.Imgproc.COLOR_RGB2HSV_FULL;
 import static org.opencv.imgproc.Imgproc.FONT_HERSHEY_COMPLEX;
 import static org.opencv.imgproc.Imgproc.RETR_TREE;
 import static org.opencv.imgproc.Imgproc.boundingRect;
-import static org.opencv.imgproc.Imgproc.circle;
 import static org.opencv.imgproc.Imgproc.dilate;
 import static org.opencv.imgproc.Imgproc.drawContours;
 import static org.opencv.imgproc.Imgproc.erode;
@@ -29,7 +28,7 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Blue_Cone_Pipe extends OpenCvPipeline {
+public class Pole_Pipe extends OpenCvPipeline {
 
     private static int IMG_HEIGHT = 0;
     private static int IMG_WIDTH = 0;
@@ -68,8 +67,8 @@ public class Blue_Cone_Pipe extends OpenCvPipeline {
     private List<Rect> rects = new ArrayList<>();
 
     //colour scales for the cone
-    public Scalar MIN_THRESH = new Scalar(135,100,100);
-    public Scalar MAX_THRESH = new Scalar(165,255,255);
+    public Scalar MIN_THRESH = new Scalar(40,40,80);
+    public Scalar MAX_THRESH = new Scalar(85,200,200);
 
     public Scalar values;
 

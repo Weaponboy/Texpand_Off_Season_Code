@@ -12,6 +12,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.teamcode.Odometry.DeadWheelsSample;
 
 public class Drivetrain {
 
@@ -581,6 +582,66 @@ public class Drivetrain {
 
     }
 
+    public void StrafeOdometryRight(double TargetPos, double power) {
+
+        double CurrentPos = 0;
+
+        double error = 2.5;
+
+        double Distance_to_travel = 0;
+
+        Distance_to_travel = TargetPos - CurrentPos - error;
+
+
+        // Set the motors to run to the target position
+        RF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        RB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        LF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        LB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        if (Distance_to_travel > 0){
+
+            while (CurrentPos < TargetPos){
+
+                RF.setPower(power);
+                RB.setPower(-power);
+                LF.setPower(-power);
+                LB.setPower(power);
+            }
+
+            RF.setPower(0);
+            RB.setPower(0);
+            LF.setPower(0);
+            LB.setPower(0);
+
+
+        }else if (Distance_to_travel < 0) {
+
+            while (CurrentPos < TargetPos){
+                RF.setPower(-power);
+                RB.setPower(power);
+                LF.setPower(power);
+                LB.setPower(-power);
+            }
+
+            RF.setPower(0);
+            RB.setPower(0);
+            LF.setPower(0);
+            LB.setPower(0);
+
+        }
+
+
+
+
+
+        RF.setPower(0);
+        RB.setPower(0);
+        LF.setPower(0);
+        LB.setPower(0);
+
+    }
+
     public void StrafeDistance_Left(double Strafe_cm, double power) {
         yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         double Start_angle = yawAngle.firstAngle;
@@ -718,6 +779,14 @@ public class Drivetrain {
         LF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         RB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         LB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    public void WithOutEncoders(){
+        //stop and reset the driving encoders
+        RF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        LF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        RB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        LB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public void Hold_Pos() {

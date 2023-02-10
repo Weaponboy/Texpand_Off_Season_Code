@@ -67,18 +67,17 @@ public class Pole_Vision_Pipeline extends OpenCvPipeline {
         IMG_HEIGHT = input.rows();
         IMG_WIDTH = input.cols();
 
-//        MIN_THRESH = new Scalar(VisionDash.blue_min_H, VisionDash.blue_min_S, VisionDash.blue_min_V);
-//        MAX_THRESH = new Scalar(VisionDash.blue_max_H, VisionDash.blue_max_S, VisionDash.blue_max_V);
-
         Imgproc.cvtColor(input, modified, COLOR_RGB2HSV_FULL);
+        Imgproc.cvtColor(output, output, COLOR_RGB2HSV_FULL);
+
         values = Core.mean(modified.submat(center));
+
         inRange(modified, MIN_THRESH, MAX_THRESH, modified);
 
         erode(modified, modified, new Mat(VisionDash.erode_const, VisionDash.erode_const, CV_8U));
         dilate(modified, modified, new Mat(VisionDash.dilate_const, VisionDash.dilate_const, CV_8U));
 
         findContours(modified, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE);
-
 
         for (int i=0; i < contours.size(); i++){
             Rect rect = boundingRect(contours.get(i));
@@ -99,8 +98,6 @@ public class Pole_Vision_Pipeline extends OpenCvPipeline {
 
         modified.release();
 
-        numrects = rects.size();
-        drawContours(output, contours, -1, orange);
         contours.clear();
         output.release();
         return output;

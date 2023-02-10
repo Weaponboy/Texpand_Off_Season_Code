@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Drivetrain;
+import org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.Pole_Pipe;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -21,7 +22,7 @@ public class Pole_Vision extends OpMode {
     Drivetrain drive = new Drivetrain();
 
     private ElapsedTime runtime = new ElapsedTime();
-    Pole_Vision_Pipeline Pole;
+    Pole_Pipe Pole;
 
     private DistanceSensor Back_Distance;
 
@@ -53,7 +54,7 @@ public class Pole_Vision extends OpMode {
 //        drive.LB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 //        drive.LF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        Pole = new Pole_Vision_Pipeline();
+        Pole = new Pole_Pipe();
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
 
@@ -78,21 +79,9 @@ public class Pole_Vision extends OpMode {
 
         drive.init(hardwareMap);
 
-        Back_Distance = hardwareMap.get(DistanceSensor.class, "Back distance");
-
-        Back_Distance.resetDeviceConfigurationForOpMode();
-
-        rectPositionFromLeft = Pole.getRectX();
-
-        Distance_To_Travel = rectPositionFromLeft - CenterOfScreen;
-
-        Distance_To_Travel = Distance_To_Travel / 18;
-
-        Distance_To_Travel = Math.abs(Distance_To_Travel);
-
-        telemetry.addData("Target cm", Distance_To_Travel);
-        telemetry.addData("Pole cm", Back_Distance.getDistance(DistanceUnit.CM));
-        telemetry.addData("Cone Position", Pole.getRectX());
+        telemetry.addData("H:", Pole.getH());
+        telemetry.addData("S:", Pole.getS());
+        telemetry.addData("V:", Pole.getV());
         telemetry.update();
     }
 
