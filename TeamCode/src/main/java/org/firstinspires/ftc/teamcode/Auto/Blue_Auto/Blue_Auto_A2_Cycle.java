@@ -408,52 +408,146 @@ public class Blue_Auto_A2_Cycle extends LinearOpMode {
     }
 
     public void Drive_To_Pos_1() {
-        drive.TurnDegreesLeft(14);
 
         Top_Pivot.setPosition(0.4);
         Base_Pivot.setPosition(0.72);
+        double pwr = 0.3;
 
-        drive.StrafeDistance(18, .5);
+        drive.WithOutEncoders();
 
-        drive.DriveDistanceLongReverse(-20, .5);
+        drive.RF.setPower(1.3*pwr);
+        drive.RB.setPower(-pwr);
+        drive.LF.setPower(-1.3*pwr);
+        drive.LB.setPower(pwr);
 
-        drive.StrafeDistance(60, .5);
+        try {
+            Thread.sleep(1000);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
 
-        drive.TurnDegreesLeft(90);
+        drive.RF.setPower(0);
+        drive.RB.setPower(0);
+        drive.LF.setPower(0);
+        drive.LB.setPower(0);
 
-        drive.StrafeDistance_Left(60, .5);
+        Pods_Down();
+
+        TurnOdometry(-14, 0.4);
+
+        DriveOdometry(-21, 0.6);
+
+        TurnOdometry(-90, 0.4);
+
+        DriveOdometry(55, 0.6);
+
+//        drive.TurnDegreesLeft(14);
+//
+//        Top_Pivot.setPosition(0.4);
+//        Base_Pivot.setPosition(0.72);
+//
+//        drive.StrafeDistance(18, .5);
+//
+//        drive.DriveDistanceLongReverse(-20, .5);
+//
+//        drive.StrafeDistance(60, .5);
+//
+//        drive.TurnDegreesLeft(90);
+//
+//        drive.StrafeDistance_Left(60, .5);
     }
 
     public void Drive_To_Pos_2() {
-        drive.TurnToHeading(-90);
 
         Top_Pivot.setPosition(0.4);
         Base_Pivot.setPosition(0.72);
+        double pwr = 0.3;
 
-        drive.StrafeDistance(18, .5);
+        drive.WithOutEncoders();
 
-        drive.DriveDistanceLongReverse(25, .5);
+        drive.RF.setPower(1.3*pwr);
+        drive.RB.setPower(-pwr);
+        drive.LF.setPower(-1.3*pwr);
+        drive.LB.setPower(pwr);
 
-        drive.StrafeDistance(60, .5);
+        try {
+            Thread.sleep(1000);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
 
-        drive.TurnToHeading(0);
+        drive.RF.setPower(0);
+        drive.RB.setPower(0);
+        drive.LF.setPower(0);
+        drive.LB.setPower(0);
+
+        Pods_Down();
+
+        TurnOdometry(-14, 0.4);
+
+        DriveOdometry(-21, 0.6);
+
+        TurnOdometry(-90, 0.4);
+
+
+//        drive.TurnToHeading(-90);
+//
+//        Top_Pivot.setPosition(0.4);
+//        Base_Pivot.setPosition(0.72);
+//
+//        drive.StrafeDistance(18, .5);
+//
+//        drive.StrafeDistance(60, .5);
+//
+//        drive.TurnToHeading(0);
     }
 
     public void Drive_To_Pos_3() {
-        drive.TurnToHeading(-90);
 
         Top_Pivot.setPosition(0.4);
         Base_Pivot.setPosition(0.72);
+        double pwr = 0.3;
 
-        drive.StrafeDistance(18, .5);
+        drive.WithOutEncoders();
 
-        drive.DriveDistanceLongReverse(-20, .5);
+        drive.RF.setPower(1.3*pwr);
+        drive.RB.setPower(-pwr);
+        drive.LF.setPower(-1.3*pwr);
+        drive.LB.setPower(pwr);
 
-        drive.StrafeDistance(60, .5);
+        try {
+            Thread.sleep(1000);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
 
-        drive.TurnToHeading(0);
+        drive.RF.setPower(0);
+        drive.RB.setPower(0);
+        drive.LF.setPower(0);
+        drive.LB.setPower(0);
 
-        drive.StrafeDistance(50, .5);
+        Pods_Down();
+
+        TurnOdometry(-14, 0.4);
+
+        DriveOdometry(-21, 0.6);
+
+        TurnOdometry(-90, 0.4);
+
+        DriveOdometry(-55, 0.6);
+
+//        drive.TurnToHeading(-90);
+//
+//        Top_Pivot.setPosition(0.4);
+//        Base_Pivot.setPosition(0.72);
+//
+//        drive.StrafeDistance(18, .5);
+//
+//        drive.DriveDistanceLongReverse(-20, .5);
+//
+//        drive.TurnToHeading(0);
+//
+//        drive.StrafeDistance(50, .5);
     }
 
     public void Drive_To_Destack() {

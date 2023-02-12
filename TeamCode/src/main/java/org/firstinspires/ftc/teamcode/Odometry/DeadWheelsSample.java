@@ -612,7 +612,7 @@ public class DeadWheelsSample extends LinearOpMode {
         //Turning
         double HeadingToTurnTo = HeadingPositionTarget - CurrentHeading;
         
-        if (getheading() == 0 + 5 || getheading() == 0 -5){
+        if (getheading() < 10 || getheading() > 350){
 
             DriveOdometry(XDistanceToDrive, 0.6);
 
@@ -620,7 +620,23 @@ public class DeadWheelsSample extends LinearOpMode {
 
             TurnOdometry(HeadingToTurnTo, 0.6);
 
-        } else if (getheading() == 180 + 5 || getheading() == 180 - 5 ) {
+        }else if (getheading() > 80 || getheading() < 100 ) {
+
+            DriveOdometry(-YDistanceToDrive, 0.6);
+
+            StrafeOdometry(XDistanceToDrive, 0.6);
+
+            TurnOdometry(HeadingToTurnTo, 0.6);
+
+        }else if (getheading() > 170 || getheading() < 190 ) {
+
+            DriveOdometry(YDistanceToDrive, 0.6);
+
+            StrafeOdometry(-XDistanceToDrive, 0.6);
+
+            TurnOdometry(HeadingToTurnTo, 0.6);
+
+        }else if (getheading() > 260 || getheading() < 280 ) {
 
             DriveOdometry(-XDistanceToDrive, 0.6);
 
@@ -636,6 +652,7 @@ public class DeadWheelsSample extends LinearOpMode {
 
     public void coordinatesInFieldMats(double matPositionTarget){
 
+        //A
         if(matPositionTarget == 1){
             coordinatesInCM(6, 8, 0);
         }else if (matPositionTarget == 2) {
@@ -648,7 +665,9 @@ public class DeadWheelsSample extends LinearOpMode {
             coordinatesInCM(6, 248, 0);
         }else if (matPositionTarget == 6) {
             coordinatesInCM(6, 308, 0);
-        }else if (matPositionTarget == 7) {
+        }
+        //B
+        else if (matPositionTarget == 7) {
             coordinatesInCM(66, 8, 0);
         }else if (matPositionTarget == 8) {
             coordinatesInCM(66, 68, 0);
@@ -660,54 +679,62 @@ public class DeadWheelsSample extends LinearOpMode {
             coordinatesInCM(66, 248, 0);
         }else if (matPositionTarget == 12) {
             coordinatesInCM(66, 308, 0);
-        }else if (matPositionTarget == 13) {
-
+        }
+        //C
+        else if (matPositionTarget == 13) {
+            coordinatesInCM(126, 8, 0);
         }else if (matPositionTarget == 14) {
-
+            coordinatesInCM(126, 68, 0);
         }else if (matPositionTarget == 15) {
-
+            coordinatesInCM(126, 128, 0);
         }else if (matPositionTarget == 16) {
-
+            coordinatesInCM(126, 188, 0);
         }else if (matPositionTarget == 17) {
-
+            coordinatesInCM(126, 248, 0);
         }else if (matPositionTarget == 18) {
-
-        }else if (matPositionTarget == 19) {
-
+            coordinatesInCM(126, 308, 0);
+        }
+        //D
+        else if (matPositionTarget == 19) {
+            coordinatesInCM(186, 8, 0);
         }else if (matPositionTarget == 20) {
-
+            coordinatesInCM(186, 68, 0);
         }else if (matPositionTarget == 21) {
-
+            coordinatesInCM(186, 128, 0);
         }else if (matPositionTarget == 22) {
-
+            coordinatesInCM(186, 188, 0);
         }else if (matPositionTarget == 23) {
-
+            coordinatesInCM(186, 248, 0);
         }else if (matPositionTarget == 24) {
-
-        }else if (matPositionTarget == 25) {
-
+            coordinatesInCM(186, 308, 0);
+        }
+        //E
+        else if (matPositionTarget == 25) {
+            coordinatesInCM(246, 8, 0);
         }else if (matPositionTarget == 26) {
-
+            coordinatesInCM(246, 68, 0);
         }else if (matPositionTarget == 27) {
-
+            coordinatesInCM(246, 128, 0);
         }else if (matPositionTarget == 28) {
-
+            coordinatesInCM(246, 188, 0);
         }else if (matPositionTarget == 29) {
-
+            coordinatesInCM(246, 248, 0);
         }else if (matPositionTarget == 30) {
-
-        }else if (matPositionTarget == 31) {
-
+            coordinatesInCM(246, 308, 0);
+        }
+        //F
+        else if (matPositionTarget == 31) {
+            coordinatesInCM(306, 8, 0);
         }else if (matPositionTarget == 32) {
-
+            coordinatesInCM(306, 68, 0);
         }else if (matPositionTarget == 33) {
-
+            coordinatesInCM(306, 128, 0);
         }else if (matPositionTarget == 34) {
-
+            coordinatesInCM(306, 188, 0);
         }else if (matPositionTarget == 35) {
-
+            coordinatesInCM(306, 248, 0);
         }else if (matPositionTarget == 36) {
-
+            coordinatesInCM(306, 308, 0);
         }
     }
 }
