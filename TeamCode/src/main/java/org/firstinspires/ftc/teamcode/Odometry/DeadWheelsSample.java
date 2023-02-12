@@ -5,18 +5,13 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.drivebase.MecanumDrive;
 import com.arcrobotics.ftclib.geometry.Pose2d;
 import com.arcrobotics.ftclib.geometry.Rotation2d;
-import com.arcrobotics.ftclib.geometry.Translation2d;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.Motor.Encoder;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
-import com.arcrobotics.ftclib.kinematics.DifferentialOdometry;
 import com.arcrobotics.ftclib.kinematics.HolonomicOdometry;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Drivetrain;
@@ -598,5 +593,121 @@ public class DeadWheelsSample extends LinearOpMode {
         drive.RB.setPower(0);
         drive.LF.setPower(0);
         drive.LB.setPower(0);
+    }
+
+    public void coordinatesInCM(double XPositionTarget, double YPositionTarget, double HeadingPositionTarget){
+
+        double CurrentX = getXpos();
+
+        double CurrentY = getYpos();
+
+        double CurrentHeading = getheading();
+
+        //X is strafing
+        double XDistanceToDrive = XPositionTarget - CurrentX;
+
+        //Y is forward
+        double YDistanceToDrive = YPositionTarget - CurrentY;
+
+        //Turning
+        double HeadingToTurnTo = HeadingPositionTarget - CurrentHeading;
+        
+        if (getheading() == 0 + 5 || getheading() == 0 -5){
+
+            DriveOdometry(XDistanceToDrive, 0.6);
+
+            StrafeOdometry(YDistanceToDrive, 0.6);
+
+            TurnOdometry(HeadingToTurnTo, 0.6);
+
+        } else if (getheading() == 180 + 5 || getheading() == 180 - 5 ) {
+
+            DriveOdometry(-XDistanceToDrive, 0.6);
+
+            StrafeOdometry(-YDistanceToDrive, 0.6);
+
+            TurnOdometry(HeadingToTurnTo, 0.6);
+
+        }
+
+        odometry.updatePose();
+
+    }
+
+    public void coordinatesInFieldMats(double matPositionTarget){
+
+        if(matPositionTarget == 1){
+            coordinatesInCM(6, 8, 0);
+        }else if (matPositionTarget == 2) {
+            coordinatesInCM(6, 68, 0);
+        }else if (matPositionTarget == 3) {
+            coordinatesInCM(6, 128, 0);
+        }else if (matPositionTarget == 4) {
+            coordinatesInCM(6, 188, 0);
+        }else if (matPositionTarget == 5) {
+            coordinatesInCM(6, 248, 0);
+        }else if (matPositionTarget == 6) {
+            coordinatesInCM(6, 308, 0);
+        }else if (matPositionTarget == 7) {
+            coordinatesInCM(66, 8, 0);
+        }else if (matPositionTarget == 8) {
+            coordinatesInCM(66, 68, 0);
+        }else if (matPositionTarget == 9) {
+            coordinatesInCM(66, 128, 0);
+        }else if (matPositionTarget == 10) {
+            coordinatesInCM(66, 188, 0);
+        }else if (matPositionTarget == 11) {
+            coordinatesInCM(66, 248, 0);
+        }else if (matPositionTarget == 12) {
+            coordinatesInCM(66, 308, 0);
+        }else if (matPositionTarget == 13) {
+
+        }else if (matPositionTarget == 14) {
+
+        }else if (matPositionTarget == 15) {
+
+        }else if (matPositionTarget == 16) {
+
+        }else if (matPositionTarget == 17) {
+
+        }else if (matPositionTarget == 18) {
+
+        }else if (matPositionTarget == 19) {
+
+        }else if (matPositionTarget == 20) {
+
+        }else if (matPositionTarget == 21) {
+
+        }else if (matPositionTarget == 22) {
+
+        }else if (matPositionTarget == 23) {
+
+        }else if (matPositionTarget == 24) {
+
+        }else if (matPositionTarget == 25) {
+
+        }else if (matPositionTarget == 26) {
+
+        }else if (matPositionTarget == 27) {
+
+        }else if (matPositionTarget == 28) {
+
+        }else if (matPositionTarget == 29) {
+
+        }else if (matPositionTarget == 30) {
+
+        }else if (matPositionTarget == 31) {
+
+        }else if (matPositionTarget == 32) {
+
+        }else if (matPositionTarget == 33) {
+
+        }else if (matPositionTarget == 34) {
+
+        }else if (matPositionTarget == 35) {
+
+        }else if (matPositionTarget == 36) {
+
+        }
     }
 }
