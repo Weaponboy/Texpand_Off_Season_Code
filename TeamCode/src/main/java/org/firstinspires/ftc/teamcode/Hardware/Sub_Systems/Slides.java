@@ -11,6 +11,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class Slides{
 
+    private DistanceSensor Back_Distance;
+
     public DcMotor Right_Slide = null;
     public DcMotor Left_Slide = null;
     public DcMotor Extend = null;
@@ -41,6 +43,10 @@ public class Slides{
 
         sensorRange = hardwareMap.get(DistanceSensor.class, "sensor_range");
 
+        sensorRange = hardwareMap.get(DistanceSensor.class, "sensor_range");
+
+        Back_Distance = hardwareMap.get(DistanceSensor.class, "Back distance");
+
         colour = hardwareMap.get(ColorSensor.class, "colour");
 
         Right_Slide = hardwareMap.get(DcMotor.class, "Right slide");
@@ -61,6 +67,8 @@ public class Slides{
         customRumbleEffect = new Gamepad.RumbleEffect.Builder()
                 .addStep(0.0, 1.0, 500)  //  Rumble right motor 100% for 500 mSec
                 .build();
+
+        Back_Distance.resetDeviceConfigurationForOpMode();
 
     }
 
