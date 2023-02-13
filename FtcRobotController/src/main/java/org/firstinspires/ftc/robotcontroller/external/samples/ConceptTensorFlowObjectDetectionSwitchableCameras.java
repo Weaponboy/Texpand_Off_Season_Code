@@ -172,6 +172,7 @@ public class ConceptTensorFlowObjectDetectionSwitchableCameras extends LinearOpM
         // Indicate that we wish to be able to switch cameras.
         webcam1 = hardwareMap.get(WebcamName.class, "Webcam 1");
         webcam2 = hardwareMap.get(WebcamName.class, "Webcam 2");
+
         parameters.cameraName = ClassFactory.getInstance().getCameraManager().nameForSwitchableCamera(webcam1, webcam2);
 
         //  Instantiate the Vuforia engine
@@ -203,8 +204,10 @@ public class ConceptTensorFlowObjectDetectionSwitchableCameras extends LinearOpM
     private void doCameraSwitching() {
         // If the left bumper is pressed, use Webcam 1.
         // If the right bumper is pressed, use Webcam 2.
+
         boolean newLeftBumper = gamepad1.left_bumper;
         boolean newRightBumper = gamepad1.right_bumper;
+
         if (newLeftBumper && !oldLeftBumper) {
             switchableCamera.setActiveCamera(webcam1);
         } else if (newRightBumper && !oldRightBumper) {

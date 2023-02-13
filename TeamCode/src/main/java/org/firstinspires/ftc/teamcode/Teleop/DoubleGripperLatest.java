@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Teleop;
 
+import android.graphics.Bitmap;
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -10,6 +12,8 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.function.Consumer;
+import org.firstinspires.ftc.robotcore.external.function.Continuation;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.SwitchableCamera;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
@@ -21,8 +25,10 @@ import org.firstinspires.ftc.teamcode.Vision.Pole_Alinement.Pole_Vision_Pipeline
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvSwitchableWebcam;
 import org.openftc.easyopencv.OpenCvWebcam;
+import org.openftc.easyopencv.PipelineRecordingParameters;
 
 import java.util.concurrent.TimeUnit;
 
@@ -34,6 +40,138 @@ public class DoubleGripperLatest extends OpMode {
     public DcMotor RB = null;
     public DcMotor LB = null;
 
+    OpenCvSwitchableWebcam Vision = new OpenCvSwitchableWebcam() {
+        @Override
+        public void setActiveCamera(WebcamName cameraName) {
+
+        }
+
+        @Override
+        public WebcamName getActiveCamera() {
+            return null;
+        }
+
+        @Override
+        public WebcamName[] getMembers() {
+            return new WebcamName[0];
+        }
+
+        @Override
+        public int openCameraDevice() {
+            return 0;
+        }
+
+        @Override
+        public void openCameraDeviceAsync(AsyncCameraOpenListener cameraOpenListener) {
+
+        }
+
+        @Override
+        public void closeCameraDevice() {
+
+        }
+
+        @Override
+        public void closeCameraDeviceAsync(AsyncCameraCloseListener cameraCloseListener) {
+
+        }
+
+        @Override
+        public void showFpsMeterOnViewport(boolean show) {
+
+        }
+
+        @Override
+        public void pauseViewport() {
+
+        }
+
+        @Override
+        public void resumeViewport() {
+
+        }
+
+        @Override
+        public void setViewportRenderingPolicy(ViewportRenderingPolicy policy) {
+
+        }
+
+        @Override
+        public void setViewportRenderer(ViewportRenderer renderer) {
+
+        }
+
+        @Override
+        public void startStreaming(int width, int height) {
+
+        }
+
+        @Override
+        public void startStreaming(int width, int height, OpenCvCameraRotation rotation) {
+
+        }
+
+        @Override
+        public void stopStreaming() {
+
+        }
+
+        @Override
+        public void setPipeline(OpenCvPipeline pipeline) {
+
+        }
+
+        @Override
+        public int getFrameCount() {
+            return 0;
+        }
+
+        @Override
+        public float getFps() {
+            return 0;
+        }
+
+        @Override
+        public int getPipelineTimeMs() {
+            return 0;
+        }
+
+        @Override
+        public int getOverheadTimeMs() {
+            return 0;
+        }
+
+        @Override
+        public int getTotalFrameTimeMs() {
+            return 0;
+        }
+
+        @Override
+        public int getCurrentPipelineMaxFps() {
+            return 0;
+        }
+
+        @Override
+        public void startRecordingPipeline(PipelineRecordingParameters parameters) {
+
+        }
+
+        @Override
+        public void stopRecordingPipeline() {
+
+        }
+
+        @Override
+        public void getFrameBitmap(Continuation<? extends Consumer<Bitmap>> continuation) {
+
+        }
+    };
+
+    private WebcamName BackWeb;
+
+    private WebcamName frontWeb;
+
+
     public DcMotor Odo_raise  = null;
 
     private double TotalDist;
@@ -41,8 +179,6 @@ public class DoubleGripperLatest extends OpMode {
     Drivetrain drive = new Drivetrain();
 
     Gamepad.RumbleEffect customRumbleEffect;
-
-    private OpenCvCamera webcam;
 
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -103,6 +239,7 @@ public class DoubleGripperLatest extends OpMode {
 
     private  int Loop = 0;
     private  int Loop2 = 0;
+
     public double Distance_To_Travel;
 
 
@@ -232,6 +369,13 @@ public class DoubleGripperLatest extends OpMode {
 
                 conefound = sensorRange.getDistance(DistanceUnit.MM) < 60;
 
+                SlowPoint= sensorRange.getDistance(DistanceUnit.MM) < 180;
+
+                if (SlowPoint){
+                    Extend.setPower(-0.5);
+                }else {
+                    Extend.setPower(-1);
+                }
 
                 Extend.setPower(-1);
                 try {
@@ -529,6 +673,14 @@ public class DoubleGripperLatest extends OpMode {
                     }
                     conefound = sensorRange.getDistance(DistanceUnit.MM) < 90;
 
+                    SlowPoint= sensorRange.getDistance(DistanceUnit.MM) < 180;
+
+                    if (SlowPoint){
+                        Extend.setPower(-0.5);
+                    }else {
+                        Extend.setPower(-1);
+                    }
+
                     Extend.setPower(-1);
 
                     telemetry.addData("Blue:", sensorRange.getDistance(DistanceUnit.MM));
@@ -743,28 +895,10 @@ public class DoubleGripperLatest extends OpMode {
 
         }
 
-        //set slides to High pole no alignment
-//        if(gamepad1.dpad_left){
-//            Right_Slide.setTargetPosition(1900);
-//            Left_Slide.setTargetPosition(1900);
-//            Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//            Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//            while(Right_Slide.isBusy() && Left_Slide.isBusy()){
-//                Right_Slide.setPower(1);
-//                Left_Slide.setPower(1);
-//            }
-//            Right_Slide.setPower(0.005);
-//            Left_Slide.setPower(0.005);
-//
-//            Top_Pivot.setPosition(0);
-//
-//            Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//            Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        }
-
         //Align to the top pole
-
         if(gamepad2.dpad_left || gamepad1.dpad_left){
+
+           Vision.setActiveCamera(BackWeb);
 
 
             Right_Slide.setTargetPosition(1900);
@@ -1143,8 +1277,9 @@ public class DoubleGripperLatest extends OpMode {
         }
 
 
+
         telemetry.addData("Odo ticks:", Odo_raise.getCurrentPosition());
-        telemetry.addData("Rumble:", rumble);
+        telemetry.addData("Active Camera:", Vision.getActiveCamera());
         telemetry.addData("Destacker Left:", Destacker_Left.getPosition());
         telemetry.addData("Destacker Right:", Destacker_Right.getPosition());
         telemetry.addData("Base Pivot:", Base_Pivot.getPosition());
@@ -1232,40 +1367,38 @@ public class DoubleGripperLatest extends OpMode {
 
         Back_Distance.resetDeviceConfigurationForOpMode();
 
-        customRumbleEffect = new Gamepad.RumbleEffect.Builder()
-                .addStep(0.0, 1.0, 500)  //  Rumble right motor 100% for 500 mSec
-                .build();
+        BackWeb = hardwareMap.get(WebcamName.class, "Backcam");
 
+        frontWeb = hardwareMap.get(WebcamName.class, "frontCam");
 
-        OpenCvSwitchableWebcam switchableWebcam;
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
 
-        WebcamName webcamName = hardwareMap.get(WebcamName.class, "Backcam");
+        Vision = OpenCvCameraFactory.getInstance().createSwitchableWebcam(cameraMonitorViewId, BackWeb, frontWeb);
 
-        OpenCvWebcam Backcam = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
+        Vision.setPipeline(Pole);
+
+        Vision.setActiveCamera(BackWeb);
 
 
-        Backcam.setPipeline(Pole);
-
-        Backcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+        Vision.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
 
-                Backcam.getExposureControl().setMode(ExposureControl.Mode.Manual);
+//                Vision.getExposureControl().setMode(ExposureControl.Mode.Manual);
+//
+//                BackWeb.getExposureControl().setExposure(30, TimeUnit.MILLISECONDS);
+//
+//                BackWeb.getGainControl().setGain(100);
+//
+//                FocusControl.Mode focusmode = FocusControl.Mode.Fixed;
+//
+//                BackWeb.getFocusControl().setMode(focusmode);
+//
+//                if (focusmode == FocusControl.Mode.Fixed){
+//                    BackWeb.getFocusControl().setFocusLength(450);
+//                }
 
-                Backcam.getExposureControl().setExposure(30, TimeUnit.MILLISECONDS);
-
-                Backcam.getGainControl().setGain(100);
-
-                FocusControl.Mode focusmode = FocusControl.Mode.Fixed;
-
-                Backcam.getFocusControl().setMode(focusmode);
-
-                if (focusmode == FocusControl.Mode.Fixed){
-                    Backcam.getFocusControl().setFocusLength(450);
-                }
-
-                Backcam.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
+                Vision.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
 
             }
 
@@ -1273,9 +1406,39 @@ public class DoubleGripperLatest extends OpMode {
             public void onError(int errorCode) { }
         });
 
-        // Set the pipeline depending on id
-        Backcam.setPipeline(Pole);
 
+
+        customRumbleEffect = new Gamepad.RumbleEffect.Builder()
+                .addStep(0.0, 1.0, 500)  //  Rumble right motor 100% for 500 mSec
+                .build();
+
+//        Backcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+//            @Override
+//            public void onOpened() {
+//
+//                Backcam.getExposureControl().setMode(ExposureControl.Mode.Manual);
+//
+//                Backcam.getExposureControl().setExposure(30, TimeUnit.MILLISECONDS);
+//
+//                Backcam.getGainControl().setGain(100);
+//
+//                FocusControl.Mode focusmode = FocusControl.Mode.Fixed;
+//
+//                Backcam.getFocusControl().setMode(focusmode);
+//
+//                if (focusmode == FocusControl.Mode.Fixed){
+//                    Backcam.getFocusControl().setFocusLength(450);
+//                }
+//
+//                Backcam.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
+//
+//            }
+//
+//            @Override
+//            public void onError(int errorCode) { }
+//        });
+
+        // Set the pipeline depending on id
 
         telemetry.addData("H:", Pole.getH());
         telemetry.addData("S:", Pole.getS());

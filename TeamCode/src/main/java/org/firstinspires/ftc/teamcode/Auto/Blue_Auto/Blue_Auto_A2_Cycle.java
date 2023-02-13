@@ -58,6 +58,8 @@ import java.util.concurrent.TimeUnit;
 public class Blue_Auto_A2_Cycle extends LinearOpMode {
     private DistanceSensor sensorRange;
 
+    private boolean SlowPoint = false;
+
     private double power;
 
     public double Distance_To_Travel;
@@ -1369,7 +1371,7 @@ public class Blue_Auto_A2_Cycle extends LinearOpMode {
 
         Extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        Extend.setPower(-0.6);
+        Extend.setPower(-1);
 
         conefound = sensorRange.getDistance(DistanceUnit.MM) < 100;
 
@@ -1380,7 +1382,15 @@ public class Blue_Auto_A2_Cycle extends LinearOpMode {
 
             conefound = sensorRange.getDistance(DistanceUnit.MM) < 100;
 
-            Extend.setPower(-0.6);
+            Extend.setPower(-1);
+
+            SlowPoint= sensorRange.getDistance(DistanceUnit.MM) < 200;
+
+            if (SlowPoint){
+                Extend.setPower(-0.5);
+            }else {
+                Extend.setPower(-1);
+            }
 
         }
         Extend.setPower(0);

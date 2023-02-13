@@ -9,12 +9,17 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.FocusControl;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.Pole_Pipe;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvWebcam;
+
+import java.util.concurrent.TimeUnit;
 
 
 @Autonomous
@@ -28,6 +33,8 @@ public class Pole_Vision extends OpMode {
 
     private OpenCvCamera webcam;
 
+    private double power;
+
     private  double poleDistance = 0;
 
     private  double TargetPoleDistance = 32;
@@ -35,6 +42,8 @@ public class Pole_Vision extends OpMode {
     private  double TravelDistance = 0;
 
     private  int Loop = 0;
+
+
 
     public double Distance_To_Travel;
 
@@ -60,11 +69,27 @@ public class Pole_Vision extends OpMode {
 
         WebcamName webcamName = hardwareMap.get(WebcamName.class, "Backcam");
 
-        OpenCvCamera Texpandcamera = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
+        OpenCvWebcam Texpandcamera = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
         Texpandcamera.setPipeline(Pole);
         Texpandcamera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
-            public void onOpened() { Texpandcamera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT); }
+            public void onOpened() {
+                Texpandcamera.getExposureControl().setMode(ExposureControl.Mode.Manual);
+
+                Texpandcamera.getExposureControl().setExposure(30, TimeUnit.MILLISECONDS);
+
+                Texpandcamera.getGainControl().setGain(100);
+
+                FocusControl.Mode focusmode = FocusControl.Mode.Fixed;
+
+                Texpandcamera.getFocusControl().setMode(focusmode);
+
+                if (focusmode == FocusControl.Mode.Fixed){
+                    Texpandcamera.getFocusControl().setFocusLength(450);
+                }
+
+                Texpandcamera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
+            }
             @Override
             public void onError(int errorCode) { }
         });
@@ -76,12 +101,26 @@ public class Pole_Vision extends OpMode {
 
     @Override
     public void init_loop() {
-
         drive.init(hardwareMap);
 
-        telemetry.addData("H:", Pole.getH());
-        telemetry.addData("S:", Pole.getS());
-        telemetry.addData("V:", Pole.getV());
+//        //Calculate distance to drive to aline
+        rectPositionFromLeft = Pole.getRectX();
+//
+        Distance_To_Travel = rectPositionFromLeft - CenterOfScreen;
+
+        Distance_To_Travel = Distance_To_Travel / 20;
+
+        //Telemetry to be displayed during init_loop()
+        telemetry.addData("S", Pole.getS());
+        telemetry.addData("V", Pole.getV());
+        telemetry.addData("H", Pole.getH());
+        telemetry.addData("con", Pole.numcontours());
+        telemetry.addData("rects", Pole.getRects());
+        telemetry.addData("Target cm", Distance_To_Travel);
+        telemetry.addData("Cone Position", Pole.getRectX());
+        telemetry.addData("rect X", Pole.getRectX());
+        telemetry.addData("rect Y", Pole.getRectY());
+        telemetry.addData("Target CM", Distance_To_Travel);
         telemetry.update();
     }
 
@@ -95,43 +134,49 @@ public class Pole_Vision extends OpMode {
     @Override
     public void loop() {
 
-//        rectPositionFromLeft = Pole.getRectX();
-//
-//        Distance_To_Travel = rectPositionFromLeft - CenterOfScreen;
-//
-//        Distance_To_Travel = Distance_To_Travel / 35;
+        rectPositionFromLeft = Pole.getRectX();
+        power = 0.35;
+        drive.WithOutEncoders();
 
-        if (Distance_To_Travel > 0){
-            drive.TurnDegreesLeft(Distance_To_Travel);
-            drive.stopMotors();
-            Distance_To_Travel = 0;
-        }else if (Distance_To_Travel < 0){
-            drive.TurnDegrees(Distance_To_Travel);
-            drive.stopMotors();
-            Distance_To_Travel = 0;
+        while (rectPositionFromLeft > CenterOfScreen + 10 || rectPositionFromLeft < CenterOfScreen - 10){
+
+            telemetry.addData("rect X", Pole.getRectX());
+            telemetry.addData("rect Y", Pole.getRectY());
+            telemetry.addData("Target CM", Distance_To_Travel);
+            telemetry.update();
+
+            if(rectPositionFromLeft > CenterOfScreen - 5 || rectPositionFromLeft < CenterOfScreen + 5){
+                power = 0.27;
+            }
+            rectPositionFromLeft = Pole.getRectX();
+
+            if (rectPositionFromLeft < CenterOfScreen) {
+
+                drive.RF.setPower(-1.3*power);
+                drive.RB.setPower(power);
+                drive.LF.setPower(1.3*power);
+                drive.LB.setPower(-power);
+
+            } else if (rectPositionFromLeft > CenterOfScreen) {
+
+                drive.RF.setPower(1.3*power);
+                drive.RB.setPower(-power);
+                drive.LF.setPower(-1.3*power);
+                drive.LB.setPower(power);
+            }
+
         }
 
+        drive.RF.setPower(0);
+        drive.RB.setPower(0);
+        drive.LF.setPower(0);
+        drive.LB.setPower(0);
 
-//        if(Distance_To_Travel == 0){
-//            poleDistance = Back_Distance.getDistance(DistanceUnit.CM);
-//
-//            TravelDistance = poleDistance - TargetPoleDistance;
-//            while(Loop < 1){
-//                Loop++;
-//                if (TravelDistance > 0){
-//                    drive.DriveDistanceLongReverse(TravelDistance, 0.5);
-//                    drive.stopMotors();
-//                    TravelDistance = 0;
-//                }else if (TravelDistance < 0) {
-//                    drive.DriveDistanceLong(-TravelDistance, 0.5);
-//                    drive.stopMotors();
-//                    TravelDistance = 0;
-//                }
-//                Loop++;
-//            }
-//
-//        }
 
+
+        //Telemetry to be displayed during loop()
+        telemetry.addData("rect X", Pole.getRectX());
+        telemetry.addData("rect Y", Pole.getRectY());
         telemetry.addData("Target CM", Distance_To_Travel);
         telemetry.update();
     }
