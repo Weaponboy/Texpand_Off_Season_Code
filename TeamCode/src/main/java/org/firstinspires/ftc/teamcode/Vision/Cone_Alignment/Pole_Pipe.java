@@ -6,6 +6,7 @@ import static org.opencv.core.Core.inRange;
 import static org.opencv.core.CvType.CV_8U;
 import static org.opencv.imgproc.Imgproc.CHAIN_APPROX_SIMPLE;
 import static org.opencv.imgproc.Imgproc.COLOR_RGB2HSV_FULL;
+import static org.opencv.imgproc.Imgproc.COLOR_RGB2YCrCb;
 import static org.opencv.imgproc.Imgproc.FONT_HERSHEY_COMPLEX;
 import static org.opencv.imgproc.Imgproc.RETR_TREE;
 import static org.opencv.imgproc.Imgproc.boundingRect;
@@ -15,6 +16,9 @@ import static org.opencv.imgproc.Imgproc.erode;
 import static org.opencv.imgproc.Imgproc.findContours;
 import static org.opencv.imgproc.Imgproc.rectangle;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+
+import org.firstinspires.ftc.teamcode.Vision.Vision_From_Collin.VisionDash;
 import org.firstinspires.ftc.teamcode.Vision.Vision_From_Collin.VisionUtils;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -45,6 +49,8 @@ public class Pole_Pipe extends OpenCvPipeline {
     private Scalar orange = new Scalar(300, 90, 90);
     private Scalar lightBlue = new Scalar(200, 90, 90);
 
+    private FtcDashboard dashboard = FtcDashboard.getInstance();
+
     public int numcontours;
     public int numrects;
 
@@ -67,14 +73,15 @@ public class Pole_Pipe extends OpenCvPipeline {
     private List<Rect> rects = new ArrayList<>();
 
     //colour scales for the cone
-    public Scalar MIN_THRESH = new Scalar(40,40,80);
-    public Scalar MAX_THRESH = new Scalar(85,200,200);
+    public Scalar MIN_THRESH;
+    public Scalar MAX_THRESH;
 
     public Scalar values;
 
     @Override
     public Mat processFrame(Mat input) {
-
+        MIN_THRESH = new Scalar(VisionDash.pole_min_H,VisionDash.pole_min_S,VisionDash.pole_min_V);
+        MAX_THRESH = new Scalar(VisionDash.pole_max_H,VisionDash.pole_max_S,VisionDash.pole_max_V);
         // copy input to output
         input.copyTo(output);
 
@@ -85,8 +92,8 @@ public class Pole_Pipe extends OpenCvPipeline {
 //        MAX_THRESH = new Scalar(VisionDash.blue_max_H, VisionDash.blue_max_S, VisionDash.blue_max_V);
 
         //convert to HSV FULL
-        Imgproc.cvtColor(input, modified, COLOR_RGB2HSV_FULL);
-        Imgproc.cvtColor(output, output, COLOR_RGB2HSV_FULL);
+        Imgproc.cvtColor(input, modified, COLOR_RGB2YCrCb);
+        Imgproc.cvtColor(output, output, COLOR_RGB2YCrCb);
 
         //submat
         values = Core.mean(modified.submat(center));

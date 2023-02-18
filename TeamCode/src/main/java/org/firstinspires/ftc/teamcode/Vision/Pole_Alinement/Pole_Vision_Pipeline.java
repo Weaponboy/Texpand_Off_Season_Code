@@ -13,6 +13,11 @@ import static org.opencv.imgproc.Imgproc.erode;
 import static org.opencv.imgproc.Imgproc.findContours;
 import static org.opencv.imgproc.Imgproc.rectangle;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Vision.Vision_From_Collin.VisionDash;
 import org.firstinspires.ftc.teamcode.Vision.Vision_From_Collin.VisionUtils;
 import org.opencv.core.Core;
@@ -28,7 +33,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Pole_Vision_Pipeline extends OpenCvPipeline {
-
     //Initiated variables needed later
     private static int IMG_HEIGHT = 0;
     private static int IMG_WIDTH = 0;
@@ -40,14 +44,16 @@ public class Pole_Vision_Pipeline extends OpenCvPipeline {
     // Rectangle settings
     private Scalar orange = new Scalar(300, 90, 90);
     private Scalar lightBlue = new Scalar(200, 90, 90);
+
     public int numcontours;
     public int numrects;
 
+    private FtcDashboard dashboard = FtcDashboard.getInstance();
     private int font = FONT_HERSHEY_COMPLEX;
 
     public double Distance_To_Travel;
 
-    public double rectPositionFromLeft = 0;
+    public static double rectPositionFromLeft = 0;
     public double rectX;
     public double rectY;
     private Rect largestRect;
@@ -56,12 +62,15 @@ public class Pole_Vision_Pipeline extends OpenCvPipeline {
 
     private Rect backroundRect2;
     private List<Rect> rects = new ArrayList<>();
-    public Scalar MIN_THRESH = new Scalar(25,80,80);
-    public Scalar MAX_THRESH = new Scalar(70,255,255);
+    public static Scalar MIN_THRESH;
+    public static Scalar MAX_THRESH;
     public Scalar values;
 
     @Override
     public Mat processFrame(Mat input) {
+        
+        MIN_THRESH = new Scalar(VisionDash.pole_min_H,VisionDash.pole_min_S,VisionDash.pole_min_V);
+        MAX_THRESH = new Scalar(VisionDash.pole_max_H,VisionDash.pole_max_S,VisionDash.pole_max_V);
         input.copyTo(output);
 
         IMG_HEIGHT = input.rows();
@@ -100,7 +109,7 @@ public class Pole_Vision_Pipeline extends OpenCvPipeline {
 
         contours.clear();
         output.release();
-        return output;
+        return modified;
 
     }
 

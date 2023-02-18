@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.Vision.DoubleCameratests;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -17,46 +19,64 @@ import org.openftc.easyopencv.OpenCvWebcam;
 
 import java.util.concurrent.TimeUnit;
 
+@TeleOp
 public class NormalChangingWebcams extends OpMode {
 
-    private OpenCvWebcam BackWeb;
-
-    private OpenCvWebcam frontWeb;
-    private DistanceSensor Back_Distance;
-
-    private ElapsedTime runtime = new ElapsedTime();
-
     Pole_Pipe Pole;
-
     Blue_Cone_Pipe Cone;
+    public OpenCvWebcam FrontWeb;
+    public OpenCvWebcam BackWeb;
 
     @Override
     public void init() {
+
+
         Pole = new Pole_Pipe();
 
         Cone = new Blue_Cone_Pipe();
 
-        Back_Distance = hardwareMap.get(DistanceSensor.class, "Back distance");
-
-        Back_Distance.resetDeviceConfigurationForOpMode();
-
-        WebcamName backcam = hardwareMap.get(WebcamName.class, "Backcam");
-
-        WebcamName frontcam = hardwareMap.get(WebcamName.class, "frontCam");
-
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
 
-        BackWeb = OpenCvCameraFactory.getInstance().createWebcam(backcam, cameraMonitorViewId);
+        int[] viewportContainerIds = OpenCvCameraFactory.getInstance()
+                .splitLayoutForMultipleViewports(
+                        cameraMonitorViewId, //The container we're splitting
+                        2, //The number of sub-containers to create
+                        OpenCvCameraFactory.ViewportSplitMethod.VERTICALLY);
 
-        frontWeb = OpenCvCameraFactory.getInstance().createWebcam(frontcam, cameraMonitorViewId);
+        FrontWeb  = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), viewportContainerIds[0]);
 
-        BackWeb.setPipeline(Pole);
+        BackWeb = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Backcam"), viewportContainerIds[1]);
 
-        frontWeb.setPipeline(Cone);
+        FrontWeb.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            @Override
+            public void onOpened() {
+                FrontWeb.setPipeline(Cone);
+
+                FrontWeb.getExposureControl().setMode(ExposureControl.Mode.Manual);
+
+                FrontWeb.getExposureControl().setExposure(30, TimeUnit.MILLISECONDS);
+
+                FrontWeb.getGainControl().setGain(100);
+
+                FocusControl.Mode focusmode = FocusControl.Mode.Fixed;
+
+                FrontWeb.getFocusControl().setMode(focusmode);
+
+                if (focusmode == FocusControl.Mode.Fixed){
+                    FrontWeb.getFocusControl().setFocusLength(450);
+                }
+
+                FrontWeb.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
+            }
+            @Override
+            public void onError(int errorCode) { }
+        });
+        FrontWeb.setPipeline(Cone);
 
         BackWeb.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
+                BackWeb.setPipeline(Pole);
 
                 BackWeb.getExposureControl().setMode(ExposureControl.Mode.Manual);
 
@@ -73,93 +93,45 @@ public class NormalChangingWebcams extends OpMode {
                 }
 
                 BackWeb.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
-
             }
-
             @Override
             public void onError(int errorCode) { }
         });
-
         BackWeb.setPipeline(Pole);
-
-        frontWeb.setPipeline(Cone);
+        telemetry.addData("Status", "init");
+        telemetry.update();
     }
 
     @Override
     public void loop() {
+        try {
+            Thread.sleep(25);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        if(gamepad1.dpad_up){
+            telemetry.addData("Front", "Web");
+            telemetry.addData("Cone X:",Cone.getRectX());
+            telemetry.update();
 
-        if (gamepad1.dpad_up){
-            frontWeb.closeCameraDeviceAsync(new OpenCvCamera.AsyncCameraCloseListener() {
-                @Override
-                public void onClose() {
-                    BackWeb.stopStreaming();
-                }
-            });
+            BackWeb.closeCameraDevice();
 
-            BackWeb.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-                @Override
-                public void onOpened() {
-
-                    BackWeb.getExposureControl().setMode(ExposureControl.Mode.Manual);
-
-                    BackWeb.getExposureControl().setExposure(30, TimeUnit.MILLISECONDS);
-
-                    BackWeb.getGainControl().setGain(100);
-
-                    FocusControl.Mode focusmode = FocusControl.Mode.Fixed;
-
-                    BackWeb.getFocusControl().setMode(focusmode);
-
-                    if (focusmode == FocusControl.Mode.Fixed){
-                        BackWeb.getFocusControl().setFocusLength(450);
-                    }
-
-                    BackWeb.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
-
-                }
-
-                @Override
-                public void onError(int errorCode) { }
-            });
+            FrontWeb.openCameraDevice();
 
         }else if(gamepad1.dpad_down){
-            BackWeb.closeCameraDeviceAsync(new OpenCvCamera.AsyncCameraCloseListener() {
-                @Override
-                public void onClose() {
-                    BackWeb.stopStreaming();
-                }
-            });
+            telemetry.addData("Back", "Web");
+            telemetry.addData("Pole X:",Pole.getRectX());
+            telemetry.update();
 
-            frontWeb.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-                @Override
-                public void onOpened() {
-
-                    BackWeb.getExposureControl().setMode(ExposureControl.Mode.Manual);
-
-                    BackWeb.getExposureControl().setExposure(30, TimeUnit.MILLISECONDS);
-
-                    BackWeb.getGainControl().setGain(100);
-
-                    FocusControl.Mode focusmode = FocusControl.Mode.Fixed;
-
-                    BackWeb.getFocusControl().setMode(focusmode);
-
-                    if (focusmode == FocusControl.Mode.Fixed){
-                        BackWeb.getFocusControl().setFocusLength(450);
-                    }
-
-                    BackWeb.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
-
-                }
-
-                @Override
-                public void onError(int errorCode) { }
-            });
+            FrontWeb.closeCameraDevice();
+            BackWeb.openCameraDevice();
 
         }
+        if(!gamepad1.dpad_down && !gamepad1.dpad_up) {
+            telemetry.addData("BACK FPS", BackWeb.getFps());
+            telemetry.addData("FRONT FPS", FrontWeb.getFps());
+            telemetry.update();
+        }
 
-        telemetry.addData("Camera front", frontWeb.getFps());
-        telemetry.addData("Camera Back", BackWeb.getFps());
-        telemetry.update();
     }
 }

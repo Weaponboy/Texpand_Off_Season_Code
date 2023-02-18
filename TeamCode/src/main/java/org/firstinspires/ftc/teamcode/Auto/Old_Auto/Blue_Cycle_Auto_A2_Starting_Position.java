@@ -21,7 +21,6 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 
 @Autonomous
-@Disabled
 public class Blue_Cycle_Auto_A2_Starting_Position extends LinearOpMode {
 
     //hardware
@@ -110,9 +109,6 @@ public class Blue_Cycle_Auto_A2_Starting_Position extends LinearOpMode {
         });
 
         telemetry.setMsTransmissionInterval(50);
-
-        Top_Gripper.setPosition(0);
-        Top_Pivot.setPosition(0.4);
 
         drive.init(hardwareMap);
         top.init(hardwareMap);

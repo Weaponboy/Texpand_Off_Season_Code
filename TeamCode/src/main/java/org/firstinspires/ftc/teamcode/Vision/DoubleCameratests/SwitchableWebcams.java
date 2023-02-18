@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Vision.DoubleCameratests;
 import android.graphics.Bitmap;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -18,135 +19,10 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvSwitchableWebcam;
 import org.openftc.easyopencv.PipelineRecordingParameters;
-
+@TeleOp
 public class SwitchableWebcams extends OpMode {
 
-    OpenCvSwitchableWebcam Vision = new OpenCvSwitchableWebcam() {
-        @Override
-        public void setActiveCamera(WebcamName cameraName) {
-
-        }
-
-        @Override
-        public WebcamName getActiveCamera() {
-            return null;
-        }
-
-        @Override
-        public WebcamName[] getMembers() {
-            return new WebcamName[0];
-        }
-
-        @Override
-        public int openCameraDevice() {
-            return 0;
-        }
-
-        @Override
-        public void openCameraDeviceAsync(AsyncCameraOpenListener cameraOpenListener) {
-
-        }
-
-        @Override
-        public void closeCameraDevice() {
-
-        }
-
-        @Override
-        public void closeCameraDeviceAsync(AsyncCameraCloseListener cameraCloseListener) {
-
-        }
-
-        @Override
-        public void showFpsMeterOnViewport(boolean show) {
-
-        }
-
-        @Override
-        public void pauseViewport() {
-
-        }
-
-        @Override
-        public void resumeViewport() {
-
-        }
-
-        @Override
-        public void setViewportRenderingPolicy(ViewportRenderingPolicy policy) {
-
-        }
-
-        @Override
-        public void setViewportRenderer(ViewportRenderer renderer) {
-
-        }
-
-        @Override
-        public void startStreaming(int width, int height) {
-
-        }
-
-        @Override
-        public void startStreaming(int width, int height, OpenCvCameraRotation rotation) {
-
-        }
-
-        @Override
-        public void stopStreaming() {
-
-        }
-
-        @Override
-        public void setPipeline(OpenCvPipeline pipeline) {
-
-        }
-
-        @Override
-        public int getFrameCount() {
-            return 0;
-        }
-
-        @Override
-        public float getFps() {
-            return 0;
-        }
-
-        @Override
-        public int getPipelineTimeMs() {
-            return 0;
-        }
-
-        @Override
-        public int getOverheadTimeMs() {
-            return 0;
-        }
-
-        @Override
-        public int getTotalFrameTimeMs() {
-            return 0;
-        }
-
-        @Override
-        public int getCurrentPipelineMaxFps() {
-            return 0;
-        }
-
-        @Override
-        public void startRecordingPipeline(PipelineRecordingParameters parameters) {
-
-        }
-
-        @Override
-        public void stopRecordingPipeline() {
-
-        }
-
-        @Override
-        public void getFrameBitmap(Continuation<? extends Consumer<Bitmap>> continuation) {
-
-        }
-    };
+    OpenCvSwitchableWebcam Vision;
 
     private WebcamName BackWeb;
 
@@ -172,20 +48,20 @@ public class SwitchableWebcams extends OpMode {
 
         BackWeb = hardwareMap.get(WebcamName.class, "Backcam");
 
-        frontWeb = hardwareMap.get(WebcamName.class, "frontCam");
+        frontWeb = hardwareMap.get(WebcamName.class, "Webcam 1");
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
 
+
+
         Vision = OpenCvCameraFactory.getInstance().createSwitchableWebcam(cameraMonitorViewId, BackWeb, frontWeb);
 
-        Vision.setPipeline(Pole);
-
-        Vision.setActiveCamera(BackWeb);
-
         Vision.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+
             @Override
             public void onOpened() {
 
+                Vision.setPipeline(Pole);
                 Vision.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
 
             }
@@ -193,6 +69,9 @@ public class SwitchableWebcams extends OpMode {
             @Override
             public void onError(int errorCode) { }
         });
+
+        Vision.setActiveCamera(BackWeb);
+
     }
 
     @Override
@@ -200,12 +79,15 @@ public class SwitchableWebcams extends OpMode {
 
         if (gamepad1.dpad_up){
             Vision.setActiveCamera(BackWeb);
+            Vision.setPipeline(Pole);
         }else if(gamepad1.dpad_down){
             Vision.setActiveCamera(frontWeb);
+            Vision.setPipeline(Cone);
         }
 
         telemetry.addData("Distance", Back_Distance.getDistance(DistanceUnit.MM));
         telemetry.addData("Active Camera:", Vision.getActiveCamera());
+        telemetry.addData("Camera FPS:", Vision.getFps());
         telemetry.update();
     }
 
