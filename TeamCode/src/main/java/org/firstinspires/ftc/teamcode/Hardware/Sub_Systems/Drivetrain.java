@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.apache.commons.math3.analysis.function.Min;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
@@ -43,7 +44,7 @@ public class Drivetrain {
 
     public double Distance_latest = 0;
     
-    Orientation yawAngle;
+    public Orientation yawAngle;
 
     static final double     HEADING_THRESHOLD       = 1.0 ;
 
@@ -166,12 +167,39 @@ public class Drivetrain {
 
     }
 
-    public void TurnToHeading(double Heading){
+    public void TurnToHeading(double Heading,double power){
         RF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         RB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         LF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         LB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         
+        yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        Current_Heading = yawAngle.firstAngle;
+        while (Current_Heading < (Heading - 5) || Current_Heading > (Heading + 5)) {
+            yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            Current_Heading = yawAngle.firstAngle;
+
+            if (Current_Heading > (Heading + 0.25)) {
+                LF.setPower(power);
+                LB.setPower(power);
+                RB.setPower(-power);
+                RF.setPower(-power);
+            } else if (Current_Heading < (Heading - 0.25)) {
+                LF.setPower(-power);
+                LB.setPower(-power);
+                RB.setPower(power);
+                RF.setPower(power);
+            } else {
+                RB.setPower(0);
+                RF.setPower(0);
+                LF.setPower(0);
+                LB.setPower(0);
+            }
+        }
+        RF.setPower(0);
+        LF.setPower(0);
+        RB.setPower(0);
+        LB.setPower(0);
         yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         Current_Heading = yawAngle.firstAngle;
         while (Current_Heading < (Heading - 0.5) || Current_Heading > (Heading + 0.5)) {
@@ -199,7 +227,6 @@ public class Drivetrain {
         LF.setPower(0);
         RB.setPower(0);
         LB.setPower(0);
-
     }
 
     public void DriveDistanceLongReverse(double distance, double speed) {
@@ -244,10 +271,16 @@ public class Drivetrain {
         // Wait for the motors to reach their target positions
         while (RF.getCurrentPosition() > ((-ticks) + 20) || RB.getCurrentPosition() > ((-ticks) + 20) || LF.getCurrentPosition() > ((-ticks) + 20) || LB.getCurrentPosition() > ((-ticks) + 20) ) {
 
-            RF.setPower(speed);
-            RB.setPower(speed);
-            LF.setPower(speed);
-            LB.setPower(speed);
+            if(Math.abs(RF.getCurrentPosition()) > ticks*0.9){
+                speed = speed*0.5;
+            }else{
+                RF.setPower(speed);
+                RB.setPower(speed);
+                LF.setPower(speed);
+                LB.setPower(speed);
+            }
+
+
 
 
         }
@@ -263,7 +296,7 @@ public class Drivetrain {
 
         DriveDistanceLong(130, 0.6);
 
-        TurnToHeading(-89);
+        TurnToHeading(-89,0.45);
 
         DriveDistanceLong(25.5, 0.4);
 
@@ -276,7 +309,7 @@ public class Drivetrain {
 
         StrafeDistance_Left(10, 0.6);
 
-        TurnToHeading(-96);
+        TurnToHeading(-96,0.45);
 
         Distance_1 = sensorRange.getDistance(DistanceUnit.MM);
 
@@ -295,7 +328,6 @@ public class Drivetrain {
     public void DriveDistanceLong(double distance, double speed) {
         yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         double Start_angle = yawAngle.firstAngle;
-        double Ramp_Down_point = 0;
 
         ResetEncoders();
         // Constants for the encoder counts per revolution and gear ratio
@@ -311,6 +343,7 @@ public class Drivetrain {
         // Calculate the number of encoder ticks required to travel the given distance
         int ticks = Math.toIntExact((long) (distance * ticksPerRevolution / wheelCircumference));
 
+
         // Set the target position for each motor
         RF.setTargetPosition(ticks);
         RB.setTargetPosition(ticks);
@@ -323,58 +356,41 @@ public class Drivetrain {
         LF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         LB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        Ramp_Down_point = 0.8*ticks;
-
-        // Set the power of each motor
         RF.setPower(speed);
         RB.setPower(speed);
         LF.setPower(speed);
         LB.setPower(speed);
 
-        // Wait for the motors to reach their target positions
+        // Drive with varying motor powers until the motors to reach their target positions
         while (RF.getCurrentPosition() < ticks - 20 || RB.getCurrentPosition() < ticks - 20 || LF.getCurrentPosition() < ticks - 20 || LB.getCurrentPosition() < ticks - 20) {
             yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             Current_Heading = yawAngle.firstAngle;
-            if(RB.getCurrentPosition() > ticks){
-                RB.setPower(0);
-            }else if(RB.getCurrentPosition() >= Ramp_Down_point){
-                RB.setPower(speed- 0.2);
-            }
 
-            if(LF.getCurrentPosition() > ticks){
-                LF.setPower(0);
-            }else if(LF.getCurrentPosition() >= Ramp_Down_point){
-                LF.setPower(speed- 0.2);
-            }
 
-            if(LB.getCurrentPosition() > ticks){
-                LB.setPower(0);
-            }else if(LB.getCurrentPosition() >= Ramp_Down_point){
-                LB.setPower(speed- 0.2);
-            }
+//            else{
+//                if (speed < maxspeed) {
+//                    speed = speed + 0.1;
+//                }
+//            }
+            RF.setPower(speed);
+            RB.setPower(speed);
+            LF.setPower(speed);
+            LB.setPower(speed);
+        }
+        RF.setPower(0);
+        RB.setPower(0);
+        LF.setPower(0);
+        LB.setPower(0);
+        speed = 0.3;
 
-            if(RF.getCurrentPosition() > ticks){
-                RF.setPower(0);
-            }else if(RF.getCurrentPosition() >= Ramp_Down_point){
-                RF.setPower(speed- 0.2);
-            }
+        while (RF.getCurrentPosition() < ticks - 5 || RB.getCurrentPosition() < ticks - 5 || LF.getCurrentPosition() < ticks - 5 || LB.getCurrentPosition() < ticks - 5) {
+            yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            Current_Heading = yawAngle.firstAngle;
 
-            if (Current_Heading > (Start_angle + 3)) {
-                LF.setPower(speed + 0.05);
-                LB.setPower(speed + 0.05);
-                RB.setPower(speed - 0.05);
-                RF.setPower(speed - 0.05);
-            } else if (Current_Heading < (Start_angle - 3)) {
-                RB.setPower(speed + 0.05);
-                RF.setPower(speed + 0.05);
-                LF.setPower(speed - 0.05);
-                LB.setPower(speed - 0.05);
-            } else {
-                RB.setPower(speed);
-                RF.setPower(speed);
-                LF.setPower(speed);
-                LB.setPower(speed);
-            }
+            RF.setPower(speed);
+            RB.setPower(speed);
+            LF.setPower(speed);
+            LB.setPower(speed);
 
         }
         RF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -383,27 +399,27 @@ public class Drivetrain {
         LB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         Current_Heading = yawAngle.firstAngle;
-        while (Current_Heading < (Start_angle - 3) || Current_Heading > (Start_angle + 3)) {
-            yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            Current_Heading = yawAngle.firstAngle;
-
-            if (Current_Heading > (Start_angle + 1)) {
-                LF.setPower(0.22);
-                LB.setPower(0.22);
-                RB.setPower(-0.22);
-                RF.setPower(-0.22);
-            } else if (Current_Heading < (Start_angle - 1)) {
-                RB.setPower(0.22);
-                RF.setPower(0.22);
-                LF.setPower(-0.22);
-                LB.setPower(-0.22);
-            } else {
-                RB.setPower(0);
-                RF.setPower(0);
-                LF.setPower(0);
-                LB.setPower(0);
-            }
-        }
+//        while (Current_Heading < (Start_angle - 3) || Current_Heading > (Start_angle + 3)) {
+//            yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+//            Current_Heading = yawAngle.firstAngle;
+//
+//            if (Current_Heading > (Start_angle + 1)) {
+//                LF.setPower(0.22);
+//                LB.setPower(0.22);
+//                RB.setPower(-0.22);
+//                RF.setPower(-0.22);
+//            } else if (Current_Heading < (Start_angle - 1)) {
+//                RB.setPower(0.22);
+//                RF.setPower(0.22);
+//                LF.setPower(-0.22);
+//                LB.setPower(-0.22);
+//            } else {
+//                RB.setPower(0);
+//                RF.setPower(0);
+//                LF.setPower(0);
+//                LB.setPower(0);
+//            }
+//        }
 
         // Stop the motors
         RF.setPower(0);
@@ -411,6 +427,126 @@ public class Drivetrain {
         LF.setPower(0);
         LB.setPower(0);
 
+    }
+
+
+    public void DriveDistanceRamp(double Distance_target, double Speed_target) {
+
+        double Ramp_up_dist = 10;
+        double Ramp_down_dist = 20;
+        double Speed_min = 0.2;
+        double Distance_travelled = 0;
+        double Distance_to_travel = Distance_target;
+        yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        double Start_angle = yawAngle.firstAngle;
+        double Angle_adjust = 0;
+
+
+        ResetEncoders();
+        // Constants for the encoder counts per revolution and gear ratio
+        final int ENCODER_COUNTS_PER_REVOLUTION = 510;
+        final double GEAR_RATIO = 1.0;
+
+        // Calculate the number of ticks per revolution
+        int ticksPerRevolution = (int) (ENCODER_COUNTS_PER_REVOLUTION / GEAR_RATIO);
+
+        // Calculate the circumference of the wheel
+        double wheelCircumference = Math.PI * 2 * (9.6 / 2.0);
+
+        // Calculate the number of encoder ticks required to travel the given distance
+        int ticks = Math.toIntExact((long) (Distance_target * ticksPerRevolution / wheelCircumference));
+        double ticks_per_cm = ticks / Distance_target;
+
+        double Ramp_up_slope = (1 - Speed_min) / Ramp_up_dist;
+        double Ramp_down_slope = (1 - Speed_min) / Ramp_down_dist;
+        double Speed_max = Math.min(Speed_min + Distance_target * Ramp_down_slope, Speed_target);
+        double Speed_now = Speed_min;
+
+
+        // Set the target position for each motor
+        RF.setTargetPosition(ticks);
+        RB.setTargetPosition(ticks);
+        LF.setTargetPosition(ticks);
+        LB.setTargetPosition(ticks);
+
+        // Set the motors to run to the target position
+        RF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        RB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        LF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        LB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        RF.setPower(Speed_now);
+        RB.setPower(Speed_now);
+        LF.setPower(Speed_now);
+        LB.setPower(Speed_now);
+
+        // Drive with varying motor powers until the motors to reach their target positions
+        while (Distance_travelled < Distance_target) {
+            // Check the current distance travelled in cm
+            Distance_travelled = (RF.getCurrentPosition() + LF.getCurrentPosition() + RB.getCurrentPosition() + LB.getCurrentPosition()) / (4 * ticks_per_cm);
+            Distance_to_travel = Distance_target - Distance_travelled;
+
+            //Check if angle has changed so a small power adjustment can be made to maintain the heading
+            yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            Current_Heading = yawAngle.firstAngle;
+
+            if (Current_Heading > (Start_angle + 1)) {
+                Angle_adjust = 0.2;
+            } else if (Current_Heading < (Start_angle - 1)) {
+                Angle_adjust = - 0.2;
+
+                if (Distance_to_travel > Ramp_down_dist) {//Not near the end
+                    Speed_now = Math.min(Speed_max, Speed_min + Distance_travelled * Ramp_up_slope);
+                } else {//Near the end and need to slow down steadily to cut momentum and not slip
+                    Speed_now = Speed_min + Distance_to_travel * Ramp_down_slope;
+
+                    RF.setPower(Speed_now - Angle_adjust);
+                    RB.setPower(Speed_now - Angle_adjust);
+                    LF.setPower(Speed_now + Angle_adjust);
+                    LB.setPower(Speed_now + Angle_adjust);
+                }
+
+                RF.setPower(0);
+                RB.setPower(0);
+                LF.setPower(0);
+                LB.setPower(0);
+
+                RF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                RB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                LF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                LB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+//        Current_Heading = yawAngle.firstAngle;
+//        while (Current_Heading < (Start_angle - 3) || Current_Heading > (Start_angle + 3)) {
+//            yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+//            Current_Heading = yawAngle.firstAngle;
+//
+//            if (Current_Heading > (Start_angle + 1)) {
+//                LF.setPower(0.22);
+//                LB.setPower(0.22);
+//                RB.setPower(-0.22);
+//                RF.setPower(-0.22);
+//            } else if (Current_Heading < (Start_angle - 1)) {
+//                RB.setPower(0.22);
+//                RF.setPower(0.22);
+//                LF.setPower(-0.22);
+//                LB.setPower(-0.22);
+//            } else {
+//                RB.setPower(0);
+//                RF.setPower(0);
+//                LF.setPower(0);
+//                LB.setPower(0);
+//            }
+//        }
+
+                // Stop the motors
+                RF.setPower(0);
+                RB.setPower(0);
+                LF.setPower(0);
+                LB.setPower(0);
+
+            }
+        }
     }
 
     public void DriveDistance(double distance, double speed) {
@@ -854,7 +990,6 @@ public class Drivetrain {
 
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
-
         RF.setDirection(DcMotorSimple.Direction.FORWARD);
         LF.setDirection(DcMotorSimple.Direction.REVERSE);
         RB.setDirection(DcMotorSimple.Direction.FORWARD);

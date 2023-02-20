@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Vision.Cone_Alignment;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.drivebase.MecanumDrive;
 import com.arcrobotics.ftclib.geometry.Pose2d;
@@ -27,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 
 
 @Autonomous
+@Config
 public class Cone_Stack_Vision extends OpMode {
 
     public static final double TRACKWIDTH = 36.2  ;
@@ -65,7 +67,8 @@ public class Cone_Stack_Vision extends OpMode {
 
     public double rectPositionFromLeft = 0;
 
-
+    public static int Gain = 100;
+    public static int Exposure = 30;
     public void init() {
 
         drive.init(hardwareMap);
@@ -85,9 +88,9 @@ public class Cone_Stack_Vision extends OpMode {
             public void onOpened() {
                 Texpandcamera.getExposureControl().setMode(ExposureControl.Mode.Manual);
 
-                Texpandcamera.getExposureControl().setExposure(30, TimeUnit.MILLISECONDS);
+                Texpandcamera.getExposureControl().setExposure(Exposure, TimeUnit.MILLISECONDS);
 
-                Texpandcamera.getGainControl().setGain(100);
+                Texpandcamera.getGainControl().setGain(Gain);
 
                 FocusControl.Mode focusmode = FocusControl.Mode.Fixed;
 
@@ -159,6 +162,7 @@ public class Cone_Stack_Vision extends OpMode {
         telemetry.addData("S", Cone_Pipeline.getS());
         telemetry.addData("V", Cone_Pipeline.getV());
         telemetry.addData("H", Cone_Pipeline.getH());
+        telemetry.addData("Min H Value", Blue_Cone_Pipe.Min_H);
         telemetry.addData("con", Cone_Pipeline.numcontours());
         telemetry.addData("rects", Cone_Pipeline.getRects());
         telemetry.addData("Target cm", Distance_To_Travel);
@@ -173,37 +177,69 @@ public class Cone_Stack_Vision extends OpMode {
     public void loop() {
 
         rectPositionFromLeft = Cone_Pipeline.getRectX();
-        power = 0.35;
+        power = 0.25;
         drive.WithOutEncoders();
 
-        while (rectPositionFromLeft > CenterOfScreen + 10 || rectPositionFromLeft < CenterOfScreen - 10){
-
-            telemetry.addData("rect X", Cone_Pipeline.getRectX());
-            telemetry.addData("rect Y", Cone_Pipeline.getRectY());
-            telemetry.addData("Target CM", Distance_To_Travel);
+        while (Math.abs(rectPositionFromLeft - CenterOfScreen) > 12){
+            telemetry.addData("Target CM", Math.abs(rectPositionFromLeft - CenterOfScreen));
             telemetry.update();
-
-            if(rectPositionFromLeft > CenterOfScreen - 5 || rectPositionFromLeft < CenterOfScreen + 5){
-                power = 0.27;
-            }
+//            telemetry.addData("rect X", Cone_Pipeline.getRectX());
+//            telemetry.addData("rect Y", Cone_Pipeline.getRectY());
+//            telemetry.addData("Target CM", Distance_To_Travel);
+//            telemetry.update();
             rectPositionFromLeft = Cone_Pipeline.getRectX();
+
 
             if (rectPositionFromLeft < CenterOfScreen) {
 
-                drive.RF.setPower(-1.3*power);
+                drive.RF.setPower(-power);
                 drive.RB.setPower(power);
-                drive.LF.setPower(1.3*power);
+                drive.LF.setPower(power);
                 drive.LB.setPower(-power);
 
             } else if (rectPositionFromLeft > CenterOfScreen) {
 
-                drive.RF.setPower(1.3*power);
+                drive.RF.setPower(power);
                 drive.RB.setPower(-power);
-                drive.LF.setPower(-1.3*power);
+                drive.LF.setPower(-power);
                 drive.LB.setPower(power);
+            }else{
+                drive.RF.setPower(0);
+                drive.RB.setPower(0);
+                drive.LF.setPower(0);
+                drive.LB.setPower(0);
             }
 
         }
+
+//        while (rectPositionFromLeft > CenterOfScreen + 10 || rectPositionFromLeft < CenterOfScreen - 10){
+//
+//            telemetry.addData("rect X", Cone_Pipeline.getRectX());
+//            telemetry.addData("rect Y", Cone_Pipeline.getRectY());
+//            telemetry.addData("Target CM", Distance_To_Travel);
+//            telemetry.update();
+//
+//            if(rectPositionFromLeft > CenterOfScreen - 5 || rectPositionFromLeft < CenterOfScreen + 5){
+//                power = 0.27;
+//            }
+//            rectPositionFromLeft = Cone_Pipeline.getRectX();
+//
+//            if (rectPositionFromLeft < CenterOfScreen) {
+//
+//                drive.RF.setPower(-1.3*power);
+//                drive.RB.setPower(power);
+//                drive.LF.setPower(1.3*power);
+//                drive.LB.setPower(-power);
+//
+//            } else if (rectPositionFromLeft > CenterOfScreen) {
+//
+//                drive.RF.setPower(1.3*power);
+//                drive.RB.setPower(-power);
+//                drive.LF.setPower(-1.3*power);
+//                drive.LB.setPower(power);
+//            }
+//
+//        }
 
         drive.RF.setPower(0);
         drive.RB.setPower(0);
@@ -221,10 +257,6 @@ public class Cone_Stack_Vision extends OpMode {
 //        }
 
         //Telemetry to be displayed during loop()
-        telemetry.addData("rect X", Cone_Pipeline.getRectX());
-        telemetry.addData("rect Y", Cone_Pipeline.getRectY());
-        telemetry.addData("Target CM", Distance_To_Travel);
-        telemetry.update();
     }
 
     public double getXpos() {

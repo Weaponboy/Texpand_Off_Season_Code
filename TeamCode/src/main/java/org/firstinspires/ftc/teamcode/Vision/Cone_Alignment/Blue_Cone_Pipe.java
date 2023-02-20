@@ -16,6 +16,11 @@ import static org.opencv.imgproc.Imgproc.erode;
 import static org.opencv.imgproc.Imgproc.findContours;
 import static org.opencv.imgproc.Imgproc.rectangle;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Vision.Vision_From_Collin.VisionDash;
 import org.firstinspires.ftc.teamcode.Vision.Vision_From_Collin.VisionUtils;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -28,10 +33,12 @@ import org.openftc.easyopencv.OpenCvPipeline;
 
 import java.util.ArrayList;
 import java.util.List;
-
+@Config
 public class Blue_Cone_Pipe extends OpenCvPipeline {
 
-    private static int IMG_HEIGHT = 0;
+    private static FtcDashboard dashboard = FtcDashboard.getInstance();
+    Telemetry dashboardTelemetry = dashboard.getTelemetry();
+    int IMG_HEIGHT = 0;
     private static int IMG_WIDTH = 0;
 
     //Create Mats
@@ -68,14 +75,28 @@ public class Blue_Cone_Pipe extends OpenCvPipeline {
     private List<Rect> rects = new ArrayList<>();
 
     //colour scales for the cone
-    public Scalar MIN_THRESH = new Scalar(135,100,100);
-    public Scalar MAX_THRESH = new Scalar(165,255,255);
+    public static int Min_H;
+    public static int Min_S;
+    public static int Min_V;
+    public static int Max_H;
+    public static int Max_S;
+    public static int Max_V;
+    public Scalar MIN_THRESH;
+    public Scalar MAX_THRESH;
 
     public Scalar values;
 
     @Override
     public Mat processFrame(Mat input) {
+        Min_H = 125;
+        Min_S = 90;
+        Min_V = 90;
+        Max_H = 165;
+        Max_S = 255;
+        Max_V = 255;
 
+        MIN_THRESH = new Scalar(VisionDash.cone_Min_H,VisionDash.cone_Min_S,VisionDash.cone_Min_V);
+        MAX_THRESH = new Scalar(VisionDash.cone_Max_H,VisionDash.cone_Max_S,VisionDash.cone_Max_V);
         // copy input to output
         input.copyTo(output);
 

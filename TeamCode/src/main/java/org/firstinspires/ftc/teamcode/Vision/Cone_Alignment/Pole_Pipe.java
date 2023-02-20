@@ -18,6 +18,7 @@ import static org.opencv.imgproc.Imgproc.rectangle;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 
+import org.apache.commons.math3.geometry.partitioning.BSPTreeVisitor;
 import org.firstinspires.ftc.teamcode.Vision.Vision_From_Collin.VisionDash;
 import org.firstinspires.ftc.teamcode.Vision.Vision_From_Collin.VisionUtils;
 import org.opencv.core.Core;
@@ -56,21 +57,26 @@ public class Pole_Pipe extends OpenCvPipeline {
 
 
     private int font = FONT_HERSHEY_COMPLEX;
-    private double rectX;
+    private double rectX = 0;
 
     private double H;
-
+    public double Rect_Width = 0;
     private double S;
 
     private double V;
 
     //create rects
     static final Rect center2 = new Rect(new Point(200, 180), new Point(350, 320));
-    private double rectY;
+    private double rectY = 0;
 
     Rect rect = new Rect(new Point(0,0), new Point(50, 50));
     private Rect largestRect;
     private List<Rect> rects = new ArrayList<>();
+    //POLE WIDTH SPECIFIC VARIABLES
+    private List<Rect> OrderedByWidthrects = new ArrayList<>();
+    private int PoleRect = -1;
+    private Rect TargetRect;
+    public int rectangles;
 
     //colour scales for the cone
     public Scalar MIN_THRESH;
@@ -80,6 +86,7 @@ public class Pole_Pipe extends OpenCvPipeline {
 
     @Override
     public Mat processFrame(Mat input) {
+
         MIN_THRESH = new Scalar(VisionDash.pole_min_H,VisionDash.pole_min_S,VisionDash.pole_min_V);
         MAX_THRESH = new Scalar(VisionDash.pole_max_H,VisionDash.pole_max_S,VisionDash.pole_max_V);
         // copy input to output
@@ -92,8 +99,8 @@ public class Pole_Pipe extends OpenCvPipeline {
 //        MAX_THRESH = new Scalar(VisionDash.blue_max_H, VisionDash.blue_max_S, VisionDash.blue_max_V);
 
         //convert to HSV FULL
-        Imgproc.cvtColor(input, modified, COLOR_RGB2YCrCb);
-        Imgproc.cvtColor(output, output, COLOR_RGB2YCrCb);
+        Imgproc.cvtColor(input, modified, COLOR_RGB2HSV_FULL);
+        Imgproc.cvtColor(output, output, COLOR_RGB2HSV_FULL);
 
         //submat
         values = Core.mean(modified.submat(center));
@@ -120,15 +127,28 @@ public class Pole_Pipe extends OpenCvPipeline {
 
         //find largest rect and draw a rectangle and mark it with a circle in the center
         if(rects.size() > 0){
+//            for (int i=0; i < rects.size(); i++){
+//                if (rects.get(i).width < 68 && (rects.get(i).width > 50)) {
+//                    PoleRect = i;
+//                }
+//            }
 
             largestRect = VisionUtils.sortRectsByMaxOption(1, VisionUtils.RECT_OPTION.AREA, rects).get(0);
+            rectangle(output, largestRect, orange, 30);
+            Imgproc.circle(output,new Point(largestRect.x + largestRect.width/2,largestRect.y + largestRect.height/2),50,orange,20);
 
-            rectangle(output, largestRect, lightBlue, 30);
+//            if (PoleRect > - 1){
+//                TargetRect = rects.get(PoleRect);
+//                rectangle(output, TargetRect, lightBlue, 30);
+//
+//                rectX = TargetRect.x + largestRect.width/2;
+//                rectY = TargetRect.y + largestRect.height/2;
+//                Rect_Width = TargetRect.width;
+//                Imgproc.circle(output,new Point(rectX,rectY),50,orange,20);
+//            }
 
-            rectX = largestRect.x + largestRect.width/2;
-            rectY = largestRect.y + largestRect.height/2;
 
-            Imgproc.circle(output,new Point(rectX,rectY),50,orange,20);
+
         }
 
         //This is used to output the HSV For debugging
@@ -145,7 +165,7 @@ public class Pole_Pipe extends OpenCvPipeline {
         //Clear arrays  to stop pipeline from leaking memory
         contours.clear();
         rects.clear();
-
+        PoleRect = -1;
         //return output
         return output;
     }

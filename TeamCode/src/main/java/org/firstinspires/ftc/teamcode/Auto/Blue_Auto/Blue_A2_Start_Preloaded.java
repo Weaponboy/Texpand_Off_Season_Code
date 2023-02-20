@@ -327,7 +327,7 @@ public class Blue_A2_Start_Preloaded extends LinearOpMode {
 
     public void Drive_To_Pos_1() {
 
-        drive.TurnToHeading(0);
+        drive.TurnToHeading(0, 0.45);
         Top_Pivot.setPosition(0.4);
         drive.DriveDistanceLong(10,0.5);
         telemetry.addData("Finished", "driving");
@@ -349,7 +349,7 @@ public class Blue_A2_Start_Preloaded extends LinearOpMode {
     }
 
     public void Drive_To_Pos_2() {
-        drive.TurnToHeading(0);
+        drive.TurnToHeading(0,0.45);
         Top_Pivot.setPosition(0.4);
         drive.DriveDistanceLong(10,0.5);
         drive.StrafeDistance_Left(5,0.4);
@@ -371,7 +371,7 @@ public class Blue_A2_Start_Preloaded extends LinearOpMode {
 
     public void Drive_To_Pos_3() {
 
-        drive.TurnToHeading(0);
+        drive.TurnToHeading(0,0.45);
         Top_Pivot.setPosition(0.4);
         drive.DriveDistanceLong(10,0.5);
         drive.StrafeDistance(60,0.5);
@@ -397,7 +397,7 @@ public class Blue_A2_Start_Preloaded extends LinearOpMode {
 
         drive.DriveDistanceLong(116,0.5);
         drive.StrafeDistance_Left(4,0.5);
-        drive.TurnToHeading(-142);
+        drive.TurnToHeading(-142 ,0.45);
 //        drive.DriveDistanceLong(135, 0.5);
 //
 //        Base_Pivot.setPosition(0.72);

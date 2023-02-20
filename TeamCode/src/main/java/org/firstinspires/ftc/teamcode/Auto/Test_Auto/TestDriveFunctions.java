@@ -79,7 +79,7 @@ public class TestDriveFunctions extends LinearOpMode {
 
         TestTrain.DriveDistanceLong(130, 0.6);
 
-        TestTrain.TurnToHeading(-87);
+        TestTrain.TurnToHeading(-87,0.45);
 
         TestTrain.DriveDistanceLong(25.5, 0.4);
 
@@ -92,7 +92,7 @@ public class TestDriveFunctions extends LinearOpMode {
 
         TestTrain.StrafeDistance_Left(10, 0.6);
 
-        TestTrain.TurnToHeading(-96);
+        TestTrain.TurnToHeading(-96,0.45);
 
         TestTrain.Distance_1 = TestTrain.sensorRange.getDistance(DistanceUnit.MM);
 

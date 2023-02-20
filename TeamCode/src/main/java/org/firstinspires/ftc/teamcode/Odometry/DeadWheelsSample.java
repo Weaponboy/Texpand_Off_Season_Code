@@ -111,15 +111,16 @@ public class DeadWheelsSample extends LinearOpMode {
         odometry.updatePose(new Pose2d(0, 0, new Rotation2d()));
 
         odometry.update(0, 0, 0);
-        DriveOdometry(150,0.3);
-        try {
-            Thread.sleep(2000);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-
-        telemetry.addData("Robot Position", odometry.getPose());
-        telemetry.update();
+         DriveToPos(10,0,0.3);
+//        DriveOdometry(150,0.3);
+//        try {
+//            Thread.sleep(2000);
+//        } catch (Exception e) {
+//            System.out.println(e.getMessage());
+//        }
+//
+//        telemetry.addData("Robot Position", odometry.getPose());
+//        telemetry.update();
 
 
 //
@@ -158,7 +159,184 @@ public class DeadWheelsSample extends LinearOpMode {
 
         }
     }
+    public void DriveToPos(double TargetXPos, double TargetYPos, double power){
+        double CurrentXPos = 0;
+        double CurrentYPos = 0;
+        double StartingHeading = 0;
 
+        double CurrentPosStarting = 0;
+
+        double power_rampup = 0.05;
+        double power_rampdown = power_rampup*1.2;
+        double ramp_down_point = 0;
+        double max_speed = 0;
+        int loopcount =0;
+        boolean refined = false;
+        double Xdist = 0;
+        double Ydist = 0;
+        double RRXdist = 0;
+        double RRYdist = 0;
+        double Horizontal = 0;
+        double Vertical = 0;
+        double Rotation = 0;
+        double ResultantDist = 0;
+        double ConvertedHeading = 0;
+        double Pivot = 0;
+
+        // Set the motors to run to the target position
+        drive.RF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        drive.RB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        drive.LF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        drive.LB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        do {
+            odometry.updatePose();
+            CurrentXPos = getYpos();
+            CurrentYPos = getXpos();
+            StartingHeading = Math.toDegrees(getheading());
+            if (StartingHeading <= 0) {
+                ConvertedHeading = (0 - StartingHeading);
+            }else {
+                ConvertedHeading = (360 - StartingHeading);
+            }
+            Xdist = TargetXPos - CurrentXPos;
+            Ydist = TargetYPos - CurrentYPos;
+            RRXdist = Xdist*Math.cos(Math.toRadians(360-ConvertedHeading)) - Ydist*Math.sin(Math.toRadians(360-ConvertedHeading));
+            RRYdist = Xdist*Math.sin(Math.toRadians(360-ConvertedHeading)) + Ydist*Math.cos(Math.toRadians(360-ConvertedHeading));
+            ResultantDist = Math.sqrt((Xdist*Xdist) + (Ydist*Ydist));
+
+            Vertical = Ydist/ResultantDist;
+            Horizontal = Xdist/ResultantDist;
+
+
+
+            telemetry.addData("Xdist", Xdist);
+            telemetry.addData("Ydist", Ydist);
+            telemetry.addData("StartingHeading", StartingHeading);
+            telemetry.addData("ConvertedHeading", ConvertedHeading);
+            telemetry.addData("RRXdist", RRXdist);
+            telemetry.addData("RRYdist", RRYdist);
+            telemetry.addData("Vertical", Vertical);
+            telemetry.addData("Horizontal", Horizontal);
+            telemetry.update();
+
+
+
+
+            drive.RF.setPower(power*1.3*(-Pivot + (Vertical - Horizontal)));
+            drive.RB.setPower(power*(-Pivot + (Vertical + Horizontal)));
+            drive.LF.setPower(power*1.3*(Pivot + (Vertical + Horizontal)));
+            drive.LB.setPower(power*(Pivot + (Vertical - Horizontal)));
+
+
+        } while ((Math.abs(Xdist) > 0.5) || (Math.abs(Ydist) > 0.5));
+
+
+
+
+//            ramp_down_point = Math.abs(TargetXPos - CurrentXPos)*0.75;
+//            telemetry.addData("StartHeading", StartingHeading);
+//            telemetry.addData("CurrentXPos", CurrentXPos);
+//            telemetry.addData("TargetXPos", TargetXPos);
+//            telemetry.addData("Rampdownpoint", ramp_down_point);
+//            telemetry.update();
+//        try {
+//            Thread.sleep(4000);
+//        } catch (Exception e) {
+//            System.out.println(e.getMessage());
+//        }
+//            while (Math.abs(TargetXPos - CurrentXPos) > 0.05) {
+//
+//                telemetry.addData("Robot Position", odometry.getPose());
+//                telemetry.addData("TargetXPos", TargetXPos);
+//                telemetry.update();
+//
+//                odometry.updatePose();
+//                CurrentXPos = getXpos();
+//                if (Math.abs(TargetXPos - CurrentXPos) < ramp_down_point) {
+//                    if (power > 0.25) {
+//                        power = power - power_rampdown;
+//                    }
+//                }else if (power<1) {
+//                    power = power + power_rampup;
+//                    loopcount = loopcount +1;
+//                }
+//                if (power > max_speed){
+//                    max_speed = power;
+//                }
+//                if (CurrentXPos < TargetXPos) {
+//
+//                    drive.RF.setPower(power);
+//                    drive.RB.setPower(power);
+//                    drive.LF.setPower(power);
+//                    drive.LB.setPower(power);
+//
+//                } else if (CurrentXPos > TargetXPos) {
+//
+//                    drive.RF.setPower(-power);
+//                    drive.RB.setPower(-power);
+//                    drive.LF.setPower(-power);
+//                    drive.LB.setPower(-power);
+//                }
+//            }
+//            try {
+//                Thread.sleep(150);
+//            } catch (Exception e) {
+//                System.out.println(e.getMessage());
+//            }
+//            power = 0.15;
+//            odometry.updatePose();
+//            CurrentXPos = getXpos();
+//            while (Math.abs(TargetXPos - CurrentXPos) > 0.05) {
+//
+//                refined = true;
+//                telemetry.addData("Robot Position", odometry.getPose());
+//                telemetry.addData("TargetXPos", TargetXPos);
+//                telemetry.update();
+//
+//                odometry.updatePose();
+//                CurrentXPos = getXpos();
+//                if (Math.abs(TargetXPos - CurrentXPos) < ramp_down_point) {
+//                    if (power > 0.25) {
+//                        power = power - power_rampdown;
+//                    }
+//                }else if (power<1) {
+//                    power = power + power_rampup;
+//                    loopcount = loopcount +1;
+//                }
+//                if (power > max_speed){
+//                    max_speed = power;
+//                }
+//                if (CurrentXPos < TargetXPos) {
+//
+//                    drive.RF.setPower(power);
+//                    drive.RB.setPower(power);
+//                    drive.LF.setPower(power);
+//                    drive.LB.setPower(power);
+//
+//                } else if (CurrentXPos > TargetXPos) {
+//
+//                    drive.RF.setPower(-power);
+//                    drive.RB.setPower(-power);
+//                    drive.LF.setPower(-power);
+//                    drive.LB.setPower(-power);
+//                }
+//            }
+
+        drive.RF.setPower(0);
+        drive.RB.setPower(0);
+        drive.LF.setPower(0);
+        drive.LB.setPower(0);
+//        telemetry.addData("TargetXpos   ", TargetXPos);
+//        telemetry.addData("CurrentXpos", CurrentXPos);
+//        telemetry.addData("refined", refined);
+//        telemetry.update();
+        try {
+            Thread.sleep(4000);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
     public double getXpos() {
         return odometry.getPose().getX();
     }

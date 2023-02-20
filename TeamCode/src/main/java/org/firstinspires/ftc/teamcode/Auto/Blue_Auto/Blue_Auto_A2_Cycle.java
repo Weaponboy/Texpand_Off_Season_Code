@@ -116,7 +116,7 @@ public class Blue_Auto_A2_Cycle extends LinearOpMode {
     double De_Pos_2 = 0.2;
     double De_Pos_3 = 0.45;
     double De_Pos_4 = 0.54;
-    double De_Pos_5 = 0.7;
+    double De_Pos_5 = 0.72;
 
     OpenCvWebcam camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;

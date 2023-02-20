@@ -219,7 +219,7 @@ public class Blue_Cycle_Auto_A2_Starting_Position extends LinearOpMode {
     }
 
     public void Drive_To_Pos_1(){
-        drive.TurnToHeading(0);
+        drive.TurnToHeading(0,0.45);
 
         drive.StrafeDistance(40, .5);
 
@@ -227,7 +227,7 @@ public class Blue_Cycle_Auto_A2_Starting_Position extends LinearOpMode {
     }
 
     public void Drive_To_Pos_2(){
-        drive.TurnToHeading(0);
+        drive.TurnToHeading(0,0.45);
 
         drive.StrafeDistance(40, .5);
 
@@ -235,7 +235,7 @@ public class Blue_Cycle_Auto_A2_Starting_Position extends LinearOpMode {
     }
 
     public void Drive_To_Pos_3(){
-        drive.TurnToHeading(0);
+        drive.TurnToHeading(0,0.45);
 
         drive.StrafeDistance(40, .5);
 
@@ -245,13 +245,13 @@ public class Blue_Cycle_Auto_A2_Starting_Position extends LinearOpMode {
     public void Drive_To_Destack(){
         drive.DriveDistanceLong(140, 0.6);
 
-        drive.TurnToHeading(-90);
+        drive.TurnToHeading(-90,0.45);
 
         drive.StrafeDistance_Left(25, 0.6);
 
         drive.DriveDistanceLong(20, 0.6);
 
-        drive.TurnToHeading(-104);
+        drive.TurnToHeading(-104,0.45);
 
         drive.StrafeDistance(14, 0.6);
 

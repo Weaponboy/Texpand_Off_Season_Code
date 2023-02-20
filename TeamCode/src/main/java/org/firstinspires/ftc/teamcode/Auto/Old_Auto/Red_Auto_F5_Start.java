@@ -333,7 +333,7 @@ public class Red_Auto_F5_Start extends LinearOpMode {
 
         drive.StrafeDistance_Left(60, .5);
 
-        drive.TurnToHeading(90);
+        drive.TurnToHeading(90,0.45);
 
         drive.StrafeDistance_Left(60, .5);
     }
@@ -351,7 +351,7 @@ public class Red_Auto_F5_Start extends LinearOpMode {
 
         drive.StrafeDistance_Left(60, .5);
 
-        drive.TurnToHeading(90);
+        drive.TurnToHeading(90,0.45);
     }
 
     public void Drive_To_Pos_3() {
@@ -367,7 +367,7 @@ public class Red_Auto_F5_Start extends LinearOpMode {
 
         drive.StrafeDistance_Left(60, .5);
 
-        drive.TurnToHeading(90);
+        drive.TurnToHeading(90,0.45);
 
         drive.StrafeDistance(50, .5);
     }

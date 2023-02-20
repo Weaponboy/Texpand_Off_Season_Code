@@ -142,6 +142,7 @@ public class Pole_Vision extends OpMode {
         telemetry.addData("H", Pole.getH());
         telemetry.addData("con", Pole.numcontours());
         telemetry.addData("rects", Pole.getRects());
+        telemetry.addData("Ordered rectangles", Pole.rectangles);
         telemetry.addData("Target cm", Distance_To_Travel);
         telemetry.addData("Cone Position", Pole.getRectX());
         telemetry.addData("rect X", Pole.getRectX());

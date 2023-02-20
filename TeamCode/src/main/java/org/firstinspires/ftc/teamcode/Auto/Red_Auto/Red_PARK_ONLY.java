@@ -321,7 +321,7 @@ public class Red_PARK_ONLY extends LinearOpMode {
     }
 
     public void Drive_To_Pos_2() {
-        drive.TurnToHeading(-90);
+        drive.TurnToHeading(-90,0.45);
 
         Top_Pivot.setPosition(0.4);
         Base_Pivot.setPosition(0.72);
@@ -332,11 +332,11 @@ public class Red_PARK_ONLY extends LinearOpMode {
 
         drive.StrafeDistance(60, .5);
 
-        drive.TurnToHeading(0);
+        drive.TurnToHeading(0,0.45);
     }
 
     public void Drive_To_Pos_3() {
-        drive.TurnToHeading(-90);
+        drive.TurnToHeading(-90,0.45);
 
         Top_Pivot.setPosition(0.4);
         Base_Pivot.setPosition(0.72);
@@ -347,7 +347,7 @@ public class Red_PARK_ONLY extends LinearOpMode {
 
         drive.StrafeDistance(60, .5);
 
-        drive.TurnToHeading(0);
+        drive.TurnToHeading(0,0.45);
 
         drive.StrafeDistance(50, .5);
     }
@@ -371,7 +371,7 @@ public class Red_PARK_ONLY extends LinearOpMode {
 
         Base_Pivot.setPosition(0.72);
 
-        drive.TurnToHeading(-89);
+        drive.TurnToHeading(-89,0.45);
         telemetry.addData("Finished", "Turning");
         telemetry.update();
         Base_Pivot.setPosition(0.8);
@@ -387,7 +387,7 @@ public class Red_PARK_ONLY extends LinearOpMode {
         drive.StrafeDistance_Left(17, 0.6);
 
 
-        drive.TurnToHeading(-102);
+        drive.TurnToHeading(-102,0.45);
 
     }
 

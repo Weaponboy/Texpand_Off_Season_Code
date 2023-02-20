@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Vision.DoubleCameratests;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -7,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.FocusControl;
@@ -29,7 +31,8 @@ public class NormalChangingWebcams extends OpMode {
 
     @Override
     public void init() {
-
+        FtcDashboard dashboard = FtcDashboard.getInstance();
+        Telemetry dashboardTelemetry = dashboard.getTelemetry();
 
         Pole = new Pole_Pipe();
 
@@ -73,6 +76,7 @@ public class NormalChangingWebcams extends OpMode {
         });
         FrontWeb.setPipeline(Cone);
 
+
         BackWeb.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
@@ -113,18 +117,13 @@ public class NormalChangingWebcams extends OpMode {
             telemetry.addData("Front", "Web");
             telemetry.addData("Cone X:",Cone.getRectX());
             telemetry.update();
-
-            BackWeb.closeCameraDevice();
-
-            FrontWeb.openCameraDevice();
+            FtcDashboard.getInstance().startCameraStream(FrontWeb,30);
 
         }else if(gamepad1.dpad_down){
             telemetry.addData("Back", "Web");
             telemetry.addData("Pole X:",Pole.getRectX());
             telemetry.update();
-
-            FrontWeb.closeCameraDevice();
-            BackWeb.openCameraDevice();
+            FtcDashboard.getInstance().startCameraStream(BackWeb,30);
 
         }
         if(!gamepad1.dpad_down && !gamepad1.dpad_up) {

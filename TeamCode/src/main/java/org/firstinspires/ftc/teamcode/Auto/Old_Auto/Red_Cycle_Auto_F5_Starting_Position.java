@@ -115,13 +115,13 @@ public class Red_Cycle_Auto_F5_Starting_Position extends LinearOpMode {
 
         drive.DriveDistanceLong(140, 0.6);
 
-        drive.TurnToHeading(90);
+        drive.TurnToHeading(90,0.45);
 
         drive.StrafeDistance_Left(25, 0.6);
 
         drive.DriveDistance(20, 0.6);
 
-        drive.TurnToHeading(14);
+        drive.TurnToHeading(14,0.45);
 
         drive.StrafeDistance(14, 0.6);
 
