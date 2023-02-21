@@ -326,13 +326,11 @@ public class Blue_A5_Start_Preloaded extends LinearOpMode {
     }
 
     public void Drive_To_Pos_1() {
-
-        drive.TurnToHeading(0,0.45);
-        Top_Pivot.setPosition(0.4);
+        drive.TurnToHeading(8,0.45);
+        Top_Pivot.setPosition(1);
         drive.DriveDistanceLong(10,0.5);
-        telemetry.addData("Finished", "driving");
-        telemetry.update();
-        drive.StrafeDistance_Left(60,0.5);
+        drive.StrafeDistance(52,0.5);
+
 //        telemetry.addData("Finished", "placing");
 //        telemetry.update();
 //        drive.TurnToHeading(-90);
@@ -349,13 +347,13 @@ public class Blue_A5_Start_Preloaded extends LinearOpMode {
     }
 
     public void Drive_To_Pos_2() {
-        drive.TurnToHeading(0,0.45);
-        Top_Pivot.setPosition(0.4);
-        drive.DriveDistanceLong(10,0.5);
-        drive.StrafeDistance(5,0.4);
+        drive.TurnToHeading(8,0.35);
+        Top_Pivot.setPosition(1);
+        drive.StrafeDistance_Left(8,0.5);
 
-//        telemetry.addData("Finished", "placing");
-//        telemetry.update();
+        telemetry.addData("Finished", "placing 2");
+        telemetry.update();
+
 //        drive.TurnToHeading(-90);
 //        drive.StrafeDistance(10, .5);
 //
@@ -370,11 +368,13 @@ public class Blue_A5_Start_Preloaded extends LinearOpMode {
     }
 
     public void Drive_To_Pos_3() {
+        drive.TurnToHeading(8, 0.35);
 
-        drive.TurnToHeading(0,0.45);
-        Top_Pivot.setPosition(0.4);
-        drive.DriveDistanceLong(10,0.5);
-        drive.StrafeDistance(60,0.5);
+        Top_Pivot.setPosition(1);
+        telemetry.addData("Finished", "driving 3");
+        telemetry.update();
+        drive.StrafeDistance_Left(65,0.5);
+
 
 
 //        telemetry.addData("Finished", "placing");
@@ -395,9 +395,9 @@ public class Blue_A5_Start_Preloaded extends LinearOpMode {
 
     public void Drive_To_Destack() {
 
-        drive.DriveDistanceLong(118,0.5);
-        drive.StrafeDistance(4,0.5);
-        drive.TurnToHeading(138,0.45);
+        drive.DriveDistanceLong(130,0.5);
+
+        drive.TurnToHeading(130,0.35);
 //        drive.DriveDistanceLong(135, 0.5);
 //
 //        Base_Pivot.setPosition(0.72);
@@ -433,14 +433,15 @@ public class Blue_A5_Start_Preloaded extends LinearOpMode {
         Left_Slide.setTargetPosition(1900);
         Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        while (Right_Slide.isBusy() && Left_Slide.isBusy()) {
+        while (Right_Slide.getCurrentPosition() < 1890 && Left_Slide.getCurrentPosition() < 1890) {
             Right_Slide.setPower(1);
             Left_Slide.setPower(1);
+            Top_Pivot.setPosition(0.3);
         }
         Right_Slide.setPower(0);
         Left_Slide.setPower(0);
-
         Top_Pivot.setPosition(0);
+
 
         Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);

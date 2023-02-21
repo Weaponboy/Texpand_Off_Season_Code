@@ -257,7 +257,7 @@ public class Blue_A2_Start_Motor_Destack extends LinearOpMode {
             telemetry.addData("Stop Position", "1");
             telemetry.update();
 
-            Drive_To_Destack();
+            Reverse_To_Destack();
 
 //            while (sensorRange.getDistance(DistanceUnit.MM) > 370){
 //
@@ -587,9 +587,9 @@ public class Blue_A2_Start_Motor_Destack extends LinearOpMode {
 
     public void Reverse_To_Destack() {
 
-        drive.DriveDistanceLong(140,0.7);
-        drive.TurnToHeading(-100,0.45);
-        drive.DriveDistanceLong(15,0.5);
+        drive.DriveDistanceLong(140,0.6);
+        drive.TurnToHeading(-106,0.4);
+        drive.DriveDistanceLong(13,0.5);
         Texpandcamera.setPipeline(Cone_Pipeline);
 
         rectPositionFromLeft = 0;
@@ -638,8 +638,8 @@ public class Blue_A2_Start_Motor_Destack extends LinearOpMode {
         drive.LF.setPower(0);
         drive.LB.setPower(0);
 
-        drive.TurnToHeading(-100,0.45);
-
+        drive.TurnToHeading(-106,0.45);
+        drive.DriveDistanceLongReverse(4,0.5);
         rectPositionFromLeft = Cone_Pipeline.getRectX();
         power = 0.26;
         drive.WithOutEncoders();

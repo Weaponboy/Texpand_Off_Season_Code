@@ -113,24 +113,13 @@ public class NormalChangingWebcams extends OpMode {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        if(gamepad1.dpad_up){
-            telemetry.addData("Front", "Web");
-            telemetry.addData("Cone X:",Cone.getRectX());
-            telemetry.update();
-            FtcDashboard.getInstance().startCameraStream(FrontWeb,30);
 
-        }else if(gamepad1.dpad_down){
-            telemetry.addData("Back", "Web");
-            telemetry.addData("Pole X:",Pole.getRectX());
-            telemetry.update();
-            FtcDashboard.getInstance().startCameraStream(BackWeb,30);
+        telemetry.addData("Front", "Web");
+        telemetry.addData("Cone X:",Cone.getRectX());
+        telemetry.addData("Back", "Web");
+        telemetry.addData("Pole X:",Pole.getRectX());
+        telemetry.update();
 
-        }
-        if(!gamepad1.dpad_down && !gamepad1.dpad_up) {
-            telemetry.addData("BACK FPS", BackWeb.getFps());
-            telemetry.addData("FRONT FPS", FrontWeb.getFps());
-            telemetry.update();
-        }
 
     }
 }

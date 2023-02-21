@@ -85,16 +85,16 @@ public class Pole_Vision extends OpMode {
             public void onOpened() {
                 Texpandcamera.getExposureControl().setMode(ExposureControl.Mode.Manual);
 
-                Texpandcamera.getExposureControl().setExposure(30, TimeUnit.MILLISECONDS);
+                Texpandcamera.getExposureControl().setExposure(8, TimeUnit.MILLISECONDS);
 
-                Texpandcamera.getGainControl().setGain(100);
+                Texpandcamera.getGainControl().setGain(1);
 
                 FocusControl.Mode focusmode = FocusControl.Mode.Fixed;
 
                 Texpandcamera.getFocusControl().setMode(focusmode);
 
                 if (focusmode == FocusControl.Mode.Fixed){
-                    Texpandcamera.getFocusControl().setFocusLength(400);
+                    Texpandcamera.getFocusControl().setFocusLength(300);
                 }
 
                 Texpandcamera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);

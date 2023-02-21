@@ -5,6 +5,7 @@ import static org.firstinspires.ftc.teamcode.Vision.Vision_From_Collin.VisionDas
 import static org.opencv.core.Core.inRange;
 import static org.opencv.core.CvType.CV_8U;
 import static org.opencv.imgproc.Imgproc.CHAIN_APPROX_SIMPLE;
+import static org.opencv.imgproc.Imgproc.COLOR_RGB2HSV;
 import static org.opencv.imgproc.Imgproc.COLOR_RGB2HSV_FULL;
 import static org.opencv.imgproc.Imgproc.COLOR_RGB2YCrCb;
 import static org.opencv.imgproc.Imgproc.FONT_HERSHEY_COMPLEX;
@@ -99,8 +100,8 @@ public class Pole_Pipe extends OpenCvPipeline {
 //        MAX_THRESH = new Scalar(VisionDash.blue_max_H, VisionDash.blue_max_S, VisionDash.blue_max_V);
 
         //convert to HSV FULL
-        Imgproc.cvtColor(input, modified, COLOR_RGB2HSV_FULL);
-        Imgproc.cvtColor(output, output, COLOR_RGB2HSV_FULL);
+        Imgproc.cvtColor(input, modified, COLOR_RGB2HSV);
+//        Imgproc.cvtColor(output, output, COLOR_RGB2HSV_FULL);
 
         //submat
         values = Core.mean(modified.submat(center));
@@ -137,12 +138,13 @@ public class Pole_Pipe extends OpenCvPipeline {
             rectangle(output, largestRect, orange, 30);
             Imgproc.circle(output,new Point(largestRect.x + largestRect.width/2,largestRect.y + largestRect.height/2),50,orange,20);
 
+            rectX = largestRect.x + largestRect.width/2;
+            rectY = largestRect.y + largestRect.height/2;
 //            if (PoleRect > - 1){
 //                TargetRect = rects.get(PoleRect);
 //                rectangle(output, TargetRect, lightBlue, 30);
 //
-//                rectX = TargetRect.x + largestRect.width/2;
-//                rectY = TargetRect.y + largestRect.height/2;
+
 //                Rect_Width = TargetRect.width;
 //                Imgproc.circle(output,new Point(rectX,rectY),50,orange,20);
 //            }

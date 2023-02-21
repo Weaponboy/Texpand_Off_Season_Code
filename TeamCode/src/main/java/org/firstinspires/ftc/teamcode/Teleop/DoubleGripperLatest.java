@@ -956,61 +956,45 @@ public class DoubleGripperLatest extends OpMode {
             Left_Slide.setTargetPosition(1900);
             Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            while(Right_Slide.isBusy() && Left_Slide.isBusy()){
+            drive.DriveEncoders();
+            power = 0.2;
+            while(Right_Slide.getCurrentPosition() < 1900 && Left_Slide.getCurrentPosition() < 1900){
                 Right_Slide.setPower(1);
                 Left_Slide.setPower(1);
 
                 rectPositionFromLeft = Pole.getRectX();
-                power = 0.3;
-                drive.WithOutEncoders();
 
-                while (Math.abs(rectPositionFromLeft - CenterOfScreen) > 20 && !gamepad1.dpad_left){
 
-                    telemetry.addData("rect X", Pole.getRectX());
-                    telemetry.addData("rect Y", Pole.getRectY());
-                    telemetry.addData("Target CM", Distance_To_Travel);
-                    telemetry.update();
+                AlignToPole(15);
 
-                    if(rectPositionFromLeft > CenterOfScreen - 15 || rectPositionFromLeft < CenterOfScreen + 20){
-                        power = 0.18;
-                    }else{
-                        power = 0.27;
-                    }
-                    rectPositionFromLeft = Pole.getRectX();
 
-                    if (rectPositionFromLeft < CenterOfScreen + 10) {
 
-                        drive.RF.setPower(-1.2*power);
-                        drive.RB.setPower(-power);
-                        drive.LF.setPower(1.2*power);
-                        drive.LB.setPower(power);
 
-                    } else if (rectPositionFromLeft > CenterOfScreen - 10) {
-
-                        drive.RF.setPower(1.2*power);
-                        drive.RB.setPower(power);
-                        drive.LF.setPower(-1.2*power);
-                        drive.LB.setPower(-power);
-                    }
-
-                }
-
-                drive.RF.setPower(0);
-                drive.RB.setPower(0);
-                drive.LF.setPower(0);
-                drive.LB.setPower(0);
-
-                telemetry.addData("Distance_To_Travel:", Distance_To_Travel);
-                telemetry.update();
-                drive.DriveEncoders();
+               drive.DriveEncoders();
             }
+            rectPositionFromLeft = Pole.getRectX();
             Right_Slide.setPower(0.005);
             Left_Slide.setPower(0.005);
-
-            Top_Pivot.setPosition(0);
+            drive.RF.setPower(0);
+            drive.RB.setPower(0);
+            drive.LF.setPower(0);
+            drive.LB.setPower(0);
+            if(Math.abs(rectPositionFromLeft - CenterOfScreen) > 45) {
+                Top_Pivot.setPosition(0.4);
+            }else{
+                Top_Pivot.setPosition(0);
+            }
 
             Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            telemetry.addData("rect X", Pole.getRectX());
+            telemetry.addData("rect Y", Pole.getRectY());
+            telemetry.addData("Distance off by ", Math.abs(rectPositionFromLeft - CenterOfScreen));
+            telemetry.addData("Power ", power);
+            telemetry.update();
+
+
         }
 
         if(gamepad2.a && Base_Pivot.getPosition() != 0.85){
@@ -1039,58 +1023,34 @@ public class DoubleGripperLatest extends OpMode {
             Left_Slide.setTargetPosition(900);
             Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            while(Right_Slide.isBusy() && Left_Slide.isBusy()){
+            drive.DriveEncoders();
+            while(Right_Slide.getCurrentPosition() < 900 && Left_Slide.getCurrentPosition() < 900){
                 Right_Slide.setPower(1);
                 Left_Slide.setPower(1);
 
                 rectPositionFromLeft = Pole.getRectX();
                 power = 0.27;
-                drive.WithOutEncoders();
 
-                while (rectPositionFromLeft > CenterOfScreen - 30 || rectPositionFromLeft < CenterOfScreen + 30 && !gamepad1.dpad_right){
+                AlignToPole(15);
 
-                    telemetry.addData("rect X", Pole.getRectX());
-                    telemetry.addData("rect Y", Pole.getRectY());
-                    telemetry.addData("Target CM", Distance_To_Travel);
-                    telemetry.update();
 
-                    if(rectPositionFromLeft > CenterOfScreen - 20 || rectPositionFromLeft < CenterOfScreen + 20){
-                        power = 0.18;
-                    }else{
-                        power = 0.27;
-                    }
-                    rectPositionFromLeft = Pole.getRectX();
-
-                    if (rectPositionFromLeft < CenterOfScreen + 10) {
-
-                        drive.RF.setPower(-1.2*power);
-                        drive.RB.setPower(-power);
-                        drive.LF.setPower(1.2*power);
-                        drive.LB.setPower(power);
-
-                    }else if (rectPositionFromLeft > CenterOfScreen - 10) {
-
-                        drive.RF.setPower(1.2*power);
-                        drive.RB.setPower(power);
-                        drive.LF.setPower(-1.2*power);
-                        drive.LB.setPower(-power);
-                    }
-
-                }
-
-                drive.RF.setPower(0);
-                drive.RB.setPower(0);
-                drive.LF.setPower(0);
-                drive.LB.setPower(0);
 
                 telemetry.addData("Distance_To_Travel:", Distance_To_Travel);
                 telemetry.update();
-                drive.DriveEncoders();
+
             }
             Right_Slide.setPower(0.005);
             Left_Slide.setPower(0.005);
 
-            Top_Pivot.setPosition(0);
+            drive.RF.setPower(0);
+            drive.RB.setPower(0);
+            drive.LF.setPower(0);
+            drive.LB.setPower(0);
+            if(Math.abs(rectPositionFromLeft - CenterOfScreen) > 50) {
+                Top_Pivot.setPosition(0.4);
+            }else{
+                Top_Pivot.setPosition(0);
+            }
 
             Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -1479,9 +1439,9 @@ public class DoubleGripperLatest extends OpMode {
 
                 FrontWeb.getExposureControl().setMode(ExposureControl.Mode.Manual);
 
-                FrontWeb.getExposureControl().setExposure(30, TimeUnit.MILLISECONDS);
+                FrontWeb.getExposureControl().setExposure(8, TimeUnit.MILLISECONDS);
 
-                FrontWeb.getGainControl().setGain(100);
+                FrontWeb.getGainControl().setGain(1);
 
                 FocusControl.Mode focusmode = FocusControl.Mode.Fixed;
 
@@ -1498,17 +1458,17 @@ public class DoubleGripperLatest extends OpMode {
         });
         FrontWeb.setPipeline(Cone_Pipeline);
 
-
+        BackWeb.setPipeline(Pole);
         BackWeb.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
-                BackWeb.setPipeline(Pole);
+
 
                 BackWeb.getExposureControl().setMode(ExposureControl.Mode.Manual);
 
-                BackWeb.getExposureControl().setExposure(30, TimeUnit.MILLISECONDS);
+                BackWeb.getExposureControl().setExposure(8, TimeUnit.MILLISECONDS);
 
-                BackWeb.getGainControl().setGain(100);
+                BackWeb.getGainControl().setGain(1);
 
                 FocusControl.Mode focusmode = FocusControl.Mode.Fixed;
 
@@ -1535,6 +1495,38 @@ public class DoubleGripperLatest extends OpMode {
         telemetry.addData("Status:", "Initialized");
         telemetry.addData("top pivot:", Top_Pivot.getPosition());
         telemetry.update();
+    }
+
+    public void AlignToPole (double tolerance) {
+        while (Math.abs(rectPositionFromLeft - CenterOfScreen) > tolerance && !(gamepad1.left_stick_x > 0.1) && !(gamepad2.left_stick_x > 0.1)){
+
+            telemetry.addData("rect X", Pole.getRectX());
+            telemetry.addData("rect Y", Pole.getRectY());
+            telemetry.addData("Distance off by ", Math.abs(rectPositionFromLeft - CenterOfScreen));
+            telemetry.update();
+
+            if(Math.abs(rectPositionFromLeft - CenterOfScreen) > tolerance + 10){
+                power = 0.10;
+            }
+            rectPositionFromLeft = Pole.getRectX();
+
+            if (rectPositionFromLeft < CenterOfScreen) {
+
+                drive.RF.setPower(-1.2*power);
+                drive.RB.setPower(-power);
+                drive.LF.setPower(1.2*power);
+                drive.LB.setPower(power);
+
+            } else if (rectPositionFromLeft > CenterOfScreen) {
+
+                drive.RF.setPower(1.2*power);
+                drive.RB.setPower(power);
+                drive.LF.setPower(-1.2*power);
+                drive.LB.setPower(-power);
+            }
+
+        }
+
     }
 
     public void Pods_Down(){

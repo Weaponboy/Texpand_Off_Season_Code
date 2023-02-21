@@ -5,6 +5,7 @@ import static org.firstinspires.ftc.teamcode.Vision.Vision_From_Collin.VisionDas
 import static org.opencv.core.Core.inRange;
 import static org.opencv.core.CvType.CV_8U;
 import static org.opencv.imgproc.Imgproc.CHAIN_APPROX_SIMPLE;
+import static org.opencv.imgproc.Imgproc.COLOR_RGB2HSV;
 import static org.opencv.imgproc.Imgproc.COLOR_RGB2HSV_FULL;
 import static org.opencv.imgproc.Imgproc.FONT_HERSHEY_COMPLEX;
 import static org.opencv.imgproc.Imgproc.RETR_TREE;
@@ -107,8 +108,8 @@ public class Blue_Cone_Pipe extends OpenCvPipeline {
 //        MAX_THRESH = new Scalar(VisionDash.blue_max_H, VisionDash.blue_max_S, VisionDash.blue_max_V);
 
         //convert to HSV FULL
-        Imgproc.cvtColor(input, modified, COLOR_RGB2HSV_FULL);
-        Imgproc.cvtColor(output, output, COLOR_RGB2HSV_FULL);
+        Imgproc.cvtColor(input, modified, COLOR_RGB2HSV);
+
 
         //submat
         values = Core.mean(modified.submat(center));

@@ -22,6 +22,7 @@
 package org.firstinspires.ftc.teamcode.Auto.Blue_Auto;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -69,7 +70,7 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
 
     public double ConversionPixelstoCm = 20;//need to tune this
 
-    public static final double CenterOfScreen = 325;
+    public double CenterOfScreen = 300;
 
     public double rectPositionFromLeft = 0;
     public ColorSensor colour = null;
@@ -115,6 +116,7 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
     // You will need to do your own calibration for other configurations!
     double fx = 578.272;
     double fy = 578.272;
+
     double cx = 402.145;
     double cy = 221.506;
 
@@ -141,6 +143,7 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
         Texpandcamera = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
         drive.init(hardwareMap);
         Texpandcamera.setPipeline(aprilTagDetectionPipeline);
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         Texpandcamera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
@@ -244,9 +247,7 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
 
             Drive_To_Destack();
 
-
-
-//            DropPreLoad();
+            DropPreLoad();
 //
 //            Destack_4();
 //
@@ -259,44 +260,25 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
 
             Drive_To_Destack();
 
-//            while (sensorRange.getDistance(DistanceUnit.MM) > 370){
-//
-//                drive.StrafeDistance(1, 0.4);
-//
-//                telemetry.addData("Distance", sensorRange.getDistance(DistanceUnit.MM));
-//                telemetry.update();
-//            }
-
             DropPreLoad();
 
-            Destack_3();
-
-            Drive_To_Pos_1();
+//            Destack_3();
+//
+//            Drive_To_Pos_1();
 
         } else if (tagOfInterest.id == MIDDLE) {
             //Position 2
-            telemetry.addData("Stop Position", "2");
-            telemetry.update();
 
             Drive_To_Destack();
 
             DropPreLoad();
 
-            Destack_4();
-
-            Drive_To_Pos_2();
+//            Destack_4();
+//
+//            Drive_To_Pos_2();
 
         }
-        while (!isStopRequested() && opModeIsActive()){
-            telemetry.addData("Angle", drive.yawAngle.firstAngle);
-            telemetry.addData("RectX", Cone_Pipeline.getRectX());
-            telemetry.update();
-            try {
-                Thread.sleep(30);
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
-        }
+
     }
 
     void tagToTelemetry(AprilTagDetection detection) {
@@ -427,38 +409,30 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
     }
 
     public void Drive_To_Destack() {
-
-        drive.DriveDistanceLong(140,0.65);
-        telemetry.addData("Angle", drive.yawAngle.firstAngle);
+        telemetry.addData("Stop Position", "2");
+        telemetry.update();
+        drive.DriveDistanceRamp(140,0.9);
+        telemetry.addData("Angle pre-stop", drive.yawAngle.firstAngle);
         telemetry.addData("RF", drive.RF.getCurrentPosition());
         telemetry.addData("RB", drive.RB.getCurrentPosition());
         telemetry.addData("LF", drive.LF.getCurrentPosition());
         telemetry.addData("LB", drive.LB.getCurrentPosition());
+        telemetry.addData("Max speed achieved ", drive.Max_speed);
         telemetry.addData("Target", 140*510/(Math.PI * 2 * (9.6 / 2.0)));
         telemetry.update();
-        try {
-            Thread.sleep(5000);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-        drive.TurnToHeading(-106,0.45);
+
+        drive.TurnToHeading(-98,0.35);
         telemetry.addData("Angle", drive.yawAngle.firstAngle);
         telemetry.update();
-        try {
-            Thread.sleep(3000);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-        drive.DriveDistanceLong(16,0.55);
-        try {
-            Thread.sleep(5000);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+
+        drive.DriveDistanceRamp(18,0.65);
+
         Texpandcamera.setPipeline(Cone_Pipeline);
 
         rectPositionFromLeft = 0;
         Distance_To_Travel = 0;
+
+
 
         for (int i = 0;  i < 10; i++){
             rectPositionFromLeft = Cone_Pipeline.getRectX();
@@ -470,7 +444,7 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
         }
 
         rectPositionFromLeft = Cone_Pipeline.getRectX();
-        double power = 0.25;
+        double power = 0.2;
         drive.DriveEncoders();
 
         while (Math.abs(rectPositionFromLeft - CenterOfScreen) > 10){
@@ -484,16 +458,16 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
 
             if (rectPositionFromLeft < CenterOfScreen) {
 
-                drive.RF.setPower(-power);
+                drive.RF.setPower(-power-poweradj);
                 drive.RB.setPower(power);
-                drive.LF.setPower(power);
+                drive.LF.setPower(power+poweradj);
                 drive.LB.setPower(-power);
 
             } else if (rectPositionFromLeft > CenterOfScreen) {
 
-                drive.RF.setPower(power);
+                drive.RF.setPower(power+poweradj);
                 drive.RB.setPower(-power);
-                drive.LF.setPower(-power);
+                drive.LF.setPower(-power-poweradj);
                 drive.LB.setPower(power);
             }
         }
@@ -502,27 +476,17 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
         drive.RB.setPower(0);
         drive.LF.setPower(0);
         drive.LB.setPower(0);
-        telemetry.addData("Angle", drive.yawAngle.firstAngle);
-        telemetry.addData("RectX", Cone_Pipeline.getRectX());
-        telemetry.update();
-        try {
-            Thread.sleep(5000);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-        drive.TurnToHeading(-106,0.45);
+
+        drive.TurnToHeading(-100,0.25);
+        drive.DriveDistanceLongReverse(2,0.4);
         telemetry.addData("Angle", drive.yawAngle.firstAngle);
         telemetry.update();
-        try {
-            Thread.sleep(3000);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+        CenterOfScreen = 340;
         rectPositionFromLeft = Cone_Pipeline.getRectX();
-        power = 0.15;
+        power = 0.16;
         drive.DriveEncoders();
 
-        while (Math.abs(rectPositionFromLeft - CenterOfScreen) > 25){
+        while (Math.abs(rectPositionFromLeft - CenterOfScreen) > 10){
 
 //            telemetry.addData("rect X", Cone_Pipeline.getRectX());
 //            telemetry.addData("rect Y", Cone_Pipeline.getRectY());
@@ -533,16 +497,16 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
 
             if (rectPositionFromLeft < CenterOfScreen) {
 
-                drive.RF.setPower(-power);
+                drive.RF.setPower(-power-poweradj);
                 drive.RB.setPower(power);
-                drive.LF.setPower(power);
+                drive.LF.setPower(power+poweradj);
                 drive.LB.setPower(-power);
 
             } else if (rectPositionFromLeft > CenterOfScreen) {
 
-                drive.RF.setPower(power);
+                drive.RF.setPower(power+poweradj);
                 drive.RB.setPower(-power);
-                drive.LF.setPower(-power);
+                drive.LF.setPower(-power-poweradj);
                 drive.LB.setPower(power);
             }
         }
@@ -551,37 +515,37 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
         drive.RB.setPower(0);
         drive.LF.setPower(0);
         drive.LB.setPower(0);
-        telemetry.addData("Angle", drive.yawAngle.firstAngle);
-        telemetry.addData("RectX", Cone_Pipeline.getRectX());
-        telemetry.update();
-//        Base_Pivot.setPosition(0.1);
-
-        Base_Gripper.setPosition(0.4);
-//        drive.DriveDistanceLong(135, 0.5);
-//
-//        Base_Pivot.setPosition(0.72);
-//
-//        drive.TurnToHeading(-89);
-//
-//        Base_Pivot.setPosition(0.8);
-//
-//        drive.DriveDistanceLong(25, 0.4);
-//        RF.setPower(0);
-//        RB.setPower(0);
-//        LF.setPower(0);
-//        LB.setPower(0);
-//
-//        drive.ResetEncoders();
-//
-//        drive.StrafeDistance_Left(21, 0.5);
-//
-//
-//
-//        drive.TurnToHeading(-102);
-//
-//        drive.DriveDistanceLongReverse(8, 0.4);
-//        telemetry.addData("Finished", "Turning");
+//        telemetry.addData("Angle", drive.yawAngle.firstAngle);
+//        telemetry.addData("RectX", Cone_Pipeline.getRectX());
 //        telemetry.update();
+////        Base_Pivot.setPosition(0.1);
+//
+//        Base_Gripper.setPosition(0.4);
+////        drive.DriveDistanceLong(135, 0.5);
+////
+////        Base_Pivot.setPosition(0.72);
+////
+////        drive.TurnToHeading(-89);
+////
+////        Base_Pivot.setPosition(0.8);
+////
+////        drive.DriveDistanceLong(25, 0.4);
+////        RF.setPower(0);
+////        RB.setPower(0);
+////        LF.setPower(0);
+////        LB.setPower(0);
+////
+////        drive.ResetEncoders();
+////
+////        drive.StrafeDistance_Left(21, 0.5);
+////
+////
+////
+////        drive.TurnToHeading(-102);
+////
+////        drive.DriveDistanceLongReverse(8, 0.4);
+////        telemetry.addData("Finished", "Turning");
+////        telemetry.update();
     }
 
     public void Reverse_To_Destack() {
