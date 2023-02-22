@@ -57,23 +57,23 @@ public class Cone_Stack_Vision extends OpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
 
-    Blue_Cone_Pipe Cone_Pipeline;
-
+    Red_Cone_Pipe Cone_Pipeline;
+    private int loop1 = 0;
     private OpenCvCamera webcam;
 
     public double Distance_To_Travel;
 
-    public double CenterOfScreen = 320;
+    public double CenterOfScreen = 330;
 
     public double rectPositionFromLeft = 0;
 
-    public static int Gain = 100;
-    public static int Exposure = 30;
+    public static int Gain = 1;
+    public static int Exposure = 8;
     public void init() {
 
         drive.init(hardwareMap);
 
-        Cone_Pipeline = new Blue_Cone_Pipe();
+        Cone_Pipeline = new Red_Cone_Pipe();
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
 
@@ -175,88 +175,100 @@ public class Cone_Stack_Vision extends OpMode {
 
     @Override
     public void loop() {
+        double power;
+
+        rectPositionFromLeft = 0;
+        Distance_To_Travel = 0;
+
+        CenterOfScreen = 329;
+
+
+        if(loop1 == 0){
+            power = 0.15;
+            drive.DriveEncoders();
+
+            rectPositionFromLeft = Cone_Pipeline.getRectX();
+            while (Math.abs(rectPositionFromLeft - CenterOfScreen) > 80){
+
+                telemetry.addData("rect X", Cone_Pipeline.getRectX());
+                telemetry.addData("rect Y", Cone_Pipeline.getRectY());
+                telemetry.update();
+
+                if (rectPositionFromLeft < CenterOfScreen) {
+
+                    drive.RF.setPower(-power);
+                    drive.RB.setPower(power);
+                    drive.LF.setPower(power);
+                    drive.LB.setPower(-power);
+                    rectPositionFromLeft = Cone_Pipeline.getRectX();
+                } else if (rectPositionFromLeft > CenterOfScreen) {
+
+                    drive.RF.setPower(power);
+                    drive.RB.setPower(-power);
+                    drive.LF.setPower(-power);
+                    drive.LB.setPower(power);
+                    rectPositionFromLeft = Cone_Pipeline.getRectX();
+                }
+
+
+            }
+            power = 0.09;
+            drive.DriveEncoders();
+
+            rectPositionFromLeft = Cone_Pipeline.getRectX();
+            while (Math.abs(rectPositionFromLeft - CenterOfScreen) > 10){
+
+                telemetry.addData("rect X", Cone_Pipeline.getRectX());
+                telemetry.addData("rect Y", Cone_Pipeline.getRectY());
+                telemetry.update();
+
+                if (rectPositionFromLeft < CenterOfScreen) {
+
+                    drive.RF.setPower(-power);
+                    drive.RB.setPower(power);
+                    drive.LF.setPower(power);
+                    drive.LB.setPower(-power);
+                    rectPositionFromLeft = Cone_Pipeline.getRectX();
+                } else if (rectPositionFromLeft > CenterOfScreen) {
+
+                    drive.RF.setPower(power);
+                    drive.RB.setPower(-power);
+                    drive.LF.setPower(-power);
+                    drive.LB.setPower(power);
+                    rectPositionFromLeft = Cone_Pipeline.getRectX();
+                }else{
+                    drive.RF.setPower(-0.05);
+                    drive.RB.setPower(-0.05);
+                    drive.LF.setPower(-0.05);
+                    drive.LB.setPower(-0.05);
+                }
+
+
+            }
+            drive.RF.setPower(-0.05);
+            drive.RB.setPower(-0.05);
+            drive.LF.setPower(-0.05);
+            drive.LB.setPower(-0.05);
+            try {
+                Thread.sleep(70);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+            drive.RF.setPower(0);
+            drive.RB.setPower(0);
+            drive.LF.setPower(0);
+            drive.LB.setPower(0);
+        }
+        loop1 = 1;
+
 
         rectPositionFromLeft = Cone_Pipeline.getRectX();
-        power = 0.25;
-        drive.WithOutEncoders();
 
-        while (Math.abs(rectPositionFromLeft - CenterOfScreen) > 12){
-            telemetry.addData("Target CM", Math.abs(rectPositionFromLeft - CenterOfScreen));
-            telemetry.update();
-//            telemetry.addData("rect X", Cone_Pipeline.getRectX());
-//            telemetry.addData("rect Y", Cone_Pipeline.getRectY());
-//            telemetry.addData("Target CM", Distance_To_Travel);
-//            telemetry.update();
-            rectPositionFromLeft = Cone_Pipeline.getRectX();
+        telemetry.addData("rect X", Cone_Pipeline.getRectX());
+        telemetry.addData("rect Y", Cone_Pipeline.getRectY());
+        telemetry.update();
 
 
-            if (rectPositionFromLeft < CenterOfScreen) {
-
-                drive.RF.setPower(-power);
-                drive.RB.setPower(power);
-                drive.LF.setPower(power);
-                drive.LB.setPower(-power);
-
-            } else if (rectPositionFromLeft > CenterOfScreen) {
-
-                drive.RF.setPower(power);
-                drive.RB.setPower(-power);
-                drive.LF.setPower(-power);
-                drive.LB.setPower(power);
-            }else{
-                drive.RF.setPower(0);
-                drive.RB.setPower(0);
-                drive.LF.setPower(0);
-                drive.LB.setPower(0);
-            }
-
-        }
-
-//        while (rectPositionFromLeft > CenterOfScreen + 10 || rectPositionFromLeft < CenterOfScreen - 10){
-//
-//            telemetry.addData("rect X", Cone_Pipeline.getRectX());
-//            telemetry.addData("rect Y", Cone_Pipeline.getRectY());
-//            telemetry.addData("Target CM", Distance_To_Travel);
-//            telemetry.update();
-//
-//            if(rectPositionFromLeft > CenterOfScreen - 5 || rectPositionFromLeft < CenterOfScreen + 5){
-//                power = 0.27;
-//            }
-//            rectPositionFromLeft = Cone_Pipeline.getRectX();
-//
-//            if (rectPositionFromLeft < CenterOfScreen) {
-//
-//                drive.RF.setPower(-1.3*power);
-//                drive.RB.setPower(power);
-//                drive.LF.setPower(1.3*power);
-//                drive.LB.setPower(-power);
-//
-//            } else if (rectPositionFromLeft > CenterOfScreen) {
-//
-//                drive.RF.setPower(1.3*power);
-//                drive.RB.setPower(-power);
-//                drive.LF.setPower(-1.3*power);
-//                drive.LB.setPower(power);
-//            }
-//
-//        }
-
-        drive.RF.setPower(0);
-        drive.RB.setPower(0);
-        drive.LF.setPower(0);
-        drive.LB.setPower(0);
-
-
-        //Drive to the target position
-//        if (Distance_To_Travel > 0){
-//            StrafeOdometryNoCorrrection(Distance_To_Travel*1.34, 0.5);
-//            Distance_To_Travel = 0;
-//        }else if (Distance_To_Travel < 0){
-//            StrafeOdometryNoCorrrection(Distance_To_Travel*1.38, 0.5);
-//            Distance_To_Travel = 0;
-//        }
-
-        //Telemetry to be displayed during loop()
     }
 
     public double getXpos() {

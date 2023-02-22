@@ -145,6 +145,8 @@ public class Blue_Cone_Pipe extends OpenCvPipeline {
             rectY = largestRect.y + largestRect.height/2;
 
             Imgproc.circle(output,new Point(rectX,rectY),50,orange,20);
+        }else{
+            rectX = 329;
         }
 
         //This is used to output the HSV For debugging

@@ -51,7 +51,7 @@ public class Drivetrain {
     static final double     P_TURN_GAIN            = 0.02;
     static final double     P_DRIVE_GAIN           = 0.03;
 
-    private BNO055IMU imu         = null;      // Control/Expansion Hub IMU
+    public BNO055IMU imu         = null;      // Control/Expansion Hub IMU
 
     private double          robotHeading  = 0;
     private double          headingOffset = 0;
@@ -176,26 +176,53 @@ public class Drivetrain {
         
         yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         Current_Heading = yawAngle.firstAngle;
-        while (Current_Heading < (Heading - 5) || Current_Heading > (Heading + 5)) {
-            yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            Current_Heading = yawAngle.firstAngle;
+        while (Math.abs(Current_Heading - Heading) > 30) {
 
-            if (Current_Heading > (Heading + 0.25)) {
+            if (Current_Heading > Heading) {
                 LF.setPower(power);
                 LB.setPower(power);
                 RB.setPower(-power);
                 RF.setPower(-power);
-            } else if (Current_Heading < (Heading - 0.25)) {
+            } else if (Current_Heading < Heading) {
                 LF.setPower(-power);
                 LB.setPower(-power);
                 RB.setPower(power);
                 RF.setPower(power);
+            } else {
+//                RB.setPower(0);
+//                RF.setPower(0);
+//                LF.setPower(0);
+//                LB.setPower(0);
+            }
+            yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            Current_Heading = yawAngle.firstAngle;
+        }
+//        RF.setPower(0);
+//        LF.setPower(0);
+//        RB.setPower(0);
+//        LB.setPower(0);
+        yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        Current_Heading = yawAngle.firstAngle;
+        while (Math.abs(Current_Heading - Heading) > 0.1) {
+
+            if (Current_Heading > (Heading)) {
+                LF.setPower(0.1);
+                LB.setPower(0.1);
+                RB.setPower(-0.1);
+                RF.setPower(-0.1);
+            } else if (Current_Heading < (Heading)) {
+                LF.setPower(-0.1);
+                LB.setPower(-0.1);
+                RB.setPower(0.1);
+                RF.setPower(0.1);
             } else {
                 RB.setPower(0);
                 RF.setPower(0);
                 LF.setPower(0);
                 LB.setPower(0);
             }
+            yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            Current_Heading = yawAngle.firstAngle;
         }
         RF.setPower(0);
         LF.setPower(0);
@@ -203,31 +230,6 @@ public class Drivetrain {
         LB.setPower(0);
         yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         Current_Heading = yawAngle.firstAngle;
-        while (Current_Heading < (Heading - 0.5) || Current_Heading > (Heading + 0.5)) {
-            yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            Current_Heading = yawAngle.firstAngle;
-
-            if (Current_Heading > (Heading + 0.25)) {
-                LF.setPower(0.25);
-                LB.setPower(0.25);
-                RB.setPower(-0.25);
-                RF.setPower(-0.25);
-            } else if (Current_Heading < (Heading - 0.25)) {
-                LF.setPower(-0.25);
-                LB.setPower(-0.25);
-                RB.setPower(0.25);
-                RF.setPower(0.25);
-            } else {
-                RB.setPower(0);
-                RF.setPower(0);
-                LF.setPower(0);
-                LB.setPower(0);
-            }
-        }
-        RF.setPower(0);
-        LF.setPower(0);
-        RB.setPower(0);
-        LB.setPower(0);
     }
 
     public void DriveDistanceLongReverse(double distance, double speed) {

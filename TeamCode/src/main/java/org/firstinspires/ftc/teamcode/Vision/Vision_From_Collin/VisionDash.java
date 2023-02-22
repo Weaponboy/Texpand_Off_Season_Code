@@ -17,21 +17,21 @@ public class VisionDash {
     public static double area_cutoff = 500;
 
 
-    public static int red_min_Y = 110;
-    public static int red_min_Cr = 180;
-    public static int red_min_Cb = 105;
-
-    public static int red_max_Y = 170;
-    public static int red_max_Cr = 230;
-    public static int red_max_Cb = 130;
-
-    public static int blue_min_Y = 110;
-    public static int blue_min_Cr = 180;
-    public static int blue_min_Cb = 105;
-
-    public static int blue_max_Y = 170;
-    public static int blue_max_Cr = 230;
-    public static int blue_max_Cb = 130;
+//    public static int red_min_Y = 110;
+//    public static int red_min_Cr = 180;
+//    public static int red_min_Cb = 105;
+//
+//    public static int red_max_Y = 170;
+//    public static int red_max_Cr = 230;
+//    public static int red_max_Cb = 130;
+//
+//    public static int blue_min_Y = 110;
+//    public static int blue_min_Cr = 180;
+//    public static int blue_min_Cb = 105;
+//
+//    public static int blue_max_Y = 170;
+//    public static int blue_max_Cr = 230;
+//    public static int blue_max_Cb = 130;
 
     //Cone color
     public static int pole_min_H = 20;
@@ -48,6 +48,13 @@ public class VisionDash {
     public static int cone_Max_H = 132;
     public static int cone_Max_S = 255;
     public static int cone_Max_V = 255;
+
+    public static int Red_cone_Min_H = 160;
+    public static int Red_cone_Min_S = 90;
+    public static int Red_cone_Min_V = 80;
+    public static int Red_cone_Max_H = 190;
+    public static int Red_cone_Max_S = 255;
+    public static int Red_cone_Max_V = 255;
 
     public static int max_Cb = 255;
     public static int max_Cr = 255;

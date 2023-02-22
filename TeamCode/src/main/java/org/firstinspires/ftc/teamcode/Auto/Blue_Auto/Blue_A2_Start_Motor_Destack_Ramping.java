@@ -70,7 +70,7 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
 
     public double ConversionPixelstoCm = 20;//need to tune this
 
-    public double CenterOfScreen = 300;
+    public double CenterOfScreen = 329;
 
     public double rectPositionFromLeft = 0;
     public ColorSensor colour = null;
@@ -98,7 +98,7 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
 
     // destacker positions
     double De_Pos_1 = 0;
-    double De_Pos_2 = 0.2;
+    double De_Pos_2 = 0.15;
     double De_Pos_3 = 0.45;
     double De_Pos_4 = 0.54;
     double De_Pos_5 = 0.72;
@@ -248,10 +248,10 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
             Drive_To_Destack();
 
             DropPreLoad();
-//
-//            Destack_4();
-//
-//            Drive_To_Pos_3();
+
+            Destack_4();
+
+            Drive_To_Pos_3();
 
         } else if (tagOfInterest.id == LEFT) {
             //Position 1
@@ -262,9 +262,9 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
 
             DropPreLoad();
 
-//            Destack_3();
-//
-//            Drive_To_Pos_1();
+            Destack_3();
+
+            Drive_To_Pos_1();
 
         } else if (tagOfInterest.id == MIDDLE) {
             //Position 2
@@ -273,9 +273,9 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
 
             DropPreLoad();
 
-//            Destack_4();
-//
-//            Drive_To_Pos_2();
+            Destack_4();
+
+            Drive_To_Pos_2();
 
         }
 
@@ -351,11 +351,11 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
 
         Base_Pivot.setPosition(1);
 
-        drive.StrafeDistance_Left(20, .8);
+        drive.StrafeDistance_Left(17, .5);
 
-        drive.DriveDistanceLongReverse(75, .8);
+        drive.DriveDistanceLongReverse(85, .5);
 
-        drive.TurnToHeading(-9,0.6);
+        drive.TurnToHeading(0,0.3);
         Top_Pivot.setPosition(1);
 
     }
@@ -367,43 +367,27 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
 
         Base_Pivot.setPosition(1);
 
-        drive.StrafeDistance_Left(18, .8);
+        drive.StrafeDistance_Left(18, .5);
 
-        drive.DriveDistanceLongReverse(44, .8);
+        drive.DriveDistanceLongReverse(20, .5);
 
-        drive.TurnToHeading(-7,6);
-        drive.StrafeDistance(8, .6);
+        drive.TurnToHeading(0,3);
+
     }
 
     public void Drive_To_Pos_3() {
-        try {
-            Thread.sleep(3000);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+
         drive.TurnDegreesLeft(14);
-        try {
-            Thread.sleep(3000);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+
         Top_Pivot.setPosition(1);
 
         Base_Pivot.setPosition(1);
 
-        drive.StrafeDistance_Left(18, .8);
-        try {
-            Thread.sleep(3000);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-        drive.DriveDistanceLong(30, .8);
-        try {
-            Thread.sleep(3000);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-        drive.TurnToHeading(-7,5);
+        drive.StrafeDistance_Left(18, .5);
+
+        drive.DriveDistanceLong(30, .5);
+
+        drive.TurnToHeading(0,0.35);
 
 
     }
@@ -421,131 +405,142 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
         telemetry.addData("Target", 140*510/(Math.PI * 2 * (9.6 / 2.0)));
         telemetry.update();
 
-        drive.TurnToHeading(-98,0.35);
+        drive.TurnToHeading(-101,0.3);
         telemetry.addData("Angle", drive.yawAngle.firstAngle);
         telemetry.update();
 
-        drive.DriveDistanceRamp(18,0.65);
+        drive.DriveDistanceRamp(20,0.65);
 
         Texpandcamera.setPipeline(Cone_Pipeline);
+
+        double power;
 
         rectPositionFromLeft = 0;
         Distance_To_Travel = 0;
 
+        CenterOfScreen = 329;
 
 
-        for (int i = 0;  i < 10; i++){
+            power = 0.15;
+            drive.DriveEncoders();
+
             rectPositionFromLeft = Cone_Pipeline.getRectX();
+            while (Math.abs(rectPositionFromLeft - CenterOfScreen) > 80){
+
+                telemetry.addData("rect X", Cone_Pipeline.getRectX());
+                telemetry.addData("rect Y", Cone_Pipeline.getRectY());
+                telemetry.update();
+
+                if (rectPositionFromLeft < CenterOfScreen) {
+
+                    drive.RF.setPower(-power);
+                    drive.RB.setPower(power);
+                    drive.LF.setPower(power);
+                    drive.LB.setPower(-power);
+                    rectPositionFromLeft = Cone_Pipeline.getRectX();
+                } else if (rectPositionFromLeft > CenterOfScreen) {
+
+                    drive.RF.setPower(power);
+                    drive.RB.setPower(-power);
+                    drive.LF.setPower(-power);
+                    drive.LB.setPower(power);
+                    rectPositionFromLeft = Cone_Pipeline.getRectX();
+                }
+
+
+            }
+            power = 0.09;
+            drive.DriveEncoders();
+        drive.TurnToHeading(-101,0.3);
+
+            rectPositionFromLeft = Cone_Pipeline.getRectX();
+            while (Math.abs(rectPositionFromLeft - CenterOfScreen) > 10){
+
+                telemetry.addData("rect X", Cone_Pipeline.getRectX());
+                telemetry.addData("rect Y", Cone_Pipeline.getRectY());
+                telemetry.update();
+
+                if (rectPositionFromLeft < CenterOfScreen) {
+
+                    drive.RF.setPower(-power);
+                    drive.RB.setPower(power);
+                    drive.LF.setPower(power);
+                    drive.LB.setPower(-power);
+                    rectPositionFromLeft = Cone_Pipeline.getRectX();
+                } else if (rectPositionFromLeft > CenterOfScreen) {
+
+                    drive.RF.setPower(power);
+                    drive.RB.setPower(-power);
+                    drive.LF.setPower(-power);
+                    drive.LB.setPower(power);
+                    rectPositionFromLeft = Cone_Pipeline.getRectX();
+                }else{
+                    drive.RF.setPower(-0.05);
+                    drive.RB.setPower(-0.05);
+                    drive.LF.setPower(-0.05);
+                    drive.LB.setPower(-0.05);
+                }
+
+
+            }
+            drive.RF.setPower(-0.05);
+            drive.RB.setPower(-0.05);
+            drive.LF.setPower(-0.05);
+            drive.LB.setPower(-0.05);
             try {
-                Thread.sleep(5);
+                Thread.sleep(70);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
-        }
+            drive.RF.setPower(0);
+            drive.RB.setPower(0);
+            drive.LF.setPower(0);
+            drive.LB.setPower(0);
 
-        rectPositionFromLeft = Cone_Pipeline.getRectX();
-        double power = 0.2;
-        drive.DriveEncoders();
+        drive.TurnToHeading(-101,0.2);
 
-        while (Math.abs(rectPositionFromLeft - CenterOfScreen) > 10){
-
-//            telemetry.addData("rect X", Cone_Pipeline.getRectX());
-//            telemetry.addData("rect Y", Cone_Pipeline.getRectY());
-//            telemetry.addData("Target CM", Distance_To_Travel);
-//            telemetry.update();
-            rectPositionFromLeft = Cone_Pipeline.getRectX();
-
-
-            if (rectPositionFromLeft < CenterOfScreen) {
-
-                drive.RF.setPower(-power-poweradj);
-                drive.RB.setPower(power);
-                drive.LF.setPower(power+poweradj);
-                drive.LB.setPower(-power);
-
-            } else if (rectPositionFromLeft > CenterOfScreen) {
-
-                drive.RF.setPower(power+poweradj);
-                drive.RB.setPower(-power);
-                drive.LF.setPower(-power-poweradj);
-                drive.LB.setPower(power);
-            }
-        }
-
-        drive.RF.setPower(0);
-        drive.RB.setPower(0);
-        drive.LF.setPower(0);
-        drive.LB.setPower(0);
-
-        drive.TurnToHeading(-100,0.25);
-        drive.DriveDistanceLongReverse(2,0.4);
-        telemetry.addData("Angle", drive.yawAngle.firstAngle);
-        telemetry.update();
-        CenterOfScreen = 340;
-        rectPositionFromLeft = Cone_Pipeline.getRectX();
-        power = 0.16;
-        drive.DriveEncoders();
-
-        while (Math.abs(rectPositionFromLeft - CenterOfScreen) > 10){
-
-//            telemetry.addData("rect X", Cone_Pipeline.getRectX());
-//            telemetry.addData("rect Y", Cone_Pipeline.getRectY());
-//            telemetry.addData("Target CM", Distance_To_Travel);
-//            telemetry.update();
-            rectPositionFromLeft = Cone_Pipeline.getRectX();
-
-
-            if (rectPositionFromLeft < CenterOfScreen) {
-
-                drive.RF.setPower(-power-poweradj);
-                drive.RB.setPower(power);
-                drive.LF.setPower(power+poweradj);
-                drive.LB.setPower(-power);
-
-            } else if (rectPositionFromLeft > CenterOfScreen) {
-
-                drive.RF.setPower(power+poweradj);
-                drive.RB.setPower(-power);
-                drive.LF.setPower(-power-poweradj);
-                drive.LB.setPower(power);
-            }
-        }
-
-        drive.RF.setPower(0);
-        drive.RB.setPower(0);
-        drive.LF.setPower(0);
-        drive.LB.setPower(0);
-//        telemetry.addData("Angle", drive.yawAngle.firstAngle);
-//        telemetry.addData("RectX", Cone_Pipeline.getRectX());
-//        telemetry.update();
-////        Base_Pivot.setPosition(0.1);
 //
-//        Base_Gripper.setPosition(0.4);
-////        drive.DriveDistanceLong(135, 0.5);
-////
-////        Base_Pivot.setPosition(0.72);
-////
-////        drive.TurnToHeading(-89);
-////
-////        Base_Pivot.setPosition(0.8);
-////
-////        drive.DriveDistanceLong(25, 0.4);
-////        RF.setPower(0);
-////        RB.setPower(0);
-////        LF.setPower(0);
-////        LB.setPower(0);
-////
-////        drive.ResetEncoders();
-////
-////        drive.StrafeDistance_Left(21, 0.5);
-////
-////
-////
-////        drive.TurnToHeading(-102);
-////
-////        drive.DriveDistanceLongReverse(8, 0.4);
-////        telemetry.addData("Finished", "Turning");
-////        telemetry.update();
+//        telemetry.addData("Angle", drive.yawAngle.firstAngle);
+//        telemetry.update();
+//        CenterOfScreen = 320;
+//        rectPositionFromLeft = Cone_Pipeline.getRectX();
+//        power = 0.15;
+//        drive.DriveEncoders();
+//
+//        while (Math.abs(rectPositionFromLeft - CenterOfScreen) > 4){
+//
+////            telemetry.addData("rect X", Cone_Pipeline.getRectX());
+////            telemetry.addData("rect Y", Cone_Pipeline.getRectY());
+////            telemetry.addData("Target CM", Distance_To_Travel);
+////            telemetry.update();
+//            rectPositionFromLeft = Cone_Pipeline.getRectX();
+//
+//
+//            if (rectPositionFromLeft < CenterOfScreen) {
+//
+//                drive.RF.setPower(-power);
+//                drive.RB.setPower(power);
+//                drive.LF.setPower(power);
+//                drive.LB.setPower(-power);
+//
+//            } else if (rectPositionFromLeft > CenterOfScreen) {
+//
+//                drive.RF.setPower(power);
+//                drive.RB.setPower(-power);
+//                drive.LF.setPower(-power);
+//                drive.LB.setPower(power);
+//            }
+//        }
+//
+//        drive.RF.setPower(0);
+//        drive.RB.setPower(0);
+//        drive.LF.setPower(0);
+//        drive.LB.setPower(0);
+        drive.DriveDistanceLongReverse(5,0.4);
+
+        Base_Pivot.setPosition(0.1);
+
+        Base_Gripper.setPosition(0.4);
     }
 
     public void Reverse_To_Destack() {
@@ -732,8 +727,8 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
 
         Destacker_Left.setPosition(De_pos);
         Destacker_Right.setPosition(De_pos);
+        Base_Pivot.setPosition(0.15);
 
-        Base_Pivot.setPosition(0.1);
 
         Top_Pivot.setPosition(0.5);
 
@@ -965,8 +960,9 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
         Base_Gripper.setPosition(0.4);
 
         //cone 1
+        Base_Pivot.setPosition(0.12);
         Destack(De_Pos_1);
-        Base_Pivot.setPosition(0.2);
+        Base_Pivot.setPosition(0.12);
 
         if (abort){
             //Drive to position
@@ -975,34 +971,37 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
         }else {
 
             //cone 2
+            Base_Pivot.setPosition(0.12);
             Destack(De_Pos_2);
-
+            Base_Pivot.setPosition(0.12);
             if (abort){
                 //Drive to position
                 Base_Pivot.setPosition(0.1);
                 Top_Pivot.setPosition(Top_Pivot_Waiting);
                 Base_Pivot.setPosition(0.72);
             }else {
-
+                Base_Pivot.setPosition(0.12);
                 //cone 3
                 Destack(De_Pos_3);
-
+                Base_Pivot.setPosition(0.12);
                 if (abort){
                     //Drive to position
                     Top_Pivot.setPosition(Top_Pivot_Waiting);
                     Base_Pivot.setPosition(0.72);
                 }else {
+                    Base_Pivot.setPosition(0.12);
                     //cone 4
                     Destack(De_Pos_4);
-
+                    Base_Pivot.setPosition(0.12);
                     if (abort){
                         //Drive to position
                         Top_Pivot.setPosition(Top_Pivot_Waiting);
                         Base_Pivot.setPosition(0.72);
                     }else {
-
+                        Base_Pivot.setPosition(0.12);
                         //cone 5
                         Destack(De_Pos_5);
+                        Base_Pivot.setPosition(0.12);
                     }
                 }
 
@@ -1013,7 +1012,7 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
     }
     public void Destack_4 () {
         Base_Gripper.setPosition(0.4);
-
+        Base_Pivot.setPosition(0.12);
         //cone 1
         Destack(De_Pos_1);
         Base_Pivot.setPosition(0.2);
@@ -1023,28 +1022,29 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
             Top_Pivot.setPosition(Top_Pivot_Waiting);
             Base_Pivot.setPosition(0.72);
         }else {
-
+            Base_Pivot.setPosition(0.12);
             //cone 2
             Destack(De_Pos_2);
-
+            Base_Pivot.setPosition(0.12);
             if (abort){
                 //Drive to position
                 Base_Pivot.setPosition(0.1);
                 Top_Pivot.setPosition(Top_Pivot_Waiting);
                 Base_Pivot.setPosition(0.72);
             }else {
-
+                Base_Pivot.setPosition(0.12);
                 //cone 3
                 Destack(De_Pos_3);
-
+                Base_Pivot.setPosition(0.12);
                 if (abort){
                     //Drive to position
                     Top_Pivot.setPosition(Top_Pivot_Waiting);
                     Base_Pivot.setPosition(0.72);
                 }else {
+                    Base_Pivot.setPosition(0.12);
                     //cone 4
                     Destack(De_Pos_4);
-
+                    Base_Pivot.setPosition(0.12);
                     if (abort){
                         //Drive to position
                         Top_Pivot.setPosition(Top_Pivot_Waiting);
@@ -1059,7 +1059,7 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
     }
     public void Destack_3 () {
         Base_Gripper.setPosition(0.4);
-
+        Base_Pivot.setPosition(0.12);
         //cone 1
         Destack(De_Pos_1);
         Base_Pivot.setPosition(0.2);
@@ -1069,20 +1069,20 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
             Top_Pivot.setPosition(Top_Pivot_Waiting);
             Base_Pivot.setPosition(0.72);
         }else {
-
+            Base_Pivot.setPosition(0.12);
             //cone 2
             Destack(De_Pos_2);
-
+            Base_Pivot.setPosition(0.12);
             if (abort){
                 //Drive to position
                 Base_Pivot.setPosition(0.1);
                 Top_Pivot.setPosition(Top_Pivot_Waiting);
                 Base_Pivot.setPosition(0.72);
             }else {
-
+                Base_Pivot.setPosition(0.12);
                 //cone 3
                 Destack(De_Pos_3);
-
+                Base_Pivot.setPosition(0.12);
 
 
             }

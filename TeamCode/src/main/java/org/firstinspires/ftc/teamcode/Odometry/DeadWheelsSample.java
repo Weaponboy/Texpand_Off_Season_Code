@@ -9,11 +9,15 @@ import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.Motor.Encoder;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.arcrobotics.ftclib.kinematics.HolonomicOdometry;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Drivetrain;
 
 /**
@@ -53,6 +57,7 @@ public class DeadWheelsSample extends LinearOpMode {
     private double pivot;
     private double Distance_to_travel;
     Drivetrain drive = new Drivetrain();
+    public BNO055IMU imu         = null;      // Control/Expansion Hub IMU
 
     private MotorEx LF, RF, LB, RB;
     private MecanumDrive driveTrain;
@@ -61,12 +66,18 @@ public class DeadWheelsSample extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json";
+        parameters.loggingEnabled = true;
+        parameters.loggingTag = "IMU";
         LF = new MotorEx(hardwareMap, "LF");
         LB = new MotorEx(hardwareMap, "LB");
         RF = new MotorEx(hardwareMap, "RF");
         RB = new MotorEx(hardwareMap, "RB");
-
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
         //Telemetry for dashboard
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -105,55 +116,38 @@ public class DeadWheelsSample extends LinearOpMode {
 
         odometry.update(0, 0, 0);
         odometry.updatePose();
-        telemetry.addData("Robot Position", odometry.getPose());
+        telemetry.addData("Robot Position", imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
         telemetry.update();
         waitForStart();
-        odometry.updatePose(new Pose2d(0, 0, new Rotation2d()));
 
-        odometry.update(0, 0, 0);
-         DriveToPos(10,0,0.3);
-//        DriveOdometry(150,0.3);
-//        try {
-//            Thread.sleep(2000);
-//        } catch (Exception e) {
-//            System.out.println(e.getMessage());
-//        }
-//
-//        telemetry.addData("Robot Position", odometry.getPose());
-//        telemetry.update();
+        drive.TurnToHeading(-90,0.3);
 
+        for (int i = 0;  i < 300; i++){
+            telemetry.addData("Robot Position", imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
+            telemetry.update();
+            try {
+                Thread.sleep(10);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }
+        drive.TurnToHeading(-90,0.3);
 
-//
-//        DriveOdometry(10,0.5);
-//        telemetry.addData("Robot Position", odometry.getPose());
-//        telemetry.update();
-//        try {
-//            Thread.sleep(2000);
-//        } catch (Exception e) {
-//            System.out.println(e.getMessage());
-//        }
-//
-//        TurnOdometry(-30,0.5);
-//        try {
-//            Thread.sleep(2000);
-//        } catch (Exception e) {
-//            System.out.println(e.getMessage());
-//        }
-//        DriveOdometry(10,0.5);
-//        telemetry.addData("Robot Position", odometry.getPose());
-//        telemetry.update();
-//        try {
-//            Thread.sleep(2000);
-//        } catch (Exception e) {
-//            System.out.println(e.getMessage());
-//        }
-//        telemetry.addData("Robot Position", odometry.getPose());
-//        telemetry.update();
+        for (int i = 0;  i < 300; i++){
+            telemetry.addData("Robot Position", imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
+            telemetry.update();
+            try {
+                Thread.sleep(10);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }
+        drive.TurnToHeading(-90,0.3);
+
         while (opModeIsActive() && !isStopRequested()) {
             // control loop
             odometry.updatePose(); // update the position
-
-            telemetry.addData("Robot Position", odometry.getPose());
+            telemetry.addData("Robot Position", imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
             telemetry.update();
 
 
