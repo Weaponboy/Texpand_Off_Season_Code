@@ -20,6 +20,7 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import java.util.ArrayList;
 
 @Autonomous
+@Disabled
 public class Sleeve_Detection extends LinearOpMode {
 
     Threshold_Pipeline_2 thresholdPipe = new Threshold_Pipeline_2();

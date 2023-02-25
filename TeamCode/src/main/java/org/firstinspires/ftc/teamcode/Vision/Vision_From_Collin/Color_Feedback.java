@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Vision.Vision_From_Collin;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -14,6 +15,7 @@ import org.openftc.easyopencv.OpenCvPipeline;
 
 
 @Autonomous
+@Disabled
 public class Color_Feedback extends OpMode {
 
     private ElapsedTime runtime = new ElapsedTime();

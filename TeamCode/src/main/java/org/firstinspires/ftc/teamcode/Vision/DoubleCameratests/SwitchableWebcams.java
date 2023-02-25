@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Vision.DoubleCameratests;
 
 import android.graphics.Bitmap;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
@@ -20,6 +21,7 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvSwitchableWebcam;
 import org.openftc.easyopencv.PipelineRecordingParameters;
 @TeleOp
+@Disabled
 public class SwitchableWebcams extends OpMode {
 
     OpenCvSwitchableWebcam Vision;

@@ -48,7 +48,7 @@ public class Red_Cone_Pipe extends OpenCvPipeline {
     private ArrayList<MatOfPoint> contours = new ArrayList<>();
     private Mat hierarchy = new Mat();
 
-    static final Rect center = new Rect(new Point(100, 100), new Point(550, 350));
+    static final Rect center = new Rect(new Point(100, 100), new Point(550, 380));
 
     // Rectangle colour Scales
     private Scalar orange = new Scalar(300, 90, 90);
@@ -103,6 +103,8 @@ public class Red_Cone_Pipe extends OpenCvPipeline {
 
         IMG_HEIGHT = input.rows();
         IMG_WIDTH = input.cols();
+
+        output.submat(center);
 
 //        MIN_THRESH = new Scalar(VisionDash.blue_min_H, VisionDash.blue_min_S, VisionDash.blue_min_V);
 //        MAX_THRESH = new Scalar(VisionDash.blue_max_H, VisionDash.blue_max_S, VisionDash.blue_max_V);
@@ -165,7 +167,7 @@ public class Red_Cone_Pipe extends OpenCvPipeline {
         rects.clear();
 
         //return output
-        return output;
+        return output.submat(center);
     }
 
     //methods to return values

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Vision.DoubleCameratests;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -22,6 +23,7 @@ import org.openftc.easyopencv.OpenCvWebcam;
 import java.util.concurrent.TimeUnit;
 
 @TeleOp
+@Disabled
 public class NormalChangingWebcams extends OpMode {
 
     Pole_Pipe Pole;

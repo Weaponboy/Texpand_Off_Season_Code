@@ -39,6 +39,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Vision.AprilTags.AprilTagDetectionPipeline;
 import org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.Blue_Cone_Pipe;
+import org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.Red_Cone_Pipe;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -70,6 +71,8 @@ public class Blue_A5_Start_Motor_Destack_Ramping extends LinearOpMode {
 
     public double ConversionPixelstoCm = 20;//need to tune this
 
+
+    // was 329
     public double CenterOfScreen = 329;
 
     public double rectPositionFromLeft = 0;
@@ -98,9 +101,9 @@ public class Blue_A5_Start_Motor_Destack_Ramping extends LinearOpMode {
 
     // destacker positions
     double De_Pos_1 = 0;
-    double De_Pos_2 = 0.15;
-    double De_Pos_3 = 0.45;
-    double De_Pos_4 = 0.54;
+    double De_Pos_2 = 0.36;
+    double De_Pos_3 = 0.49;
+    double De_Pos_4 = 0.68;
     double De_Pos_5 = 0.72;
 
     OpenCvCamera camera;
@@ -249,7 +252,7 @@ public class Blue_A5_Start_Motor_Destack_Ramping extends LinearOpMode {
 
             DropPreLoad();
 
-            Destack_4();
+//            Destack_3();
 
             Drive_To_Pos_3();
 
@@ -261,8 +264,8 @@ public class Blue_A5_Start_Motor_Destack_Ramping extends LinearOpMode {
             Drive_To_Destack();
 
             DropPreLoad();
-
-            Destack_3();
+//
+//            Destack_3();
 
             Drive_To_Pos_1();
 
@@ -273,7 +276,7 @@ public class Blue_A5_Start_Motor_Destack_Ramping extends LinearOpMode {
 
             DropPreLoad();
 
-            Destack_4();
+//            Destack_3();
 
             Drive_To_Pos_2();
 
@@ -345,29 +348,34 @@ public class Blue_A5_Start_Motor_Destack_Ramping extends LinearOpMode {
     }
 
     public void Drive_To_Pos_1() {
-        drive.TurnDegreesLeft(14);
+
+        drive.TurnToHeading(90, 0.35);
 
         Top_Pivot.setPosition(1);
 
         Base_Pivot.setPosition(1);
 
-        drive.StrafeDistance_Left(17, .5);
+        drive.StrafeDistance(18, .8);
 
-        drive.DriveDistanceLongReverse(85, .5);
+        drive.TurnToHeading(90,0.45);
 
-        drive.TurnToHeading(0,0.3);
+        drive.DriveDistanceLongReverse(85, .65);
+
+        drive.TurnToHeading(0,0.45);
+
         Top_Pivot.setPosition(1);
 
     }
 
     public void Drive_To_Pos_2() {
-        drive.TurnDegreesLeft(14);
+
+        drive.TurnToHeading(90, 0.35);
 
         Top_Pivot.setPosition(1);
 
         Base_Pivot.setPosition(1);
 
-        drive.StrafeDistance_Left(18, .5);
+        drive.StrafeDistance(18, .5);
 
         drive.DriveDistanceLongReverse(20, .5);
 
@@ -377,22 +385,24 @@ public class Blue_A5_Start_Motor_Destack_Ramping extends LinearOpMode {
 
     public void Drive_To_Pos_3() {
 
-        drive.TurnDegreesLeft(14);
+        drive.TurnToHeading(90, 0.35);
 
         Top_Pivot.setPosition(1);
 
-        Base_Pivot.setPosition(1);
+        Base_Pivot.setPosition(0.7);
 
-        drive.StrafeDistance_Left(18, .5);
-
-        drive.DriveDistanceLong(30, .5);
+        drive.StrafeDistance(18, .6);
 
         drive.TurnToHeading(0,0.35);
 
+        drive.StrafeDistance(33, .6);
+
+        drive.TurnToHeading(0,0.35);
 
     }
 
     public void Drive_To_Destack() {
+
         telemetry.addData("Stop Position", "2");
         telemetry.update();
         drive.DriveDistanceRamp(140,0.9);
@@ -406,6 +416,7 @@ public class Blue_A5_Start_Motor_Destack_Ramping extends LinearOpMode {
         telemetry.update();
 
         drive.TurnToHeading(101,0.3);
+
         telemetry.addData("Angle", drive.yawAngle.firstAngle);
         telemetry.update();
 
@@ -418,84 +429,105 @@ public class Blue_A5_Start_Motor_Destack_Ramping extends LinearOpMode {
         rectPositionFromLeft = 0;
         Distance_To_Travel = 0;
 
-        CenterOfScreen = 329;
+        CenterOfScreen = 309;
 
+        power = 0.15;
+        drive.DriveEncoders();
 
-            power = 0.15;
-            drive.DriveEncoders();
+        rectPositionFromLeft = Cone_Pipeline.getRectX();
+        while (Math.abs(rectPositionFromLeft - CenterOfScreen) > 80){
 
-            rectPositionFromLeft = Cone_Pipeline.getRectX();
-            while (Math.abs(rectPositionFromLeft - CenterOfScreen) > 80){
+            telemetry.addData("rect X", Cone_Pipeline.getRectX());
+            telemetry.addData("rect Y", Cone_Pipeline.getRectY());
+            telemetry.addData("rect1", "1st loop");
+            telemetry.update();
 
-                telemetry.addData("rect X", Cone_Pipeline.getRectX());
-                telemetry.addData("rect Y", Cone_Pipeline.getRectY());
-                telemetry.update();
+            if (rectPositionFromLeft < CenterOfScreen) {
+                CenterOfScreen = 329;
+                drive.RF.setPower(-power);
+                drive.RB.setPower(power);
+                drive.LF.setPower(power);
+                drive.LB.setPower(-power);
+                rectPositionFromLeft = Cone_Pipeline.getRectX();
 
-                if (rectPositionFromLeft < CenterOfScreen) {
-
-                    drive.RF.setPower(-power);
-                    drive.RB.setPower(power);
-                    drive.LF.setPower(power);
-                    drive.LB.setPower(-power);
-                    rectPositionFromLeft = Cone_Pipeline.getRectX();
-                } else if (rectPositionFromLeft > CenterOfScreen) {
-
-                    drive.RF.setPower(power);
-                    drive.RB.setPower(-power);
-                    drive.LF.setPower(-power);
-                    drive.LB.setPower(power);
-                    rectPositionFromLeft = Cone_Pipeline.getRectX();
-                }
-
-
+            } else if (rectPositionFromLeft > CenterOfScreen) {
+                CenterOfScreen = 309;
+                drive.RF.setPower(power);
+                drive.RB.setPower(-power);
+                drive.LF.setPower(-power);
+                drive.LB.setPower(power);
+                rectPositionFromLeft = Cone_Pipeline.getRectX();
             }
-            power = 0.09;
-            drive.DriveEncoders();
+
+
+        }
+
+
+        power = 0.11;
+        drive.DriveEncoders();
+
+        drive.RF.setPower(-0.05);
+        drive.RB.setPower(-0.05);
+        drive.LF.setPower(-0.05);
+        drive.LB.setPower(-0.05);
         drive.TurnToHeading(101,0.3);
-
-            rectPositionFromLeft = Cone_Pipeline.getRectX();
-            while (Math.abs(rectPositionFromLeft - CenterOfScreen) > 10){
-
-                telemetry.addData("rect X", Cone_Pipeline.getRectX());
-                telemetry.addData("rect Y", Cone_Pipeline.getRectY());
-                telemetry.update();
-
-                if (rectPositionFromLeft < CenterOfScreen) {
-
-                    drive.RF.setPower(-power);
-                    drive.RB.setPower(power);
-                    drive.LF.setPower(power);
-                    drive.LB.setPower(-power);
-                    rectPositionFromLeft = Cone_Pipeline.getRectX();
-                } else if (rectPositionFromLeft > CenterOfScreen) {
-
-                    drive.RF.setPower(power);
-                    drive.RB.setPower(-power);
-                    drive.LF.setPower(-power);
-                    drive.LB.setPower(power);
-                    rectPositionFromLeft = Cone_Pipeline.getRectX();
-                }else{
-                    drive.RF.setPower(-0.05);
-                    drive.RB.setPower(-0.05);
-                    drive.LF.setPower(-0.05);
-                    drive.LB.setPower(-0.05);
-                }
+        try {
+            Thread.sleep(100);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
 
 
+        rectPositionFromLeft = Cone_Pipeline.getRectX();
+
+        while (Math.abs(rectPositionFromLeft - CenterOfScreen) > 10){
+
+            telemetry.addData("rect X", Cone_Pipeline.getRectX());
+            telemetry.addData("rect Y", Cone_Pipeline.getRectY());
+            telemetry.addData("rect", "2nd loop");
+            telemetry.update();
+
+
+            if (rectPositionFromLeft < CenterOfScreen - 3*0) {
+                CenterOfScreen = 329;
+                //left
+                drive.RF.setPower(-power);
+                drive.RB.setPower(power);
+                drive.LF.setPower(power);
+                drive.LB.setPower(-power);
+                rectPositionFromLeft = Cone_Pipeline.getRectX();
+
+            } else if (rectPositionFromLeft >  CenterOfScreen + 3*0) {
+                CenterOfScreen = 309;
+                //right
+                drive.RF.setPower(power);
+                drive.RB.setPower(-power);
+                drive.LF.setPower(-power);
+                drive.LB.setPower(power);
+                rectPositionFromLeft = Cone_Pipeline.getRectX();
+
+            }else{
+                drive.RF.setPower(-0.05);
+                drive.RB.setPower(-0.05);
+                drive.LF.setPower(-0.05);
+                drive.LB.setPower(-0.05);
             }
-            drive.RF.setPower(-0.05);
-            drive.RB.setPower(-0.05);
-            drive.LF.setPower(-0.05);
-            drive.LB.setPower(-0.05);
-            try {
-                Thread.sleep(70);
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
-            drive.RF.setPower(0);
-            drive.RB.setPower(0);
-            drive.LF.setPower(0);
-            drive.LB.setPower(0);
+
+
+        }
+        drive.RF.setPower(-0.05);
+        drive.RB.setPower(-0.05);
+        drive.LF.setPower(-0.05);
+        drive.LB.setPower(-0.05);
+        try {
+            Thread.sleep(70);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        drive.RF.setPower(0);
+        drive.RB.setPower(0);
+        drive.LF.setPower(0);
+        drive.LB.setPower(0);
 
         drive.TurnToHeading(101,0.2);
 
@@ -546,8 +578,11 @@ public class Blue_A5_Start_Motor_Destack_Ramping extends LinearOpMode {
     public void Reverse_To_Destack() {
 
         drive.DriveDistanceLong(140,0.7);
-        drive.TurnToHeading(-100,0.45);
+
+        drive.TurnToHeading(101,0.45);
+
         drive.DriveDistanceLong(15,0.5);
+
         Texpandcamera.setPipeline(Cone_Pipeline);
 
         rectPositionFromLeft = 0;
@@ -661,18 +696,19 @@ public class Blue_A5_Start_Motor_Destack_Ramping extends LinearOpMode {
 //        telemetry.addData("Finished", "Turning");
 //        telemetry.update();
     }
+
     public void DropPreLoad() {
         Top_Pivot.setPosition(0.5);
 
         //Extend vertical slides and drop cone
-        Right_Slide.setTargetPosition(1900);
-        Left_Slide.setTargetPosition(1900);
+        Right_Slide.setTargetPosition(1800);
+        Left_Slide.setTargetPosition(1800);
         Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        while (Right_Slide.getCurrentPosition() < 1850 && Left_Slide.getCurrentPosition() < 1850) {
+        while (Right_Slide.getCurrentPosition() < 1750 && Left_Slide.getCurrentPosition() < 1750) {
             Right_Slide.setPower(1);
             Left_Slide.setPower(1);
-            Top_Pivot.setPosition(0.3);
+            Top_Pivot.setPosition(0.42);
         }
         Right_Slide.setPower(0);
         Left_Slide.setPower(0);
@@ -727,8 +763,11 @@ public class Blue_A5_Start_Motor_Destack_Ramping extends LinearOpMode {
 
         Destacker_Left.setPosition(De_pos);
         Destacker_Right.setPosition(De_pos);
-        Base_Pivot.setPosition(0.15);
-
+        if(Destacker_Left.getPosition() == De_Pos_1){
+            Base_Pivot.setPosition(0.1);
+        }else{
+            Base_Pivot.setPosition(0.1);
+        }
 
         Top_Pivot.setPosition(0.5);
 
@@ -736,14 +775,14 @@ public class Blue_A5_Start_Motor_Destack_Ramping extends LinearOpMode {
 
         Extend.setPower(-1);
 
-        conefound = sensorRange.getDistance(DistanceUnit.MM) < 50;
+        conefound = sensorRange.getDistance(DistanceUnit.MM) < 60;
 
         //extend till we find a cone or get to the slides limit
         while (!conefound && Extend.getCurrentPosition() > -900) {
 
             CheckVSlidePos();
 
-            conefound = sensorRange.getDistance(DistanceUnit.MM) < 50;
+            conefound = sensorRange.getDistance(DistanceUnit.MM) < 60;
 
             boolean SlowPoint = Extend.getCurrentPosition() < -530;
 
@@ -768,7 +807,7 @@ public class Blue_A5_Start_Motor_Destack_Ramping extends LinearOpMode {
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
-            Base_Pivot.setPosition(0.78);
+            Base_Pivot.setPosition(0.82);
             try {
                 Thread.sleep(250);
             } catch (Exception e) {
@@ -782,16 +821,17 @@ public class Blue_A5_Start_Motor_Destack_Ramping extends LinearOpMode {
 
                 while (Extend.isBusy()) {
                     CheckVSlidePos();
-                    Base_Pivot.setPosition(0.78);
+                    Base_Pivot.setPosition(0.82);
                     Extend.setPower(0.6);
 
                     if(Extend.getCurrentPosition() > -350){
-                        Base_Gripper.setPosition(0.4);
-                        //bring destacker down
                         Destacker_Left.setPosition(De_Pos_5);
                         Destacker_Right.setPosition(De_Pos_5);
                     }
-                    if(Extend.getCurrentPosition() > -300){
+                    if(Extend.getCurrentPosition() > -150){
+                        Base_Gripper.setPosition(0.4);
+                    }
+                    if(Extend.getCurrentPosition() > -70){
                         //open top gripper
                         Top_Gripper.setPosition(0.35);
 
@@ -809,22 +849,22 @@ public class Blue_A5_Start_Motor_Destack_Ramping extends LinearOpMode {
                 //open base gripper
                 Base_Gripper.setPosition(0.4);
 
-                Nest_Occupied = colour.blue() > 2200;
+                Nest_Occupied = colour.blue() > 2000;
 
                 Base_Pivot.setPosition(1);
 
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(150);
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }
 
 
-                Nest_Occupied = colour.blue() > 2200;
+                Nest_Occupied = colour.blue() > 2000;
 
                 if(!Nest_Occupied){
                     try {
-                        Thread.sleep(100);
+                        Thread.sleep(250);
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
                     }
@@ -836,16 +876,16 @@ public class Blue_A5_Start_Motor_Destack_Ramping extends LinearOpMode {
                     }
                 }
 
-                Nest_Occupied = colour.blue() > 2200;
+                Nest_Occupied = colour.blue() > 2000;
                 if(!Nest_Occupied){
                     try {
-                        Thread.sleep(100);
+                        Thread.sleep(250);
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
                     }
                 }
 
-                Nest_Occupied = colour.blue() > 2200;
+                Nest_Occupied = colour.blue() > 2000;
 
                 if (Nest_Occupied) {
 
@@ -869,6 +909,56 @@ public class Blue_A5_Start_Motor_Destack_Ramping extends LinearOpMode {
 
                     //put base pivot back to zero
                     Base_Pivot.setPosition(0.1);
+                    Extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+                    Base_Pivot.setPosition(0.1);
+
+                    //Extend vertical slides and drop cone
+                    Right_Slide.setTargetPosition(1800);
+                    Left_Slide.setTargetPosition(1800);
+                    Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    while (Right_Slide.getCurrentPosition() < 1750 && Left_Slide.getCurrentPosition() < 1750) {
+                        Right_Slide.setPower(1);
+                        Left_Slide.setPower(1);
+                        Top_Pivot.setPosition(0.42);
+                        if(Right_Slide.getCurrentPosition() > 1650){
+                            Top_Pivot.setPosition(0);
+                        }
+                    }
+                    Right_Slide.setPower(0);
+                    Left_Slide.setPower(0);
+
+                    Top_Pivot.setPosition(0);
+
+                    Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+                    try {
+                        Thread.sleep(275);
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+
+                    Top_Gripper.setPosition(0.3);
+
+                    //TO DO: Insert WHILE loop
+                    if (Top_Gripper.getPosition() == 0.3) {
+                        try {
+                            Thread.sleep(200);
+                        } catch (Exception e) {
+                            System.out.println(e.getMessage());
+                        }
+
+                        Right_Slide.setTargetPosition(0);
+                        Left_Slide.setTargetPosition(0);
+                        Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                        Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                        Right_Slide.setPower(-0.9);
+                        Left_Slide.setPower(-0.9);
+                        Top_Pivot.setPosition(0.4);
+                        lowering = true;
+                    }
 
 
                 }else {
@@ -876,53 +966,6 @@ public class Blue_A5_Start_Motor_Destack_Ramping extends LinearOpMode {
                     abort = true;
                 }
 
-                Extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-                Base_Pivot.setPosition(0.1);
-
-                //Extend vertical slides and drop cone
-                Right_Slide.setTargetPosition(1900);
-                Left_Slide.setTargetPosition(1900);
-                Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                while (Right_Slide.getCurrentPosition() < 1850 && Left_Slide.getCurrentPosition() < 1850) {
-                    Right_Slide.setPower(1);
-                    Left_Slide.setPower(1);
-                    Top_Pivot.setPosition(0.3);
-                }
-                Right_Slide.setPower(0);
-                Left_Slide.setPower(0);
-
-                Top_Pivot.setPosition(0);
-
-                Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-                try {
-                    Thread.sleep(125);
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
-                }
-
-                Top_Gripper.setPosition(0.3);
-
-                //TO DO: Insert WHILE loop
-                if (Top_Gripper.getPosition() == 0.3) {
-                    try {
-                        Thread.sleep(100);
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                    }
-                    Top_Pivot.setPosition(0.4);
-                    Right_Slide.setTargetPosition(0);
-                    Left_Slide.setTargetPosition(0);
-                    Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    Right_Slide.setPower(-0.9);
-                    Left_Slide.setPower(-0.9);
-                    lowering = true;
-
-                }
 
             } else {
                 //Abort
@@ -1010,6 +1053,7 @@ public class Blue_A5_Start_Motor_Destack_Ramping extends LinearOpMode {
         }
 
     }
+
     public void Destack_4 () {
         Base_Gripper.setPosition(0.4);
         Base_Pivot.setPosition(0.12);
@@ -1057,6 +1101,7 @@ public class Blue_A5_Start_Motor_Destack_Ramping extends LinearOpMode {
         }
 
     }
+
     public void Destack_3 () {
         Base_Gripper.setPosition(0.4);
         Base_Pivot.setPosition(0.12);

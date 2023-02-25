@@ -19,7 +19,7 @@
  * SOFTWARE.
  */
 
-package org.firstinspires.ftc.teamcode.Auto.Blue_Auto;
+package org.firstinspires.ftc.teamcode.Auto.Red_Auto;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -38,7 +38,6 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.FocusCo
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Vision.AprilTags.AprilTagDetectionPipeline;
-import org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.Blue_Cone_Pipe;
 import org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.Red_Cone_Pipe;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -50,9 +49,9 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 @Autonomous
-public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
+public class Red_F5_Start_Motor_Destack_Ramping extends LinearOpMode {
     private DistanceSensor sensorRange;
-    Blue_Cone_Pipe Cone_Pipeline;
+    Red_Cone_Pipe Cone_Pipeline;
     public DcMotor RF = null;
     public DcMotor LF = null;
     public DcMotor RB = null;
@@ -138,7 +137,7 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
         initialize();
         Extend.setDirection(DcMotorSimple.Direction.REVERSE);
         drive.init(hardwareMap);
-        Cone_Pipeline = new Blue_Cone_Pipe();
+        Cone_Pipeline = new Red_Cone_Pipe();
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
 
         WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
@@ -252,7 +251,7 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
 
             DropPreLoad();
 
-            Destack_3();
+//            Destack_3();
 
             Drive_To_Pos_3();
 
@@ -264,8 +263,8 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
             Drive_To_Destack();
 
             DropPreLoad();
-
-            Destack_3();
+//
+//            Destack_3();
 
             Drive_To_Pos_1();
 
@@ -276,7 +275,7 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
 
             DropPreLoad();
 
-            Destack_3();
+//            Destack_3();
 
             Drive_To_Pos_2();
 
@@ -349,13 +348,15 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
 
     public void Drive_To_Pos_1() {
 
-        drive.TurnToHeading(-90, 0.35);
+        drive.TurnToHeading(90, 0.35);
 
         Top_Pivot.setPosition(1);
 
         Base_Pivot.setPosition(1);
 
-        drive.StrafeDistance_Left(19, .5);
+        drive.StrafeDistance(18, .8);
+
+        drive.TurnToHeading(90,0.45);
 
         drive.DriveDistanceLongReverse(85, .65);
 
@@ -363,16 +364,18 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
 
         Top_Pivot.setPosition(1);
 
+
     }
 
     public void Drive_To_Pos_2() {
-        drive.TurnDegreesLeft(14);
+
+        drive.TurnToHeading(90, 0.35);
 
         Top_Pivot.setPosition(1);
 
         Base_Pivot.setPosition(1);
 
-        drive.StrafeDistance_Left(18, .5);
+        drive.StrafeDistance(18, .5);
 
         drive.DriveDistanceLongReverse(20, .5);
 
@@ -382,23 +385,24 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
 
     public void Drive_To_Pos_3() {
 
-        drive.TurnToHeading(-90, 0.35);
+        drive.TurnToHeading(90, 0.35);
 
         Top_Pivot.setPosition(1);
 
         Base_Pivot.setPosition(0.7);
 
-        drive.StrafeDistance_Left(18, .6);
+        drive.StrafeDistance(18, .6);
 
         drive.TurnToHeading(0,0.35);
 
-        drive.StrafeDistance_Left(33, .6);
+        drive.StrafeDistance(33, .6);
 
-        drive.TurnToHeading(3,0.35);
+        drive.TurnToHeading(0,0.35);
 
     }
 
     public void Drive_To_Destack() {
+
         telemetry.addData("Stop Position", "2");
         telemetry.update();
         drive.DriveDistanceRamp(140,0.9);
@@ -411,7 +415,8 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
         telemetry.addData("Target", 140*510/(Math.PI * 2 * (9.6 / 2.0)));
         telemetry.update();
 
-        drive.TurnToHeading(-101,0.3);
+        drive.TurnToHeading(101,0.3);
+
         telemetry.addData("Angle", drive.yawAngle.firstAngle);
         telemetry.update();
 
@@ -465,7 +470,7 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
         drive.RB.setPower(-0.05);
         drive.LF.setPower(-0.05);
         drive.LB.setPower(-0.05);
-        drive.TurnToHeading(-101,0.3);
+        drive.TurnToHeading(101,0.3);
         try {
             Thread.sleep(100);
         } catch (Exception e) {
@@ -524,7 +529,7 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
         drive.LF.setPower(0);
         drive.LB.setPower(0);
 
-        drive.TurnToHeading(-101,0.2);
+        drive.TurnToHeading(101,0.2);
 
 //
 //        telemetry.addData("Angle", drive.yawAngle.firstAngle);
@@ -573,8 +578,11 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
     public void Reverse_To_Destack() {
 
         drive.DriveDistanceLong(140,0.7);
-        drive.TurnToHeading(-100,0.45);
+
+        drive.TurnToHeading(101,0.45);
+
         drive.DriveDistanceLong(15,0.5);
+
         Texpandcamera.setPipeline(Cone_Pipeline);
 
         rectPositionFromLeft = 0;
@@ -688,6 +696,7 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
 //        telemetry.addData("Finished", "Turning");
 //        telemetry.update();
     }
+
     public void DropPreLoad() {
         Top_Pivot.setPosition(0.5);
 
@@ -754,14 +763,11 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
 
         Destacker_Left.setPosition(De_pos);
         Destacker_Right.setPosition(De_pos);
-
         if(Destacker_Left.getPosition() == De_Pos_1){
             Base_Pivot.setPosition(0.1);
         }else{
             Base_Pivot.setPosition(0.1);
         }
-
-
 
         Top_Pivot.setPosition(0.5);
 
@@ -843,18 +849,18 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
                 //open base gripper
                 Base_Gripper.setPosition(0.4);
 
-                Nest_Occupied = colour.blue() > 2000;
+                Nest_Occupied = colour.red() > 2000;
 
                 Base_Pivot.setPosition(1);
 
                 try {
-                    Thread.sleep(250);
+                    Thread.sleep(150);
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }
 
 
-                Nest_Occupied = colour.blue() > 2000;
+                Nest_Occupied = colour.red() > 2000;
 
                 if(!Nest_Occupied){
                     try {
@@ -870,7 +876,7 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
                     }
                 }
 
-                Nest_Occupied = colour.blue() > 2000;
+                Nest_Occupied = colour.red() > 2000;
                 if(!Nest_Occupied){
                     try {
                         Thread.sleep(250);
@@ -879,7 +885,7 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
                     }
                 }
 
-                Nest_Occupied = colour.blue() > 2000;
+                Nest_Occupied = colour.red() > 2000;
 
                 if (Nest_Occupied) {
 
@@ -903,7 +909,6 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
 
                     //put base pivot back to zero
                     Base_Pivot.setPosition(0.1);
-
                     Extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
                     Base_Pivot.setPosition(0.1);
@@ -1048,6 +1053,7 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
         }
 
     }
+
     public void Destack_4 () {
         Base_Gripper.setPosition(0.4);
         Base_Pivot.setPosition(0.12);
@@ -1095,6 +1101,7 @@ public class Blue_A2_Start_Motor_Destack_Ramping extends LinearOpMode {
         }
 
     }
+
     public void Destack_3 () {
         Base_Gripper.setPosition(0.4);
         Base_Pivot.setPosition(0.12);

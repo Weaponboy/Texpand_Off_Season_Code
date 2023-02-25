@@ -48,7 +48,7 @@ public class Blue_Cone_Pipe extends OpenCvPipeline {
     private ArrayList<MatOfPoint> contours = new ArrayList<>();
     private Mat hierarchy = new Mat();
 
-    static final Rect center = new Rect(new Point(100, 100), new Point(550, 350));
+    static final Rect center = new Rect(new Point(100, 100), new Point(550, 300));
 
     // Rectangle colour Scales
     private Scalar orange = new Scalar(300, 90, 90);

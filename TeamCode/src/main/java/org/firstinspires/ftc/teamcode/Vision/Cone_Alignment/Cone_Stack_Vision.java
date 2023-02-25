@@ -61,6 +61,8 @@ public class Cone_Stack_Vision extends OpMode {
     private int loop1 = 0;
     private OpenCvCamera webcam;
 
+    OpenCvWebcam Texpandcamera;
+
     public double Distance_To_Travel;
 
     public double CenterOfScreen = 330;
@@ -79,7 +81,7 @@ public class Cone_Stack_Vision extends OpMode {
 
         WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
 
-        OpenCvWebcam Texpandcamera = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
+        Texpandcamera = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
 
         Texpandcamera.setPipeline(Cone_Pipeline);
 
@@ -159,6 +161,7 @@ public class Cone_Stack_Vision extends OpMode {
         Distance_To_Travel = Distance_To_Travel / 20;
 
         //Telemetry to be displayed during init_loop()
+        telemetry.addData("FPS", Texpandcamera.getFps());
         telemetry.addData("S", Cone_Pipeline.getS());
         telemetry.addData("V", Cone_Pipeline.getV());
         telemetry.addData("H", Cone_Pipeline.getH());
@@ -178,9 +181,10 @@ public class Cone_Stack_Vision extends OpMode {
         double power;
 
         rectPositionFromLeft = 0;
+
         Distance_To_Travel = 0;
 
-        CenterOfScreen = 329;
+        CenterOfScreen = 309;
 
 
         if(loop1 == 0){
@@ -192,17 +196,19 @@ public class Cone_Stack_Vision extends OpMode {
 
                 telemetry.addData("rect X", Cone_Pipeline.getRectX());
                 telemetry.addData("rect Y", Cone_Pipeline.getRectY());
+                telemetry.addData("rect1", "1st loop");
                 telemetry.update();
 
                 if (rectPositionFromLeft < CenterOfScreen) {
-
+                    CenterOfScreen = 329;
                     drive.RF.setPower(-power);
                     drive.RB.setPower(power);
                     drive.LF.setPower(power);
                     drive.LB.setPower(-power);
                     rectPositionFromLeft = Cone_Pipeline.getRectX();
-                } else if (rectPositionFromLeft > CenterOfScreen) {
 
+                } else if (rectPositionFromLeft > CenterOfScreen) {
+                    CenterOfScreen = 309;
                     drive.RF.setPower(power);
                     drive.RB.setPower(-power);
                     drive.LF.setPower(-power);
@@ -212,30 +218,48 @@ public class Cone_Stack_Vision extends OpMode {
 
 
             }
-            power = 0.09;
+
+            power = 0.11;
             drive.DriveEncoders();
 
+            drive.RF.setPower(-0.05);
+            drive.RB.setPower(-0.05);
+            drive.LF.setPower(-0.05);
+            drive.LB.setPower(-0.05);
+            try {
+                Thread.sleep(200);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+
             rectPositionFromLeft = Cone_Pipeline.getRectX();
+
             while (Math.abs(rectPositionFromLeft - CenterOfScreen) > 10){
 
                 telemetry.addData("rect X", Cone_Pipeline.getRectX());
                 telemetry.addData("rect Y", Cone_Pipeline.getRectY());
+                telemetry.addData("rect", "2nd loop");
                 telemetry.update();
 
-                if (rectPositionFromLeft < CenterOfScreen) {
 
+                if (rectPositionFromLeft < CenterOfScreen - 3*0) {
+                    CenterOfScreen = 329;
+                    //left
                     drive.RF.setPower(-power);
                     drive.RB.setPower(power);
                     drive.LF.setPower(power);
                     drive.LB.setPower(-power);
                     rectPositionFromLeft = Cone_Pipeline.getRectX();
-                } else if (rectPositionFromLeft > CenterOfScreen) {
 
+                } else if (rectPositionFromLeft >  CenterOfScreen + 3*0) {
+                    CenterOfScreen = 309;
+                    //right
                     drive.RF.setPower(power);
                     drive.RB.setPower(-power);
                     drive.LF.setPower(-power);
                     drive.LB.setPower(power);
                     rectPositionFromLeft = Cone_Pipeline.getRectX();
+
                 }else{
                     drive.RF.setPower(-0.05);
                     drive.RB.setPower(-0.05);
