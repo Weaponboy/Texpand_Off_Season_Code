@@ -947,7 +947,7 @@ public class DoubleGripperRed extends OpMode {
                     Base_Pivot.setPosition(Base_Pivot_Collect);
                 }
 
-                
+
 
 
 
