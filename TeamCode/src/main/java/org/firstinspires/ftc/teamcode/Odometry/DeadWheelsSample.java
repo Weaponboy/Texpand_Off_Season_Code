@@ -153,6 +153,7 @@ public class DeadWheelsSample extends LinearOpMode {
 
         }
     }
+
     public void DriveToPos(double TargetXPos, double TargetYPos, double power){
         double CurrentXPos = 0;
         double CurrentYPos = 0;
@@ -184,24 +185,32 @@ public class DeadWheelsSample extends LinearOpMode {
         drive.LB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         do {
+
+            //update position
             odometry.updatePose();
+
+            //Get bot positions
             CurrentXPos = getYpos();
             CurrentYPos = getXpos();
             StartingHeading = Math.toDegrees(getheading());
+
+            //get converted heading
             if (StartingHeading <= 0) {
                 ConvertedHeading = (0 - StartingHeading);
             }else {
                 ConvertedHeading = (360 - StartingHeading);
             }
+
+            //set distance to travel error
             Xdist = TargetXPos - CurrentXPos;
             Ydist = TargetYPos - CurrentYPos;
+
             RRXdist = Xdist*Math.cos(Math.toRadians(360-ConvertedHeading)) - Ydist*Math.sin(Math.toRadians(360-ConvertedHeading));
             RRYdist = Xdist*Math.sin(Math.toRadians(360-ConvertedHeading)) + Ydist*Math.cos(Math.toRadians(360-ConvertedHeading));
             ResultantDist = Math.sqrt((Xdist*Xdist) + (Ydist*Ydist));
 
             Vertical = Ydist/ResultantDist;
             Horizontal = Xdist/ResultantDist;
-
 
 
             telemetry.addData("Xdist", Xdist);
@@ -214,19 +223,12 @@ public class DeadWheelsSample extends LinearOpMode {
             telemetry.addData("Horizontal", Horizontal);
             telemetry.update();
 
-
-
-
             drive.RF.setPower(power*1.3*(-Pivot + (Vertical - Horizontal)));
             drive.RB.setPower(power*(-Pivot + (Vertical + Horizontal)));
             drive.LF.setPower(power*1.3*(Pivot + (Vertical + Horizontal)));
             drive.LB.setPower(power*(Pivot + (Vertical - Horizontal)));
 
-
-        } while ((Math.abs(Xdist) > 0.5) || (Math.abs(Ydist) > 0.5));
-
-
-
+        }while ((Math.abs(Xdist) > 0.5) || (Math.abs(Ydist) > 0.5));
 
 //            ramp_down_point = Math.abs(TargetXPos - CurrentXPos)*0.75;
 //            telemetry.addData("StartHeading", StartingHeading);
@@ -331,6 +333,7 @@ public class DeadWheelsSample extends LinearOpMode {
             System.out.println(e.getMessage());
         }
     }
+
     public double getXpos() {
         return odometry.getPose().getX();
     }

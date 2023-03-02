@@ -98,6 +98,7 @@ public class Blue_Cone_Pipe extends OpenCvPipeline {
 
         MIN_THRESH = new Scalar(VisionDash.cone_Min_H,VisionDash.cone_Min_S,VisionDash.cone_Min_V);
         MAX_THRESH = new Scalar(VisionDash.cone_Max_H,VisionDash.cone_Max_S,VisionDash.cone_Max_V);
+
         // copy input to output
         input.copyTo(output);
 

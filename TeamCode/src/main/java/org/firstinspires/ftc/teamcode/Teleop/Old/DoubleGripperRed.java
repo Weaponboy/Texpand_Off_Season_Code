@@ -1,9 +1,10 @@
-package org.firstinspires.ftc.teamcode.Teleop;
+package org.firstinspires.ftc.teamcode.Teleop.Old;
 
 import android.graphics.Bitmap;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -24,6 +25,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.Blue_Cone_Pipe;
 import org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.Pole_Pipe;
+import org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.Red_Cone_Pipe;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -35,7 +37,8 @@ import org.openftc.easyopencv.PipelineRecordingParameters;
 import java.util.concurrent.TimeUnit;
 
 @TeleOp
-public class DoubleGripperBlue extends OpMode {
+@Disabled
+public class DoubleGripperRed extends OpMode {
     FtcDashboard dashboard = FtcDashboard.getInstance();
     Telemetry dashboardTelemetry = dashboard.getTelemetry();
     OpenCvWebcam FrontWeb;
@@ -176,9 +179,6 @@ public class DoubleGripperBlue extends OpMode {
         }
     };
 
-
-
-
     public DcMotor Odo_raise  = null;
 
     private double TotalDist;
@@ -226,7 +226,7 @@ public class DoubleGripperBlue extends OpMode {
     private double Base_Pivot_Flip = 0.78;
 
     private double Base_Pivot_Out_Way = 1;
-    Blue_Cone_Pipe Cone_Pipeline;
+    Red_Cone_Pipe Cone_Pipeline;
     private double Top_Pivot_Collect = 0.35;
 
     private double Top_Gripper_Collect_Wide = 0.36;
@@ -234,6 +234,8 @@ public class DoubleGripperBlue extends OpMode {
     private boolean rumble = false;
 
     private int Toppos = 0;
+
+    private int TopposP = 0;
 
     private int Toppos2 = 0;
     private int stakerpos = 0;
@@ -255,13 +257,12 @@ public class DoubleGripperBlue extends OpMode {
     public double ConversionPixelstoCm = 22;//need to tune this
 
     public double CenterOfScreen = 320;
-    private int TopposP = 0;
-
-    private boolean PoleAlignmnet = true;
 
     public double rectPositionFromLeft = 0;
 
     private boolean conefound = false;
+
+    private boolean PoleAlignmnet = true;
 
     private boolean SlowPoint = false;
     private double slow = 0.4;
@@ -950,6 +951,8 @@ public class DoubleGripperBlue extends OpMode {
 
 
 
+
+
         }
 
         //Align to the top pole
@@ -1035,9 +1038,11 @@ public class DoubleGripperBlue extends OpMode {
                 rectPositionFromLeft = Pole.getRectX();
                 power = 0.27;
 
-                if (PoleAlignmnet){
+               if (PoleAlignmnet){
                     AlignToPole(15);
-                }
+               }
+
+
 
                 telemetry.addData("Distance_To_Travel:", Distance_To_Travel);
                 telemetry.update();
@@ -1447,7 +1452,7 @@ public class DoubleGripperBlue extends OpMode {
 
         Pole = new Pole_Pipe();
 
-        Cone_Pipeline = new Blue_Cone_Pipe();
+        Cone_Pipeline = new Red_Cone_Pipe();
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
 

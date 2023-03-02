@@ -1,5 +1,10 @@
-package org.firstinspires.ftc.teamcode.Teleop;
+package org.firstinspires.ftc.teamcode.Teleop.Old;
 
+import android.graphics.Bitmap;
+
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -10,6 +15,9 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.function.Consumer;
+import org.firstinspires.ftc.robotcore.external.function.Continuation;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.FocusControl;
@@ -20,36 +28,32 @@ import org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.Pole_Pipe;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvPipeline;
+import org.openftc.easyopencv.OpenCvSwitchableWebcam;
 import org.openftc.easyopencv.OpenCvWebcam;
+import org.openftc.easyopencv.PipelineRecordingParameters;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @TeleOp
-public class DoubleGripperLatestThreads extends OpMode {
+@Disabled
+public class DoubleGripperBlue extends OpMode {
+    FtcDashboard dashboard = FtcDashboard.getInstance();
+    Telemetry dashboardTelemetry = dashboard.getTelemetry();
+    OpenCvWebcam FrontWeb;
+    OpenCvWebcam BackWeb;
 
     public DcMotor RF = null;
     public DcMotor LF = null;
     public DcMotor RB = null;
     public DcMotor LB = null;
 
-    private ExecutorService executor;
-
-    private AtomicInteger counter;
+    public boolean conefoundcycle;
 
     private double power;
 
-    private OpenCvWebcam BackWeb;
-
-    private OpenCvWebcam frontWeb;
-
-
     public DcMotor Odo_raise  = null;
 
-    private double TotalDist;
-    private double AveDist;
     Drivetrain drive = new Drivetrain();
 
     Gamepad.RumbleEffect customRumbleEffect;
@@ -58,13 +62,11 @@ public class DoubleGripperLatestThreads extends OpMode {
 
     Pole_Pipe Pole;
 
-    Blue_Cone_Pipe Cone;
-
     double De_Pos_1 = 0.0;
-    double De_Pos_2 = 0.2;
+    double De_Pos_2 = 0.12;
     double De_Pos_3 = 0.45;
     double De_Pos_4 = 0.54;
-    double De_Pos_5 = 0.7;
+    double De_Pos_5 = 0.72;
 
     public ColorSensor colour = null;
 
@@ -90,19 +92,21 @@ public class DoubleGripperLatestThreads extends OpMode {
     private double horizontal;
     private double pivot;
 
-    private double Base_Pivot_Collect = 0.1;
+    private double Base_Pivot_Collect = 0.05;
 
     private double Base_Pivot_Flip = 0.78;
 
     private double Base_Pivot_Out_Way = 1;
-
-    private double Top_Pivot_Collect = 0.31;
+    Blue_Cone_Pipe Cone_Pipeline;
+    private double Top_Pivot_Collect = 0.35;
 
     private double Top_Gripper_Collect_Wide = 0.36;
 
     private boolean rumble = false;
 
     private int Toppos = 0;
+
+    private int Toppos2 = 0;
     private int stakerpos = 0;
     private double Destack_position = 0;
 
@@ -122,6 +126,9 @@ public class DoubleGripperLatestThreads extends OpMode {
     public double ConversionPixelstoCm = 22;//need to tune this
 
     public double CenterOfScreen = 320;
+    private int TopposP = 0;
+
+    private boolean PoleAlignmnet = true;
 
     public double rectPositionFromLeft = 0;
 
@@ -129,7 +136,7 @@ public class DoubleGripperLatestThreads extends OpMode {
 
     private boolean SlowPoint = false;
     private double slow = 0.4;
-
+    private double Cone_power;
     private double slow1 = 0.4;
 
     private boolean lowering = false;
@@ -150,22 +157,22 @@ public class DoubleGripperLatestThreads extends OpMode {
         LF.setPower(slow1*1.3*(pivot + (vertical + horizontal)));
         LB.setPower(slow1*(pivot + (vertical - horizontal)));
 
+        if (gamepad1.right_bumper && gamepad2.right_bumper){
 
+            TopposP = TopposP + 1;
 
-        if (gamepad2.dpad_up && gamepad2.back) {
-            stakerpos = stakerpos + 1;
-
-            if(stakerpos == 1 && Odo_raise.getCurrentPosition() < 50){
-                Pods_Up();
-            } else if(stakerpos == 2 && Odo_raise.getCurrentPosition() > 50) {
-                Pods_Down();
+            if(TopposP == 1){
+                PoleAlignmnet = false;
+            }else if(TopposP == 3){
+                PoleAlignmnet = true;
             }
 
-            if(stakerpos > 2){
-                stakerpos = 0;
+            if(TopposP > 2){
+                Toppos = 0;
             }
 
         }
+
 
         if(gamepad2.b && Base_Gripper.getPosition() == 0){
             try {
@@ -185,12 +192,14 @@ public class DoubleGripperLatestThreads extends OpMode {
         }
 
         if (gamepad1.dpad_up) {
-
+            Destacker_Left.setPosition(De_Pos_1);
+            Destacker_Right.setPosition(De_Pos_1);
+            Base_Pivot.setPosition(0.12);
         }
         if (gamepad1.right_bumper) {
             Destacker_Left.setPosition(De_Pos_2);
             Destacker_Right.setPosition(De_Pos_2);
-            Base_Pivot.setPosition(0.1);
+            Base_Pivot.setPosition(0.12);
         }
         if (gamepad1.y) {
             Destacker_Left.setPosition(De_Pos_3);
@@ -215,7 +224,7 @@ public class DoubleGripperLatestThreads extends OpMode {
             Left_Slide.setPower(-0.9);
         }
 
-        if(gamepad2.back && !gamepad2.dpad_up){
+        if(gamepad2.back){
 
             Base_Pivot.setPosition(Base_Pivot_Collect);
 
@@ -227,7 +236,7 @@ public class DoubleGripperLatestThreads extends OpMode {
             Extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             Extend.setPower(-1);
 
-            conefound = sensorRange.getDistance(DistanceUnit.MM) < 60;
+            conefound = sensorRange.getDistance(DistanceUnit.MM) < 70;
 
 
             while(!conefound && Extend.getCurrentPosition() > -900){
@@ -243,9 +252,9 @@ public class DoubleGripperLatestThreads extends OpMode {
                     Left_Slide.setPower(-0.9);
                 }
 
-                conefound = sensorRange.getDistance(DistanceUnit.MM) < 60;
+                conefound = sensorRange.getDistance(DistanceUnit.MM) < 70;
 
-                SlowPoint= sensorRange.getDistance(DistanceUnit.MM) < 180;
+                SlowPoint= sensorRange.getDistance(DistanceUnit.MM) < 200;
 
                 if (SlowPoint){
                     Extend.setPower(-0.5);
@@ -253,7 +262,7 @@ public class DoubleGripperLatestThreads extends OpMode {
                     Extend.setPower(-1);
                 }
 
-                Extend.setPower(-1);
+
                 try {
                     Thread.sleep(20);
                 } catch (Exception e) {
@@ -303,7 +312,7 @@ public class DoubleGripperLatestThreads extends OpMode {
                 if (Destacker_Left.getPosition() < 0.6){
 
                     try {
-                        Thread.sleep(200);
+                        Thread.sleep(400);
                     }catch (Exception e){
                         System.out.println(e.getMessage());
                     }
@@ -340,14 +349,7 @@ public class DoubleGripperLatestThreads extends OpMode {
 
                         Extend.setPower(0.8);
 
-//                        conefoundDe = colour.blue() > 3000;
-//
-//                        if (conefoundDe || Extend.getCurrentPosition() < -700){
-//                            Base_Gripper.setPosition(0.4);
-//
-//                            Destacker_Left.setPosition(De_Pos_5);
-//                            Destacker_Right.setPosition(De_Pos_5);
-//                        }
+
                     }
 
                     if(Right_Slide.getCurrentPosition() < 10 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 10 && !Left_Slide.isBusy()){
@@ -430,23 +432,47 @@ public class DoubleGripperLatestThreads extends OpMode {
             Base_Gripper.setPosition(0); //close base gripper if it is open
         }
 
-        //Reduce robot speed
-        if(gamepad1.start && slow == 0.6){
-            slow = 0.4;
-        }else if(gamepad1.start && slow < 0.6){
-            slow = 0.6;
+        if(gamepad1.start || gamepad2.start){
+
+            Base_Pivot.setPosition(0.7);
+            try {
+                Thread.sleep(600);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+            Cone_power = 0.2;
+            rectPositionFromLeft = Cone_Pipeline.getRectX();
+            while (Math.abs(rectPositionFromLeft - CenterOfScreen) > 25 && (Math.abs(gamepad1.right_stick_x) < 0.1)){
+
+                if(Math.abs(rectPositionFromLeft - CenterOfScreen) > 15 ){
+                    Cone_power = 0.15;
+                }
+                rectPositionFromLeft = Cone_Pipeline.getRectX();
+
+                if (rectPositionFromLeft < CenterOfScreen + 10) {
+                    drive.RF.setPower(1.3*Cone_power);
+                    drive.RB.setPower(Cone_power);
+                    drive.LF.setPower(-1.3*Cone_power);
+                    drive.LB.setPower(-Cone_power);
+                } else if (rectPositionFromLeft > CenterOfScreen - 10) {
+                    drive.RF.setPower(-1.3*Cone_power);
+                    drive.RB.setPower(-Cone_power);
+                    drive.LF.setPower(1.3*Cone_power);
+                    drive.LB.setPower(Cone_power);
+                }
+
+            }
+            drive.RF.setPower(0);
+            drive.RB.setPower(0);
+            drive.LF.setPower(0);
+            drive.LB.setPower(0);
+            Base_Pivot.setPosition(0.05);
         }
 
         try {
             Thread.sleep(10);
         } catch (Exception e) {
             System.out.println(e.getMessage());
-        }
-
-        //Stop slides if finished running
-        if(lowering){
-            Right_Slide.setPower(-0.9);
-            Left_Slide.setPower(-0.9);
         }
 
         //Stop slides if finished running
@@ -471,18 +497,30 @@ public class DoubleGripperLatestThreads extends OpMode {
             Base_Gripper.setPosition(0); //close base gripper if it is open
         }
 
-        //toggle possition of top pivot
-        if (gamepad2.x || gamepad1.x) {
+        //toggle position of top pivot
+        if (gamepad1.x) {
             Toppos = Toppos + 1;
 
             if(Toppos == 1){
                 Top_Pivot.setPosition(0.22);
-            }else if(Toppos == 2){
+            }else if(Toppos == 3){
+                Top_Pivot.setPosition(0.5);
+            }
+            if(Toppos > 2){
+                Toppos = 0;
+            }
+
+        }
+
+        if (gamepad2.x) {
+            Toppos = Toppos + 1;
+
+            if(Toppos == 1){
                 Top_Pivot.setPosition(1);
             }else if(Toppos == 3){
-                Top_Pivot.setPosition(0.6);
+                Top_Pivot.setPosition(0.65);
             }
-            if(Toppos > 3){
+            if(Toppos > 2){
                 Toppos = 0;
             }
 
@@ -533,7 +571,7 @@ public class DoubleGripperLatestThreads extends OpMode {
 
                 Extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 Extend.setPower(-1);
-                conefound = sensorRange.getDistance(DistanceUnit.MM) < 90;
+                conefound = sensorRange.getDistance(DistanceUnit.MM) < 70;
 
                 while(!conefound && Extend.getCurrentPosition() > -900){
                     if(Right_Slide.getCurrentPosition() < 50 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 50 && !Left_Slide.isBusy()){
@@ -547,9 +585,10 @@ public class DoubleGripperLatestThreads extends OpMode {
                         Right_Slide.setPower(-0.9);
                         Left_Slide.setPower(-0.9);
                     }
-                    conefound = sensorRange.getDistance(DistanceUnit.MM) < 90;
 
-                    SlowPoint= sensorRange.getDistance(DistanceUnit.MM) < 180;
+                    conefound = sensorRange.getDistance(DistanceUnit.MM) < 70;
+
+                    SlowPoint = sensorRange.getDistance(DistanceUnit.MM) < 180;
 
                     if (SlowPoint){
                         Extend.setPower(-0.5);
@@ -557,12 +596,6 @@ public class DoubleGripperLatestThreads extends OpMode {
                         Extend.setPower(-1);
                     }
 
-                    Extend.setPower(-1);
-
-                    telemetry.addData("Blue:", sensorRange.getDistance(DistanceUnit.MM));
-                    telemetry.addData("motor ticks:", Extend.getCurrentPosition());
-                    telemetry.addData("Cone found:", conefound);
-                    telemetry.update();
                 }
 
                 Extend.setPower(0);
@@ -595,7 +628,8 @@ public class DoubleGripperLatestThreads extends OpMode {
                         Left_Slide.setPower(-0.9);
                     }
 
-                    Top_Pivot.setPosition(0.77);
+                    Top_Pivot.setPosition(0.6);
+
                     Top_Gripper.setPosition(Top_Gripper_Collect_Wide);
 
                     try {
@@ -603,8 +637,6 @@ public class DoubleGripperLatestThreads extends OpMode {
                     }catch (Exception e){
                         System.out.println(e.getMessage());
                     }
-
-                    if(Base_Gripper.getPosition() == 0){
 
                         Extend.setTargetPosition(0);
                         Extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -622,46 +654,19 @@ public class DoubleGripperLatestThreads extends OpMode {
                                 Left_Slide.setPower(-0.9);
                             }
 
-                            frontWeb.closeCameraDeviceAsync(new OpenCvCamera.AsyncCameraCloseListener() {
-                                @Override
-                                public void onClose() {
-                                    BackWeb.stopStreaming();
-                                }
-                            });
+                            Base_Pivot.setPosition(0.82);
+                            Extend.setPower(0.6);
 
-                            BackWeb.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-                                @Override
-                                public void onOpened() {
+                            if(Extend.getCurrentPosition() > -90){
+                                Base_Gripper.setPosition(0.4);
+                            }
+                            if(Extend.getCurrentPosition() > -20){
+                                //open top gripper
+                                Top_Gripper.setPosition(0.35);
 
-                                    BackWeb.getExposureControl().setMode(ExposureControl.Mode.Manual);
-
-                                    BackWeb.getExposureControl().setExposure(30, TimeUnit.MILLISECONDS);
-
-                                    BackWeb.getGainControl().setGain(100);
-
-                                    FocusControl.Mode focusmode = FocusControl.Mode.Fixed;
-
-                                    BackWeb.getFocusControl().setMode(focusmode);
-
-                                    if (focusmode == FocusControl.Mode.Fixed){
-                                        BackWeb.getFocusControl().setFocusLength(450);
-                                    }
-
-                                    BackWeb.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
-
-                                }
-
-                                @Override
-                                public void onError(int errorCode) { }
-                            });
-
-                            Base_Gripper.setPosition(0);
-
-                            Base_Pivot.setPosition(Base_Pivot_Flip);
-
-                            Top_Pivot.setPosition(0.6);
-
-                            Extend.setPower(0.8);
+                                //take top pivot to pick up the cone
+                                Top_Pivot.setPosition(1);
+                            }
                         }
 
                         if(Right_Slide.getCurrentPosition() < 10 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 10 && !Left_Slide.isBusy()){
@@ -720,7 +725,7 @@ public class DoubleGripperLatestThreads extends OpMode {
                                 System.out.println(e.getMessage());
                             }
 
-                            Top_Pivot.setPosition(0.4);
+                            Top_Pivot.setPosition(0.6);
 
                             try {
                                 Thread.sleep(75);
@@ -730,12 +735,66 @@ public class DoubleGripperLatestThreads extends OpMode {
                             Base_Pivot.setPosition(Base_Pivot_Collect);
                         }
 
-                    }
+
 
                     Extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+                    try {
+                        Thread.sleep(200);
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+
+                    Right_Slide.setTargetPosition(1800);
+                    Left_Slide.setTargetPosition(1800);
+                    Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    while (Right_Slide.getCurrentPosition() < 1750 && Left_Slide.getCurrentPosition() < 1750) {
+                        Right_Slide.setPower(1);
+                        Left_Slide.setPower(1);
+                        Top_Pivot.setPosition(0.3);
+                        if(Right_Slide.getCurrentPosition() > 1650){
+                            Top_Pivot.setPosition(0);
+                        }
+                    }
+                    Right_Slide.setPower(0.005);
+                    Left_Slide.setPower(0.005);
+
+                    Top_Pivot.setPosition(0.1);
+
+                    Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+
+                    try {
+                        Thread.sleep(200);
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+
+                    Top_Gripper.setPosition(Top_Pivot_Collect);
+                    if(Top_Gripper.getPosition() == Top_Pivot_Collect) {
+
+                        Right_Slide.setTargetPosition(0);
+                        Left_Slide.setTargetPosition(0);
+
+                        Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                        Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                        Top_Pivot.setPosition(0.4);
+
+                        Right_Slide.setPower(-0.9);
+                        Left_Slide.setPower(-0.9);
+
+                        lowering = true;
+                    }
+
                 }else{
                     Extend.setTargetPosition(0);
                     Extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                    Extend.setPower(0.8);
+
                     while (Extend.isBusy()) {
                         if(Right_Slide.getCurrentPosition() < 10 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 10 && !Left_Slide.isBusy()){
                             Right_Slide.setPower(0);
@@ -748,120 +807,65 @@ public class DoubleGripperLatestThreads extends OpMode {
                             Right_Slide.setPower(-0.9);
                             Left_Slide.setPower(-0.9);
                         }
-                        Extend.setPower(0.5);
+                        Extend.setPower(0.8);
                     }
+
                     Extend.setPower(0);
+
                     Base_Pivot.setPosition(Base_Pivot_Collect);
                 }
 
-            try {
-                Thread.sleep(200);
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
 
-            Right_Slide.setTargetPosition(1900);
-            Left_Slide.setTargetPosition(1900);
-            Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            while(Right_Slide.isBusy() && Left_Slide.isBusy()){
-                Right_Slide.setPower(1);
-                Left_Slide.setPower(1);
-
-                Top_Pivot.setPosition(0.28);
-
-            }
-            Right_Slide.setPower(0.005);
-            Left_Slide.setPower(0.005);
-
-            Top_Pivot.setPosition(0.1);
-
-            Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-
-            try {
-                Thread.sleep(400);
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
-
-            Top_Gripper.setPosition(Top_Pivot_Collect);
-            if(Top_Gripper.getPosition() == Top_Pivot_Collect) {
-
-                Right_Slide.setTargetPosition(0);
-                Left_Slide.setTargetPosition(0);
-
-                Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-                Top_Pivot.setPosition(0.6);
-
-                Right_Slide.setPower(-0.9);
-                Left_Slide.setPower(-0.9);
-
-                lowering = true;
-            }
 
         }
 
         //Align to the top pole
         if(gamepad2.dpad_left || gamepad1.dpad_left){
+
             Right_Slide.setTargetPosition(1900);
             Left_Slide.setTargetPosition(1900);
             Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            while(Right_Slide.isBusy() && Left_Slide.isBusy()){
+            drive.DriveEncoders();
+            power = 0.2;
+            while(Right_Slide.getCurrentPosition() < 1900 && Left_Slide.getCurrentPosition() < 1900){
                 Right_Slide.setPower(1);
                 Left_Slide.setPower(1);
 
                 rectPositionFromLeft = Pole.getRectX();
-                power = 0.35;
-                drive.WithOutEncoders();
 
-                while (rectPositionFromLeft > CenterOfScreen + 10 || rectPositionFromLeft < CenterOfScreen - 10){
-
-                    telemetry.addData("rect X", Pole.getRectX());
-                    telemetry.addData("rect Y", Pole.getRectY());
-                    telemetry.addData("Target CM", Distance_To_Travel);
-                    telemetry.update();
-
-                    if(rectPositionFromLeft > CenterOfScreen - 5 || rectPositionFromLeft < CenterOfScreen + 5){
-                        power = 0.27;
-                    }
-                    rectPositionFromLeft = Pole.getRectX();
-
-                    if (rectPositionFromLeft < CenterOfScreen) {
-
-                        drive.RF.setPower(-1.3*power);
-                        drive.RB.setPower(power);
-                        drive.LF.setPower(1.3*power);
-                        drive.LB.setPower(-power);
-
-                    } else if (rectPositionFromLeft > CenterOfScreen) {
-
-                        drive.RF.setPower(1.3*power);
-                        drive.RB.setPower(-power);
-                        drive.LF.setPower(-1.3*power);
-                        drive.LB.setPower(power);
-                    }
-
+                if (PoleAlignmnet){
+                    AlignToPole(15);
                 }
 
-                drive.RF.setPower(0);
-                drive.RB.setPower(0);
-                drive.LF.setPower(0);
-                drive.LB.setPower(0);
-
-                drive.DriveEncoders();
+               drive.DriveEncoders();
             }
+            rectPositionFromLeft = Pole.getRectX();
             Right_Slide.setPower(0.005);
             Left_Slide.setPower(0.005);
+            drive.RF.setPower(0);
+            drive.RB.setPower(0);
+            drive.LF.setPower(0);
+            drive.LB.setPower(0);
 
-            Top_Pivot.setPosition(0);
+            Top_Pivot.setPosition(0.4);
+
+//            if(Math.abs(rectPositionFromLeft - CenterOfScreen) > 45) {
+//                Top_Pivot.setPosition(0.4);
+//            }else{
+//                Top_Pivot.setPosition(0);
+//            }
 
             Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            telemetry.addData("rect X", Pole.getRectX());
+            telemetry.addData("rect Y", Pole.getRectY());
+            telemetry.addData("Distance off by ", Math.abs(rectPositionFromLeft - CenterOfScreen));
+            telemetry.addData("Power ", power);
+            telemetry.update();
+
+
         }
 
         if(gamepad2.a && Base_Pivot.getPosition() != 0.85){
@@ -890,42 +894,37 @@ public class DoubleGripperLatestThreads extends OpMode {
             Left_Slide.setTargetPosition(900);
             Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            while(Right_Slide.isBusy() && Left_Slide.isBusy()){
+            drive.DriveEncoders();
+            while(Right_Slide.getCurrentPosition() < 900 && Left_Slide.getCurrentPosition() < 900){
                 Right_Slide.setPower(1);
                 Left_Slide.setPower(1);
 
                 rectPositionFromLeft = Pole.getRectX();
-                if(rectPositionFromLeft > CenterOfScreen + 15 || rectPositionFromLeft < CenterOfScreen - 15) {
-                    if (rectPositionFromLeft < CenterOfScreen) {
+                power = 0.27;
 
-                        drive.RF.setPower(-1.3 * 0.3);
-                        drive.RB.setPower(-0.3);
-                        drive.LF.setPower(1.3 * 0.3);
-                        drive.LB.setPower(0.3);
-
-                    } else if (rectPositionFromLeft > CenterOfScreen) {
-                        drive.RF.setPower(1.3 * 0.3);
-                        drive.RB.setPower(0.3);
-                        drive.LF.setPower(-1.3 * 0.3);
-                        drive.LB.setPower(-0.3);
-                    } else {
-                        drive.RF.setPower(0);
-                        drive.RB.setPower(0);
-                        drive.LF.setPower(0);
-                        drive.LB.setPower(0);
-                    }
-                }else{
-                    drive.RF.setPower(0);
-                    drive.RB.setPower(0);
-                    drive.LF.setPower(0);
-                    drive.LB.setPower(0);
+                if (PoleAlignmnet){
+                    AlignToPole(15);
                 }
-                drive.WithOutEncoders();
+
+                telemetry.addData("Distance_To_Travel:", Distance_To_Travel);
+                telemetry.update();
+
             }
             Right_Slide.setPower(0.005);
             Left_Slide.setPower(0.005);
 
-            Top_Pivot.setPosition(0);
+            drive.RF.setPower(0);
+            drive.RB.setPower(0);
+            drive.LF.setPower(0);
+            drive.LB.setPower(0);
+
+            Top_Pivot.setPosition(0.4);
+
+//            if(Math.abs(rectPositionFromLeft - CenterOfScreen) > 50) {
+//                Top_Pivot.setPosition(0.4);
+//            }else{
+//                Top_Pivot.setPosition(0);
+//            }
 
             Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -946,8 +945,7 @@ public class DoubleGripperLatestThreads extends OpMode {
         //extend slides to collect cone
         if (gamepad2.left_trigger > 0 || gamepad1.back) {
 
-
-            if(Destacker_Right.getPosition() > 0.7){
+            if(Destacker_Right.getPosition() < 0.5){
                 Base_Pivot.setPosition(0.1);
             }else{
                 Base_Pivot.setPosition(Base_Pivot_Collect);
@@ -957,8 +955,6 @@ public class DoubleGripperLatestThreads extends OpMode {
             RB.setPower(0);
             LF.setPower(0);
             LB.setPower(0);
-
-            Base_Pivot.setPosition(Base_Pivot_Collect);
 
             Extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             Extend.setPower(-1);
@@ -979,7 +975,12 @@ public class DoubleGripperLatestThreads extends OpMode {
 
                 conefound = sensorRange.getDistance(DistanceUnit.MM) < 70;
 
-                SlowPoint= sensorRange.getDistance(DistanceUnit.MM) < 180;
+                if(Destacker_Right.getPosition() < 0.5){
+                    SlowPoint = sensorRange.getDistance(DistanceUnit.MM) < 250;
+                }else{
+                    SlowPoint = sensorRange.getDistance(DistanceUnit.MM) < 180;
+                }
+
 
                 if (SlowPoint){
                     Extend.setPower(-0.5);
@@ -1029,8 +1030,6 @@ public class DoubleGripperLatestThreads extends OpMode {
                     Left_Slide.setPower(-0.9);
                 }
 
-                Top_Pivot.setPosition(0.77);
-
                 Top_Gripper.setPosition(Top_Gripper_Collect_Wide);
 
                 try {
@@ -1039,7 +1038,18 @@ public class DoubleGripperLatestThreads extends OpMode {
                     System.out.println(e.getMessage());
                 }
 
-                if(Base_Gripper.getPosition() == 0){
+                Base_Pivot.setPosition(Base_Pivot_Flip);
+
+                if (Destacker_Left.getPosition() < 0.6){
+
+                    try {
+                        Thread.sleep(400);
+                    }catch (Exception e){
+                        System.out.println(e.getMessage());
+                    }
+
+                }
+
 
                     Extend.setTargetPosition(0);
                     Extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -1056,42 +1066,6 @@ public class DoubleGripperLatestThreads extends OpMode {
                             Right_Slide.setPower(-0.9);
                             Left_Slide.setPower(-0.9);
                         }
-                        executor.submit(() -> {
-                            frontWeb.closeCameraDeviceAsync(new OpenCvCamera.AsyncCameraCloseListener() {
-                                @Override
-                                public void onClose() {
-                                    BackWeb.stopStreaming();
-                                }
-                            });
-
-                            BackWeb.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-                                @Override
-                                public void onOpened() {
-
-                                    BackWeb.getExposureControl().setMode(ExposureControl.Mode.Manual);
-
-                                    BackWeb.getExposureControl().setExposure(30, TimeUnit.MILLISECONDS);
-
-                                    BackWeb.getGainControl().setGain(100);
-
-                                    FocusControl.Mode focusmode = FocusControl.Mode.Fixed;
-
-                                    BackWeb.getFocusControl().setMode(focusmode);
-
-                                    if (focusmode == FocusControl.Mode.Fixed){
-                                        BackWeb.getFocusControl().setFocusLength(450);
-                                    }
-
-                                    BackWeb.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
-
-                                }
-
-                                @Override
-                                public void onError(int errorCode) { }
-                            });
-
-                        });
-
 
                         Base_Gripper.setPosition(0);
 
@@ -1135,6 +1109,7 @@ public class DoubleGripperLatestThreads extends OpMode {
                             System.out.println(e.getMessage());
                         }
 
+
                         Base_Pivot.setPosition(Base_Pivot_Out_Way);
 
                         try {
@@ -1166,10 +1141,21 @@ public class DoubleGripperLatestThreads extends OpMode {
                         }catch (Exception e){
                             System.out.println(e.getMessage());
                         }
-                        Base_Pivot.setPosition(Base_Pivot_Collect);
+
+                        conefoundcycle = colour.blue() > 2000;
+
+                        if (!conefoundcycle){
+                            Base_Pivot.setPosition(Base_Pivot_Collect);
+                            try {
+                                Thread.sleep(200);
+                            }catch (Exception e){
+                                System.out.println(e.getMessage());
+                            }
+                        }
+
                     }
 
-                }
+
 
                 Extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             }else{
@@ -1190,11 +1176,10 @@ public class DoubleGripperLatestThreads extends OpMode {
                     Extend.setPower(0.8);
                 }
                 Extend.setPower(0);
-                Base_Pivot.setPosition(Base_Pivot_Collect);
             }
         }
 
-//bring slides back to bottom
+        //bring slides back to bottom
         if(gamepad1.right_trigger > 0 || gamepad2.right_trigger > 0){
             Top_Gripper.setPosition(Top_Pivot_Collect);
             if(Top_Gripper.getPosition() == Top_Pivot_Collect) {
@@ -1207,43 +1192,6 @@ public class DoubleGripperLatestThreads extends OpMode {
 
                 Top_Pivot.setPosition(0.6);
 
-                executor.submit(() -> {
-                    BackWeb.closeCameraDeviceAsync(new OpenCvCamera.AsyncCameraCloseListener() {
-                        @Override
-                        public void onClose() {
-                            BackWeb.stopStreaming();
-                        }
-                    });
-
-                    frontWeb.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-                        @Override
-                        public void onOpened() {
-
-                            BackWeb.getExposureControl().setMode(ExposureControl.Mode.Manual);
-
-                            BackWeb.getExposureControl().setExposure(30, TimeUnit.MILLISECONDS);
-
-                            BackWeb.getGainControl().setGain(100);
-
-                            FocusControl.Mode focusmode = FocusControl.Mode.Fixed;
-
-                            BackWeb.getFocusControl().setMode(focusmode);
-
-                            if (focusmode == FocusControl.Mode.Fixed){
-                                BackWeb.getFocusControl().setFocusLength(450);
-                            }
-
-                            BackWeb.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
-
-                        }
-
-                        @Override
-                        public void onError(int errorCode) { }
-                    });
-                });
-
-
-
                 Right_Slide.setPower(-0.9);
                 Left_Slide.setPower(-0.9);
 
@@ -1251,7 +1199,7 @@ public class DoubleGripperLatestThreads extends OpMode {
             }
         }
 
-//stop slides if finished
+        //stop slides if finished
         if(Right_Slide.getCurrentPosition() < 10 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 10 && !Left_Slide.isBusy()){
             Right_Slide.setPower(0);
             Left_Slide.setPower(0);
@@ -1264,31 +1212,27 @@ public class DoubleGripperLatestThreads extends OpMode {
             Left_Slide.setPower(-0.9);
         }
 
+        FtcDashboard.getInstance().startCameraStream(BackWeb,30);
+
+        telemetry.addData("Right Stick Y:", gamepad2.right_stick_y);
+        telemetry.addData("Right Stick X:", gamepad2.right_stick_x);
         telemetry.addData("Odo ticks:", Odo_raise.getCurrentPosition());
-        telemetry.addData("Camera front", frontWeb.getFps());
-        telemetry.addData("Camera Back", BackWeb.getFps());
         telemetry.addData("Destacker Left:", Destacker_Left.getPosition());
         telemetry.addData("Destacker Right:", Destacker_Right.getPosition());
         telemetry.addData("Base Pivot:", Base_Pivot.getPosition());
         telemetry.addData("Stacker pos:", stakerpos);
-        telemetry.addData("MM range:", sensorRange.getDistance(DistanceUnit.MM));
-        telemetry.addData("MM range:", Back_Distance.getDistance(DistanceUnit.MM));
+        telemetry.addData("Pole Width:", Pole.Rect_Width);
+        telemetry.addData("MM range b:", sensorRange.getDistance(DistanceUnit.MM));
+        telemetry.addData("MM range f", Back_Distance.getDistance(DistanceUnit.MM));
         telemetry.addData("Blue:", colour.blue());
         telemetry.addData("RF Power:", RF.getPower());
         telemetry.addData("RB Power:", RB.getPower());
         telemetry.addData("LF Power:", LF.getPower());
         telemetry.addData("LB Power:", LB.getPower());
         telemetry.addData("motor ticks extend:", Extend.getCurrentPosition());
-        telemetry.addData("Rect X:", Pole.getRectX());
-
+        telemetry.addData("Pole X:", Pole.getRectX());
+        telemetry.addData("Cone X", Cone_Pipeline.getRectX());
         telemetry.update();
-
-        executor.shutdown();
-        try {
-            executor.awaitTermination(1, TimeUnit.MINUTES);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
 
     }
 
@@ -1350,54 +1294,72 @@ public class DoubleGripperLatestThreads extends OpMode {
         LF.setPower(0);
         RB.setPower(0);
         LB.setPower(0);
-        Top_Pivot.setPosition(0.55);
+
         Top_Gripper.setPosition(0.3);
-        Base_Pivot.setPosition(Base_Pivot_Collect);
+
         Base_Gripper.setPosition(0.4);
-
-        executor = Executors.newFixedThreadPool(2);
-
-        // Create a shared counter that is incremented by the threads
-        counter = new AtomicInteger();
-
-        runtime.reset();
 
         drive.init(hardwareMap);
 
-        Pole = new Pole_Pipe();
-
-        Cone = new Blue_Cone_Pipe();
-
         Back_Distance.resetDeviceConfigurationForOpMode();
-
-        WebcamName backcam = hardwareMap.get(WebcamName.class, "Backcam");
-
-        WebcamName frontcam = hardwareMap.get(WebcamName.class, "frontCam");
-
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-
-        BackWeb = OpenCvCameraFactory.getInstance().createWebcam(backcam, cameraMonitorViewId);
-
-        frontWeb = OpenCvCameraFactory.getInstance().createWebcam(backcam, cameraMonitorViewId);
-
-        BackWeb.setPipeline(Pole);
-
-        frontWeb.setPipeline(Cone);
-
 
         customRumbleEffect = new Gamepad.RumbleEffect.Builder()
                 .addStep(0.0, 1.0, 500)  //  Rumble right motor 100% for 500 mSec
                 .build();
 
+        Pole = new Pole_Pipe();
+
+        Cone_Pipeline = new Blue_Cone_Pipe();
+
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+
+        int[] viewportContainerIds = OpenCvCameraFactory.getInstance()
+                .splitLayoutForMultipleViewports(
+                        cameraMonitorViewId, //The container we're splitting
+                        2, //The number of sub-containers to create
+                        OpenCvCameraFactory.ViewportSplitMethod.VERTICALLY);
+
+        FrontWeb  = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), viewportContainerIds[0]);
+
+        BackWeb = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Backcam"), viewportContainerIds[1]);
+
+        FrontWeb.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            @Override
+            public void onOpened() {
+                FrontWeb.setPipeline(Cone_Pipeline);
+
+                FrontWeb.getExposureControl().setMode(ExposureControl.Mode.Manual);
+
+                FrontWeb.getExposureControl().setExposure(8, TimeUnit.MILLISECONDS);
+
+                FrontWeb.getGainControl().setGain(1);
+
+                FocusControl.Mode focusmode = FocusControl.Mode.Fixed;
+
+                FrontWeb.getFocusControl().setMode(focusmode);
+
+                if (focusmode == FocusControl.Mode.Fixed){
+                    FrontWeb.getFocusControl().setFocusLength(450);
+                }
+
+                FrontWeb.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
+            }
+            @Override
+            public void onError(int errorCode) { }
+        });
+        FrontWeb.setPipeline(Cone_Pipeline);
+
+        BackWeb.setPipeline(Pole);
         BackWeb.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
 
+
                 BackWeb.getExposureControl().setMode(ExposureControl.Mode.Manual);
 
-                BackWeb.getExposureControl().setExposure(30, TimeUnit.MILLISECONDS);
+                BackWeb.getExposureControl().setExposure(8, TimeUnit.MILLISECONDS);
 
-                BackWeb.getGainControl().setGain(100);
+                BackWeb.getGainControl().setGain(1);
 
                 FocusControl.Mode focusmode = FocusControl.Mode.Fixed;
 
@@ -1408,23 +1370,54 @@ public class DoubleGripperLatestThreads extends OpMode {
                 }
 
                 BackWeb.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
-
             }
-
             @Override
             public void onError(int errorCode) { }
         });
-
         BackWeb.setPipeline(Pole);
+        FtcDashboard.getInstance().startCameraStream(BackWeb,30);
+        // Set the pipeline depending on id
 
-        frontWeb.setPipeline(Cone);
 
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         telemetry.addData("H:", Pole.getH());
         telemetry.addData("S:", Pole.getS());
         telemetry.addData("V:", Pole.getV());
         telemetry.addData("Status:", "Initialized");
         telemetry.addData("top pivot:", Top_Pivot.getPosition());
         telemetry.update();
+    }
+
+    public void AlignToPole (double tolerance) {
+        if (Math.abs(rectPositionFromLeft - CenterOfScreen) > tolerance && !(gamepad1.left_stick_x > 0.1) && !(gamepad2.left_stick_x > 0.1)){
+
+            telemetry.addData("rect X", Pole.getRectX());
+            telemetry.addData("rect Y", Pole.getRectY());
+            telemetry.addData("Distance off by ", Math.abs(rectPositionFromLeft - CenterOfScreen));
+            telemetry.update();
+
+            if(Math.abs(rectPositionFromLeft - CenterOfScreen) > tolerance + 10){
+                power = 0.10;
+            }
+            rectPositionFromLeft = Pole.getRectX();
+
+            if (rectPositionFromLeft < CenterOfScreen) {
+
+                drive.RF.setPower(-1.2*power);
+                drive.RB.setPower(-power);
+                drive.LF.setPower(1.2*power);
+                drive.LB.setPower(power);
+
+            } else if (rectPositionFromLeft > CenterOfScreen) {
+
+                drive.RF.setPower(1.2*power);
+                drive.RB.setPower(power);
+                drive.LF.setPower(-1.2*power);
+                drive.LB.setPower(-power);
+            }
+
+        }
+
     }
 
     public void Pods_Down(){
@@ -1454,5 +1447,6 @@ public class DoubleGripperLatestThreads extends OpMode {
 
         Odo_raise.setPower(0);
     }
+
 
 }
