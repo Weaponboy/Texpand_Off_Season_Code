@@ -6,17 +6,21 @@ package org.firstinspires.ftc.teamcode.Vision.Pole_Alinement;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.Camera;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.FocusControl;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.Pole_Pipe;
 import org.firstinspires.ftc.teamcode.Vision.Vision_From_Collin.VisionDash;
@@ -39,6 +43,7 @@ public class Pole_Vision extends OpMode {
     private DistanceSensor Back_Distance;
 
     private OpenCvCamera webcam;
+    public BNO055IMU imu         = null;      // Control/Expansion Hub IMU
 
     private double power;
 
@@ -53,8 +58,8 @@ public class Pole_Vision extends OpMode {
     FtcDashboard dashboard = FtcDashboard.getInstance();
     Telemetry dashboardTelemetry = dashboard.getTelemetry();
 
-
-    public double Distance_To_Travel;
+    public Orientation yawAngle;
+    public double Degrees_To_Turn;
 
     public double ConversionPixelstoCm = 20;//need to tune this
 
@@ -85,9 +90,9 @@ public class Pole_Vision extends OpMode {
             public void onOpened() {
                 Texpandcamera.getExposureControl().setMode(ExposureControl.Mode.Manual);
 
-                Texpandcamera.getExposureControl().setExposure(8, TimeUnit.MILLISECONDS);
+                Texpandcamera.getExposureControl().setExposure(20, TimeUnit.MILLISECONDS);
 
-                Texpandcamera.getGainControl().setGain(1);
+                Texpandcamera.getGainControl().setGain(50);
 
                 FocusControl.Mode focusmode = FocusControl.Mode.Fixed;
 
@@ -108,7 +113,15 @@ public class Pole_Vision extends OpMode {
 
         FtcDashboard.getInstance().startCameraStream(Texpandcamera,30);
 
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json";
+        parameters.loggingEnabled = true;
+        parameters.loggingTag = "IMU";
 
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
     }
 
 
@@ -120,18 +133,12 @@ public class Pole_Vision extends OpMode {
         CenterOfScreen = 320;
         drive.init(hardwareMap);
 
-        if (gamepad1.left_trigger > 0){
-            VisionDash.pole_max_H = VisionDash.pole_max_H + 1;
-        }else if (gamepad1.right_trigger > 0){
-            VisionDash.pole_min_H = VisionDash.pole_min_H + 1;
-        }
 
-//        //Calculate distance to drive to aline
-        rectPositionFromLeft = Pole.getRectX();
-//
-        Distance_To_Travel = rectPositionFromLeft - CenterOfScreen;
+        rectPositionFromLeft = Pole.TargetHighrectX;
 
-        Distance_To_Travel = Distance_To_Travel / 20;
+        Degrees_To_Turn = rectPositionFromLeft - CenterOfScreen;
+
+        Degrees_To_Turn = Degrees_To_Turn / 20;
 
         //Telemetry to be displayed during init_loop()
 
@@ -143,11 +150,10 @@ public class Pole_Vision extends OpMode {
         telemetry.addData("con", Pole.numcontours());
         telemetry.addData("rects", Pole.getRects());
         telemetry.addData("Ordered rectangles", Pole.rectangles);
-        telemetry.addData("Target cm", Distance_To_Travel);
-        telemetry.addData("Cone Position", Pole.getRectX());
-        telemetry.addData("rect X", Pole.getRectX());
-        telemetry.addData("rect Y", Pole.getRectY());
-        telemetry.addData("Target CM", Distance_To_Travel);
+        telemetry.addData("Target cm", Degrees_To_Turn);
+        telemetry.addData("Largestrect Width", Pole.Largest_Rect_Width);
+        telemetry.addData("Targetrect High Width", Pole.Target_High_Rect_Width);
+        telemetry.addData("Targetrect Med Width", Pole.Target_Med_Rect_Width);
         telemetry.update();
     }
 
@@ -160,51 +166,21 @@ public class Pole_Vision extends OpMode {
 
     @Override
     public void loop() {
+        yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
-        rectPositionFromLeft = Pole.getRectX();
         power = 0.35;
-        drive.WithOutEncoders();
-
-        while (rectPositionFromLeft > CenterOfScreen + 10 || rectPositionFromLeft < CenterOfScreen - 10){
-
-            telemetry.addData("rect X", Pole.getRectX());
-            telemetry.addData("rect Y", Pole.getRectY());
-            telemetry.addData("Target CM", Distance_To_Travel);
-            telemetry.update();
-
-            if(rectPositionFromLeft > CenterOfScreen - 5 || rectPositionFromLeft < CenterOfScreen + 5){
-                power = 0.27;
-            }
-            rectPositionFromLeft = Pole.getRectX();
-
-            if (rectPositionFromLeft < CenterOfScreen) {
-
-                drive.RF.setPower(-1.3*power);
-                drive.RB.setPower(power);
-                drive.LF.setPower(1.3*power);
-                drive.LB.setPower(-power);
-
-            } else if (rectPositionFromLeft > CenterOfScreen) {
-
-                drive.RF.setPower(1.3*power);
-                drive.RB.setPower(-power);
-                drive.LF.setPower(-1.3*power);
-                drive.LB.setPower(power);
-            }
-
+        drive.DriveEncoders();
+        if(Degrees_To_Turn != 0) {
+            drive.TurnToHeading(yawAngle.firstAngle + Degrees_To_Turn, 0.3);
+            Degrees_To_Turn = 0;
         }
-
-        drive.RF.setPower(0);
-        drive.RB.setPower(0);
-        drive.LF.setPower(0);
-        drive.LB.setPower(0);
-
-
 
         //Telemetry to be displayed during loop()
         telemetry.addData("rect X", Pole.getRectX());
         telemetry.addData("rect Y", Pole.getRectY());
-        telemetry.addData("Target CM", Distance_To_Travel);
+        telemetry.addData("Target Heading", Degrees_To_Turn + yawAngle.firstAngle);
+        telemetry.addData("Heading", yawAngle.firstAngle);
+
         telemetry.update();
     }
 

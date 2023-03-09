@@ -1,9 +1,8 @@
 package org.firstinspires.ftc.teamcode.Teleop.Old;
 
-import android.graphics.Bitmap;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -16,37 +15,38 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.function.Consumer;
-import org.firstinspires.ftc.robotcore.external.function.Continuation;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.FocusControl;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.Blue_Cone_Pipe;
 import org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.Pole_Pipe;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvPipeline;
-import org.openftc.easyopencv.OpenCvSwitchableWebcam;
 import org.openftc.easyopencv.OpenCvWebcam;
-import org.openftc.easyopencv.PipelineRecordingParameters;
 
 import java.util.concurrent.TimeUnit;
 
 @TeleOp
-@Disabled
-public class DoubleGripperBlue extends OpMode {
+
+public class DoubleGripperBlueOld extends OpMode {
     FtcDashboard dashboard = FtcDashboard.getInstance();
     Telemetry dashboardTelemetry = dashboard.getTelemetry();
     OpenCvWebcam FrontWeb;
     OpenCvWebcam BackWeb;
-
+    public double Degrees_To_Turn;
     public DcMotor RF = null;
     public DcMotor LF = null;
     public DcMotor RB = null;
     public DcMotor LB = null;
+    public Orientation yawAngle;
+    public BNO055IMU imu         = null;      // Control/Expansion Hub IMU
 
     public boolean conefoundcycle;
 
@@ -291,7 +291,7 @@ public class DoubleGripperBlue extends OpMode {
                     System.out.println(e.getMessage());
                 }
 
-                if(Right_Slide.getCurrentPosition() < 10 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 10 && !Left_Slide.isBusy()){
+                if(Right_Slide.getCurrentPosition() < 50 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 50 && !Left_Slide.isBusy()){
                     Right_Slide.setPower(0);
                     Left_Slide.setPower(0);
 
@@ -331,7 +331,7 @@ public class DoubleGripperBlue extends OpMode {
                     Extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
                     while (Extend.isBusy()) {
-                        if(Right_Slide.getCurrentPosition() < 10 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 10 && !Left_Slide.isBusy()){
+                        if(Right_Slide.getCurrentPosition() < 50 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 50 && !Left_Slide.isBusy()){
                             Right_Slide.setPower(0);
                             Left_Slide.setPower(0);
 
@@ -352,7 +352,7 @@ public class DoubleGripperBlue extends OpMode {
 
                     }
 
-                    if(Right_Slide.getCurrentPosition() < 10 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 10 && !Left_Slide.isBusy()){
+                    if(Right_Slide.getCurrentPosition() < 50 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 50 && !Left_Slide.isBusy()){
                         Right_Slide.setPower(0);
                         Left_Slide.setPower(0);
 
@@ -399,7 +399,7 @@ public class DoubleGripperBlue extends OpMode {
                 Extend.setTargetPosition(0);
                 Extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 while (Extend.isBusy()) {
-                    if(Right_Slide.getCurrentPosition() < 10 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 10 && !Left_Slide.isBusy()){
+                    if(Right_Slide.getCurrentPosition() < 50 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 50 && !Left_Slide.isBusy()){
                         Right_Slide.setPower(0);
                         Left_Slide.setPower(0);
 
@@ -616,7 +616,7 @@ public class DoubleGripperBlue extends OpMode {
                         System.out.println(e.getMessage());
                     }
 
-                    if(Right_Slide.getCurrentPosition() < 10 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 10 && !Left_Slide.isBusy()){
+                    if(Right_Slide.getCurrentPosition() < 50 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 50 && !Left_Slide.isBusy()){
                         Right_Slide.setPower(0);
                         Left_Slide.setPower(0);
 
@@ -642,7 +642,7 @@ public class DoubleGripperBlue extends OpMode {
                         Extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
                         while (Extend.isBusy()) {
-                            if(Right_Slide.getCurrentPosition() < 10 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 10 && !Left_Slide.isBusy()){
+                            if(Right_Slide.getCurrentPosition() < 50 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 50 && !Left_Slide.isBusy()){
                                 Right_Slide.setPower(0);
                                 Left_Slide.setPower(0);
 
@@ -655,6 +655,7 @@ public class DoubleGripperBlue extends OpMode {
                             }
 
                             Base_Pivot.setPosition(0.82);
+
                             Extend.setPower(0.6);
 
                             if(Extend.getCurrentPosition() > -90){
@@ -669,7 +670,7 @@ public class DoubleGripperBlue extends OpMode {
                             }
                         }
 
-                        if(Right_Slide.getCurrentPosition() < 10 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 10 && !Left_Slide.isBusy()){
+                        if(Right_Slide.getCurrentPosition() < 50 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 50 && !Left_Slide.isBusy()){
                             Right_Slide.setPower(0);
                             Left_Slide.setPower(0);
 
@@ -796,7 +797,7 @@ public class DoubleGripperBlue extends OpMode {
                     Extend.setPower(0.8);
 
                     while (Extend.isBusy()) {
-                        if(Right_Slide.getCurrentPosition() < 10 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 10 && !Left_Slide.isBusy()){
+                        if(Right_Slide.getCurrentPosition() < 50 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 50 && !Left_Slide.isBusy()){
                             Right_Slide.setPower(0);
                             Left_Slide.setPower(0);
 
@@ -821,28 +822,36 @@ public class DoubleGripperBlue extends OpMode {
 
         //Align to the top pole
         if(gamepad2.dpad_left || gamepad1.dpad_left){
-
-            Right_Slide.setTargetPosition(1900);
-            Left_Slide.setTargetPosition(1900);
+            AlignToHighCalc();
+            Right_Slide.setTargetPosition(1800);
+            Left_Slide.setTargetPosition(1800);
             Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             drive.DriveEncoders();
             power = 0.2;
-            while(Right_Slide.getCurrentPosition() < 1900 && Left_Slide.getCurrentPosition() < 1900){
+
+            while(Right_Slide.getCurrentPosition() < 1750 && Left_Slide.getCurrentPosition() < 1750){
                 Right_Slide.setPower(1);
                 Left_Slide.setPower(1);
 
                 rectPositionFromLeft = Pole.getRectX();
 
                 if (PoleAlignmnet){
-                    AlignToPole(15);
+                    AlignToPole();
                 }
 
-               drive.DriveEncoders();
+                drive.DriveEncoders();
+                drive.RF.setPower(0);
+                drive.RB.setPower(0);
+                drive.LF.setPower(0);
+                drive.LB.setPower(0);
+
             }
-            rectPositionFromLeft = Pole.getRectX();
             Right_Slide.setPower(0.005);
             Left_Slide.setPower(0.005);
+            Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            rectPositionFromLeft = Pole.getRectX();
             drive.RF.setPower(0);
             drive.RB.setPower(0);
             drive.LF.setPower(0);
@@ -856,8 +865,6 @@ public class DoubleGripperBlue extends OpMode {
 //                Top_Pivot.setPosition(0);
 //            }
 
-            Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
             telemetry.addData("rect X", Pole.getRectX());
             telemetry.addData("rect Y", Pole.getRectY());
@@ -889,13 +896,13 @@ public class DoubleGripperBlue extends OpMode {
 
             Loop2 = 0;
             Loop = 0;
-
+            AlignToMedCalc();
             Right_Slide.setTargetPosition(900);
             Left_Slide.setTargetPosition(900);
             Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             drive.DriveEncoders();
-            while(Right_Slide.getCurrentPosition() < 900 && Left_Slide.getCurrentPosition() < 900){
+            while(Right_Slide.getCurrentPosition() < 850 && Left_Slide.getCurrentPosition() < 850){
                 Right_Slide.setPower(1);
                 Left_Slide.setPower(1);
 
@@ -903,7 +910,7 @@ public class DoubleGripperBlue extends OpMode {
                 power = 0.27;
 
                 if (PoleAlignmnet){
-                    AlignToPole(15);
+                    AlignToPole();
                 }
 
                 telemetry.addData("Distance_To_Travel:", Distance_To_Travel);
@@ -912,7 +919,8 @@ public class DoubleGripperBlue extends OpMode {
             }
             Right_Slide.setPower(0.005);
             Left_Slide.setPower(0.005);
-
+            Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             drive.RF.setPower(0);
             drive.RB.setPower(0);
             drive.LF.setPower(0);
@@ -926,8 +934,7 @@ public class DoubleGripperBlue extends OpMode {
 //                Top_Pivot.setPosition(0);
 //            }
 
-            Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         }
 
         //Stop slides if finished running
@@ -1018,7 +1025,7 @@ public class DoubleGripperBlue extends OpMode {
                     System.out.println(e.getMessage());
                 }
 
-                if(Right_Slide.getCurrentPosition() < 5 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 5 && !Left_Slide.isBusy()){
+                if(Right_Slide.getCurrentPosition() < 50 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 50 && !Left_Slide.isBusy()){
                     Right_Slide.setPower(0);
                     Left_Slide.setPower(0);
 
@@ -1221,7 +1228,7 @@ public class DoubleGripperBlue extends OpMode {
         telemetry.addData("Destacker Right:", Destacker_Right.getPosition());
         telemetry.addData("Base Pivot:", Base_Pivot.getPosition());
         telemetry.addData("Stacker pos:", stakerpos);
-        telemetry.addData("Pole Width:", Pole.Rect_Width);
+
         telemetry.addData("MM range b:", sensorRange.getDistance(DistanceUnit.MM));
         telemetry.addData("MM range f", Back_Distance.getDistance(DistanceUnit.MM));
         telemetry.addData("Blue:", colour.blue());
@@ -1239,7 +1246,15 @@ public class DoubleGripperBlue extends OpMode {
     //init
     @Override
     public void init() {
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json";
+        parameters.loggingEnabled = true;
+        parameters.loggingTag = "IMU";
 
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
         RF = hardwareMap.get(DcMotor.class, "RF");
         LF = hardwareMap.get(DcMotor.class, "LF");
         RB = hardwareMap.get(DcMotor.class, "RB");
@@ -1388,38 +1403,39 @@ public class DoubleGripperBlue extends OpMode {
         telemetry.update();
     }
 
-    public void AlignToPole (double tolerance) {
-        if (Math.abs(rectPositionFromLeft - CenterOfScreen) > tolerance && !(gamepad1.left_stick_x > 0.1) && !(gamepad2.left_stick_x > 0.1)){
+    public void AlignToHighCalc() {
+        for (int i = 1; i <= 50; i++) {
+            rectPositionFromLeft = Pole.TargetHighrectX;
+        }
 
-            telemetry.addData("rect X", Pole.getRectX());
-            telemetry.addData("rect Y", Pole.getRectY());
-            telemetry.addData("Distance off by ", Math.abs(rectPositionFromLeft - CenterOfScreen));
-            telemetry.update();
+        if (rectPositionFromLeft > -1) {
+            Degrees_To_Turn = rectPositionFromLeft - CenterOfScreen;
 
-            if(Math.abs(rectPositionFromLeft - CenterOfScreen) > tolerance + 10){
-                power = 0.10;
-            }
-            rectPositionFromLeft = Pole.getRectX();
+            Degrees_To_Turn = Degrees_To_Turn / 20;
 
-            if (rectPositionFromLeft < CenterOfScreen) {
+            yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        }
+    }
+    public void AlignToMedCalc() {
 
-                drive.RF.setPower(-1.2*power);
-                drive.RB.setPower(-power);
-                drive.LF.setPower(1.2*power);
-                drive.LB.setPower(power);
+        for (int i = 1; i <= 50; i++) {
+            rectPositionFromLeft = Pole.TargetMedrectX;
+        }
+        if (rectPositionFromLeft > -1) {
+            Degrees_To_Turn = rectPositionFromLeft - CenterOfScreen;
 
-            } else if (rectPositionFromLeft > CenterOfScreen) {
+            Degrees_To_Turn = Degrees_To_Turn / 20;
 
-                drive.RF.setPower(1.2*power);
-                drive.RB.setPower(power);
-                drive.LF.setPower(-1.2*power);
-                drive.LB.setPower(-power);
-            }
-
+            yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        }
+    }
+    public void AlignToPole(){
+        if(Degrees_To_Turn != 0) {
+            drive.TurnToHeading(yawAngle.firstAngle + Degrees_To_Turn, 0.3);
+            Degrees_To_Turn = 0;
         }
 
     }
-
     public void Pods_Down(){
 
         Odo_raise.setTargetPosition(0);

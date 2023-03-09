@@ -87,7 +87,7 @@ public class Blue_Cycle_Auto_A5_Starting_Position extends LinearOpMode {
 //        RB.setPower(0);
 //        LB.setPower(0);
         drive.init(hardwareMap);
-        slide.init(hardwareMap);
+        slide.init(hardwareMap, 1);
         top.init(hardwareMap);
         bottom.init(hardwareMap);
 
