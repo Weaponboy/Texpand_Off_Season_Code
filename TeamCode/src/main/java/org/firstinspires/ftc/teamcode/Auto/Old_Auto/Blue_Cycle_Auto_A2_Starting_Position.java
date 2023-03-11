@@ -112,7 +112,7 @@ public class Blue_Cycle_Auto_A2_Starting_Position extends LinearOpMode {
 
         drive.init(hardwareMap);
         top.init(hardwareMap);
-        slide.init(hardwareMap);
+        slide.init(hardwareMap, 1);
         bot.init(hardwareMap);
 
         while (!isStarted() && !isStopRequested()) {

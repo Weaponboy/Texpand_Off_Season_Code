@@ -23,7 +23,6 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.Exposur
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.FocusControl;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Drivetrain;
-import org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.Blue_Cone_Pipe;
 import org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.Pole_Pipe;
 import org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.Red_Cone_Pipe;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -38,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 
 @TeleOp
 @Disabled
-public class DoubleGripperRed extends OpMode {
+public class DoubleGripperRedOld extends OpMode {
     FtcDashboard dashboard = FtcDashboard.getInstance();
     Telemetry dashboardTelemetry = dashboard.getTelemetry();
     OpenCvWebcam FrontWeb;
@@ -305,12 +304,12 @@ public class DoubleGripperRed extends OpMode {
 
 
         if(gamepad2.b && Base_Gripper.getPosition() == 0){
+            Base_Gripper.setPosition(0.4); //open base gripper if it is closed
             try {
                 Thread.sleep(50);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
-            Base_Gripper.setPosition(0.4); //open base gripper if it is closed
 
         }else if(gamepad2.b && Base_Gripper.getPosition() > 0){
             try {
@@ -1364,7 +1363,6 @@ public class DoubleGripperRed extends OpMode {
         telemetry.addData("Destacker Right:", Destacker_Right.getPosition());
         telemetry.addData("Base Pivot:", Base_Pivot.getPosition());
         telemetry.addData("Stacker pos:", stakerpos);
-        telemetry.addData("Pole Width:", Pole.Rect_Width);
         telemetry.addData("MM range b:", sensorRange.getDistance(DistanceUnit.MM));
         telemetry.addData("MM range f", Back_Distance.getDistance(DistanceUnit.MM));
         telemetry.addData("Blue:", colour.blue());

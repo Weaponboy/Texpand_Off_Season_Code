@@ -33,12 +33,18 @@ public class VisionDash {
 //    public static int blue_max_Cr = 230;
 //    public static int blue_max_Cb = 130;
 
-    //Cone color
-    public static int pole_min_H = 20;
-    public static int pole_min_S = 70;
-    public static int pole_min_V = 80;
+    //Pole width
+    public static int High_pole_min_width = 64;
+    public static int High_pole_max_width = 90;
+    public static int Med_pole_min_width = 80;
+    public static int Med_pole_max_width = 115;
 
-    public static int pole_max_H = 32;
+    //Cone color
+    public static int pole_min_H = 15;
+    public static int pole_min_S = 100;
+    public static int pole_min_V = 60;
+
+    public static int pole_max_H = 40;
     public static int pole_max_S = 255;
     public static int pole_max_V = 255;
 

@@ -1,13 +1,15 @@
 package org.firstinspires.ftc.teamcode.Vision.Cone_Alignment;
 
+import static org.firstinspires.ftc.teamcode.Vision.Vision_From_Collin.VisionDash.High_pole_max_width;
+import static org.firstinspires.ftc.teamcode.Vision.Vision_From_Collin.VisionDash.High_pole_min_width;
+import static org.firstinspires.ftc.teamcode.Vision.Vision_From_Collin.VisionDash.Med_pole_max_width;
+import static org.firstinspires.ftc.teamcode.Vision.Vision_From_Collin.VisionDash.Med_pole_min_width;
 import static org.firstinspires.ftc.teamcode.Vision.Vision_From_Collin.VisionDash.dilate_const;
 import static org.firstinspires.ftc.teamcode.Vision.Vision_From_Collin.VisionDash.erode_const;
 import static org.opencv.core.Core.inRange;
 import static org.opencv.core.CvType.CV_8U;
 import static org.opencv.imgproc.Imgproc.CHAIN_APPROX_SIMPLE;
 import static org.opencv.imgproc.Imgproc.COLOR_RGB2HSV;
-import static org.opencv.imgproc.Imgproc.COLOR_RGB2HSV_FULL;
-import static org.opencv.imgproc.Imgproc.COLOR_RGB2YCrCb;
 import static org.opencv.imgproc.Imgproc.FONT_HERSHEY_COMPLEX;
 import static org.opencv.imgproc.Imgproc.RETR_TREE;
 import static org.opencv.imgproc.Imgproc.boundingRect;
@@ -19,7 +21,6 @@ import static org.opencv.imgproc.Imgproc.rectangle;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 
-import org.apache.commons.math3.geometry.partitioning.BSPTreeVisitor;
 import org.firstinspires.ftc.teamcode.Vision.Vision_From_Collin.VisionDash;
 import org.firstinspires.ftc.teamcode.Vision.Vision_From_Collin.VisionUtils;
 import org.opencv.core.Core;
@@ -48,8 +49,10 @@ public class Pole_Pipe extends OpenCvPipeline {
     static final Rect center = new Rect(new Point(100, 100), new Point(550, 350));
 
     // Rectangle colour Scales
-    private Scalar orange = new Scalar(300, 90, 90);
-    private Scalar lightBlue = new Scalar(200, 90, 90);
+    private Scalar black = new Scalar(0,0,0);
+    private Scalar orange = new Scalar(300, 150, 150);
+    private Scalar high = new Scalar(255, 0, 0); //red
+    private Scalar med = new Scalar(0, 255, 0); //green
 
     private FtcDashboard dashboard = FtcDashboard.getInstance();
 
@@ -59,9 +62,16 @@ public class Pole_Pipe extends OpenCvPipeline {
 
     private int font = FONT_HERSHEY_COMPLEX;
     private double rectX = 0;
+    public double TargetHighrectX = 0;
+    private double TargetHighrectY = 0;
+    public double TargetMedrectX = 0;
+    private double TargetMedrectY = 0;
 
     private double H;
-    public double Rect_Width = 0;
+
+    public double Target_High_Rect_Width = 0;
+    public double Target_Med_Rect_Width = 0;
+    public double Largest_Rect_Width = 0;
     private double S;
 
     private double V;
@@ -75,8 +85,10 @@ public class Pole_Pipe extends OpenCvPipeline {
     private List<Rect> rects = new ArrayList<>();
     //POLE WIDTH SPECIFIC VARIABLES
     private List<Rect> OrderedByWidthrects = new ArrayList<>();
-    private int PoleRect = -1;
-    private Rect TargetRect;
+    private int HighRect = -1;
+    private int MedRect = -1;
+    private Rect TargetHighRect;
+    private Rect TargetMedRect;
     public int rectangles;
 
     //colour scales for the cone
@@ -84,6 +96,9 @@ public class Pole_Pipe extends OpenCvPipeline {
     public Scalar MAX_THRESH;
 
     public Scalar values;
+
+
+
 
     @Override
     public Mat processFrame(Mat input) {
@@ -99,7 +114,7 @@ public class Pole_Pipe extends OpenCvPipeline {
 //        MIN_THRESH = new Scalar(VisionDash.blue_min_H, VisionDash.blue_min_S, VisionDash.blue_min_V);
 //        MAX_THRESH = new Scalar(VisionDash.blue_max_H, VisionDash.blue_max_S, VisionDash.blue_max_V);
 
-        //convert to HSV FULL
+        //convert to HSV
         Imgproc.cvtColor(input, modified, COLOR_RGB2HSV);
 //        Imgproc.cvtColor(output, output, COLOR_RGB2HSV_FULL);
 
@@ -123,32 +138,72 @@ public class Pole_Pipe extends OpenCvPipeline {
             Rect rect = boundingRect(contours.get(i));
             rects.add(rect);
         }
-
+        HighRect = -1;
+        MedRect = -1;
         numcontours = contours.size();
 
-        //find largest rect and draw a rectangle and mark it with a circle in the center
-        if(rects.size() > 0){
-//            for (int i=0; i < rects.size(); i++){
-//                if (rects.get(i).width < 68 && (rects.get(i).width > 50)) {
-//                    PoleRect = i;
-//                }
-//            }
 
-            largestRect = VisionUtils.sortRectsByMaxOption(1, VisionUtils.RECT_OPTION.AREA, rects).get(0);
-            rectangle(output, largestRect, orange, 30);
-            Imgproc.circle(output,new Point(largestRect.x + largestRect.width/2,largestRect.y + largestRect.height/2),50,orange,20);
-
-            rectX = largestRect.x + largestRect.width/2;
-            rectY = largestRect.y + largestRect.height/2;
-//            if (PoleRect > - 1){
-//                TargetRect = rects.get(PoleRect);
-//                rectangle(output, TargetRect, lightBlue, 30);
+//        if(rects.size() > 0) {
+//            largestRect = VisionUtils.sortRectsByMaxOption(1, VisionUtils.RECT_OPTION.AREA, rects).get(0);
+//            rectangle(output, largestRect, orange, 8);
+//            Imgproc.circle(output, new Point(largestRect.x + largestRect.width / 2, largestRect.y + largestRect.height / 2), 10, orange, 5);
 //
+//            rectX = largestRect.x + largestRect.width / 2;
+//            rectY = largestRect.y + largestRect.height / 2;
+//            Largest_Rect_Width = largestRect.width;
+//        }
 
-//                Rect_Width = TargetRect.width;
-//                Imgproc.circle(output,new Point(rectX,rectY),50,orange,20);
-//            }
+        if(rects.size() > 0) {
+            //order the rectangles by width and find the first one that is the expected pole width
+            OrderedByWidthrects = VisionUtils.sortRectsByMaxOption(rects.size(), VisionUtils.RECT_OPTION.WIDTH, rects);
+            //find the widths expected for a high pole and a medium pole
+            for (int i = 0; i < OrderedByWidthrects.size(); i++) {
+                if (OrderedByWidthrects.get(i).width < High_pole_max_width && (OrderedByWidthrects.get(i).width > High_pole_min_width)) {
+                    HighRect = i;
+                }
+                if (OrderedByWidthrects.get(i).width < Med_pole_max_width && (OrderedByWidthrects.get(i).width > Med_pole_min_width)) {
+                    MedRect = i;
+                }
+            }
 
+
+            if (HighRect > -1) {
+                TargetHighRect = OrderedByWidthrects.get(HighRect);
+                rectangle(output, TargetHighRect, high, 8);
+
+
+
+                Target_High_Rect_Width = TargetHighRect.width;
+                TargetHighrectX = TargetHighRect.x + TargetHighRect.width / 2;
+                TargetHighrectY = TargetHighRect.y + TargetHighRect.height / 2;
+
+                Imgproc.circle(output, new Point(TargetHighrectX, TargetHighrectY), 10, high, 5);
+                Imgproc.putText(output, "High Pole", new Point(TargetHighrectX + Target_High_Rect_Width / 2, TargetHighrectY - 10), FONT_HERSHEY_COMPLEX, 0.5, black, 2);
+
+            }else{
+                TargetHighrectX = -1;
+                Target_High_Rect_Width = -1;
+
+            }
+
+            if (MedRect > -1) {
+                TargetMedRect = OrderedByWidthrects.get(MedRect);
+                rectangle(output, TargetMedRect, med, 8);
+
+
+                Target_Med_Rect_Width = TargetMedRect.width;
+                TargetMedrectX = TargetMedRect.x + TargetMedRect.width / 2;
+                TargetMedrectY = TargetMedRect.y + TargetMedRect.height / 2;
+
+                Imgproc.circle(output, new Point(TargetMedrectX, TargetMedrectY), 10, med, 5);
+                Imgproc.putText(output, "Medium Pole", new Point(TargetMedrectX + Target_Med_Rect_Width / 2, TargetMedrectY - 10), FONT_HERSHEY_COMPLEX, 0.5, black, 2);
+
+            }else{
+                TargetMedrectX = -1;
+                Target_Med_Rect_Width = -1;
+
+            }
+            //find largest rect and draw a rectangle and mark it with a circle in the center
 
 
         }
@@ -167,7 +222,8 @@ public class Pole_Pipe extends OpenCvPipeline {
         //Clear arrays  to stop pipeline from leaking memory
         contours.clear();
         rects.clear();
-        PoleRect = -1;
+        HighRect = -1;
+        MedRect = -1;
         //return output
         return output;
     }
@@ -175,6 +231,12 @@ public class Pole_Pipe extends OpenCvPipeline {
     //methods to return values
     public double getRectX() {
         return rectX;
+    }
+    public double getTargetHighrectX() {
+        return TargetHighrectX;
+    }
+    public double getTargetMedrectX() {
+        return TargetMedrectX;
     }
 
     public double getH() {
