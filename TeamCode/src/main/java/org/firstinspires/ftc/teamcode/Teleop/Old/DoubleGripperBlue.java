@@ -175,12 +175,12 @@ public class DoubleGripperBlue extends OpMode {
 
 
         if(gamepad2.b && Base_Gripper.getPosition() == 0){
+            Base_Gripper.setPosition(0.4); //open base gripper if it is closed
             try {
                 Thread.sleep(50);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
-            Base_Gripper.setPosition(0.4); //open base gripper if it is closed
 
         }else if(gamepad2.b && Base_Gripper.getPosition() > 0){
             try {
