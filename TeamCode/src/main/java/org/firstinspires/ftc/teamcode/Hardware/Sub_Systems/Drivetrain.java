@@ -176,6 +176,7 @@ public class Drivetrain {
         
         yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         Current_Heading = yawAngle.firstAngle;
+
         while (Math.abs(Current_Heading - Heading) > 30) {
 
             if (Current_Heading > Heading) {
@@ -194,6 +195,7 @@ public class Drivetrain {
 //                LF.setPower(0);
 //                LB.setPower(0);
             }
+
             yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             Current_Heading = yawAngle.firstAngle;
         }
@@ -201,9 +203,79 @@ public class Drivetrain {
 //        LF.setPower(0);
 //        RB.setPower(0);
 //        LB.setPower(0);
+
         yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         Current_Heading = yawAngle.firstAngle;
+
         while (Math.abs(Current_Heading - Heading) > 0.1) {
+
+            if (Current_Heading > (Heading)) {
+                LF.setPower(0.1);
+                LB.setPower(0.1);
+                RB.setPower(-0.1);
+                RF.setPower(-0.1);
+            } else if (Current_Heading < (Heading)) {
+                LF.setPower(-0.1);
+                LB.setPower(-0.1);
+                RB.setPower(0.1);
+                RF.setPower(0.1);
+            } else {
+                RB.setPower(0);
+                RF.setPower(0);
+                LF.setPower(0);
+                LB.setPower(0);
+            }
+            yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            Current_Heading = yawAngle.firstAngle;
+        }
+        RF.setPower(0);
+        LF.setPower(0);
+        RB.setPower(0);
+        LB.setPower(0);
+        yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        Current_Heading = yawAngle.firstAngle;
+    }
+
+    public void TurnToHeadingFast(double Heading,double power){
+        RF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        RB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        LF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        LB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        Current_Heading = yawAngle.firstAngle;
+
+        while (Math.abs(Current_Heading - Heading) > 30) {
+
+            if (Current_Heading > Heading) {
+                LF.setPower(power);
+                LB.setPower(power);
+                RB.setPower(-power);
+                RF.setPower(-power);
+            } else if (Current_Heading < Heading) {
+                LF.setPower(-power);
+                LB.setPower(-power);
+                RB.setPower(power);
+                RF.setPower(power);
+            } else {
+//                RB.setPower(0);
+//                RF.setPower(0);
+//                LF.setPower(0);
+//                LB.setPower(0);
+            }
+
+            yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            Current_Heading = yawAngle.firstAngle;
+        }
+//        RF.setPower(0);
+//        LF.setPower(0);
+//        RB.setPower(0);
+//        LB.setPower(0);
+
+        yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        Current_Heading = yawAngle.firstAngle;
+
+        while (Math.abs(Current_Heading - Heading) > 0.3) {
 
             if (Current_Heading > (Heading)) {
                 LF.setPower(0.1);

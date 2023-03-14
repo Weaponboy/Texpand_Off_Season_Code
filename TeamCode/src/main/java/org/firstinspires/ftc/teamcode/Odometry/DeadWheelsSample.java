@@ -323,10 +323,7 @@ public class DeadWheelsSample extends LinearOpMode {
         drive.RB.setPower(0);
         drive.LF.setPower(0);
         drive.LB.setPower(0);
-//        telemetry.addData("TargetXpos   ", TargetXPos);
-//        telemetry.addData("CurrentXpos", CurrentXPos);
-//        telemetry.addData("refined", refined);
-//        telemetry.update();
+
         try {
             Thread.sleep(4000);
         } catch (Exception e) {

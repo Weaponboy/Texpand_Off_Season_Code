@@ -50,6 +50,7 @@ public class Test_Threads_2 extends LinearOpMode {
             System.out.println(e.getMessage());
 
         }
+
         // Shut down the thread pool
         executor.shutdown();
         executor.awaitTermination(1, TimeUnit.MINUTES);

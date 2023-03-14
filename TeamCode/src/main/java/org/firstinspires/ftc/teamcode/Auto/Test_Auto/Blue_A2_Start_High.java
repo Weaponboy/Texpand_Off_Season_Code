@@ -49,10 +49,15 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Autonomous
 public class Blue_A2_Start_High extends LinearOpMode {
+
+
     private DistanceSensor sensorRange;
     Blue_Cone_Pipe Cone_Pipeline;
     public DcMotor RF = null;
@@ -133,19 +138,29 @@ public class Blue_A2_Start_High extends LinearOpMode {
     int MIDDLE = 2;
     int RIGHT = 3;
 
+    private ExecutorService executor;
+    private AtomicInteger counter;
+
     AprilTagDetection tagOfInterest = null;
     public OpenCvWebcam Texpandcamera;
+
     @Override
-    public void runOpMode() {
+    public void runOpMode() throws InterruptedException {
+
+        executor = Executors.newFixedThreadPool(2);
+
+        // Create a shared counter that is incremented by the threads
+        counter = new AtomicInteger();
+
         initialize();
         Extend.setDirection(DcMotorSimple.Direction.REVERSE);
         drive.init(hardwareMap);
         Cone_Pipeline = new Blue_Cone_Pipe();
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
 
-        WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
+        WebcamName Backcam = hardwareMap.get(WebcamName.class, "Backcam");
         aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
-        Texpandcamera = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
+        Texpandcamera = OpenCvCameraFactory.getInstance().createWebcam(Backcam, cameraMonitorViewId);
         drive.init(hardwareMap);
         Texpandcamera.setPipeline(aprilTagDetectionPipeline);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
@@ -238,6 +253,8 @@ public class Blue_A2_Start_High extends LinearOpMode {
             telemetry.update();
         }
 
+
+
         try {
             Thread.sleep(100);
         } catch (Exception e) {
@@ -277,9 +294,7 @@ public class Blue_A2_Start_High extends LinearOpMode {
         } else if (tagOfInterest.id == MIDDLE) {
             //Position 2
 
-            Drive_To_Destack();
-
-            Base_Pivot.setPosition(0.05);
+            Reverse_To_Destack();
 
             Base_Gripper.setPosition(0.4);
 
@@ -287,9 +302,12 @@ public class Blue_A2_Start_High extends LinearOpMode {
 
             Destack_3();
 
-//            Drive_To_Pos_2();
+            Drive_To_Pos_2();
 
         }
+
+        executor.shutdown();
+        executor.awaitTermination(1, TimeUnit.MINUTES);
 
     }
 
@@ -358,58 +376,31 @@ public class Blue_A2_Start_High extends LinearOpMode {
 
     public void Drive_To_Pos_1() {
 
-        drive.TurnToHeading(-90, 0.35);
+//        drive.TurnToHeadingFast(90,0.8);
 
-        Top_Pivot.setPosition(1);
-
-        Base_Pivot.setPosition(1);
-
-        drive.StrafeDistance_Left(19, .5);
-
-        drive.DriveDistanceLongReverse(85, .65);
-
-        drive.TurnToHeading(0,0.45);
-
-        Top_Pivot.setPosition(1);
+        drive.DriveDistanceRamp(-65, 0.6);
 
     }
 
     public void Drive_To_Pos_2() {
-        drive.TurnDegreesLeft(14);
 
-        Top_Pivot.setPosition(1);
+//        drive.TurnToHeadingFast(90,0.8);
 
-        Base_Pivot.setPosition(1);
-
-        drive.StrafeDistance_Left(18, .5);
-
-        drive.DriveDistanceLongReverse(20, .5);
-
-        drive.TurnToHeading(0,3);
+        drive.DriveDistanceRamp(-5, 0.6);
 
     }
 
     public void Drive_To_Pos_3() {
 
-        drive.TurnToHeading(-90, 0.35);
+//        drive.TurnToHeadingFast(90,0.8);
 
-        Top_Pivot.setPosition(1);
-
-        Base_Pivot.setPosition(0.7);
-
-        drive.StrafeDistance_Left(18, .6);
-
-        drive.TurnToHeading(0,0.35);
-
-        drive.StrafeDistance_Left(33, .6);
-
-        drive.TurnToHeading(3,0.35);
+        drive.DriveDistanceRamp(60, 0.6);
 
     }
 
     public void Drive_To_Destack() {
 
-        drive.DriveDistanceRamp(132,0.7);
+        drive.DriveDistanceRamp(131,0.7);
         Base_Pivot.setPosition(0.85);
         Top_Pivot.setPosition(0.4);
 
@@ -425,121 +416,17 @@ public class Blue_A2_Start_High extends LinearOpMode {
 
     public void Reverse_To_Destack() {
 
-        drive.DriveDistanceLong(140,0.7);
-        drive.TurnToHeading(-100,0.45);
-        drive.DriveDistanceLong(15,0.5);
-        Texpandcamera.setPipeline(Cone_Pipeline);
+        drive.DriveDistanceRamp(-131, 0.7);
 
-        rectPositionFromLeft = 0;
-        Distance_To_Travel = 0;
+        Base_Pivot.setPosition(0.85);
 
-        for (int i = 0;  i < 10; i++){
-            rectPositionFromLeft = Cone_Pipeline.getRectX();
-            try {
-                Thread.sleep(5);
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
-        }
+        Top_Pivot.setPosition(0.4);
 
-        rectPositionFromLeft = Cone_Pipeline.getRectX();
-        double power = 0.26;
-        drive.WithOutEncoders();
+        drive.TurnToHeadingFast(42, 0.8);
 
-        while (rectPositionFromLeft > CenterOfScreen + 10 || rectPositionFromLeft < CenterOfScreen - 10){
+        drive.DriveDistanceRamp(4, 0.2);
 
-//            telemetry.addData("rect X", Cone_Pipeline.getRectX());
-//            telemetry.addData("rect Y", Cone_Pipeline.getRectY());
-//            telemetry.addData("Target CM", Distance_To_Travel);
-//            telemetry.update();
-            rectPositionFromLeft = Cone_Pipeline.getRectX();
-
-
-            if (rectPositionFromLeft < CenterOfScreen) {
-
-                drive.RF.setPower(-power-poweradj);
-                drive.RB.setPower(power);
-                drive.LF.setPower(power+poweradj);
-                drive.LB.setPower(-power);
-
-            } else if (rectPositionFromLeft > CenterOfScreen) {
-
-                drive.RF.setPower(power+poweradj);
-                drive.RB.setPower(-power);
-                drive.LF.setPower(-power-poweradj);
-                drive.LB.setPower(power);
-            }
-        }
-
-        drive.RF.setPower(0);
-        drive.RB.setPower(0);
-        drive.LF.setPower(0);
-        drive.LB.setPower(0);
-
-        drive.TurnToHeading(-100,0.45);
-
-        rectPositionFromLeft = Cone_Pipeline.getRectX();
-        power = 0.26;
-        drive.WithOutEncoders();
-
-        while (rectPositionFromLeft > CenterOfScreen + 10 || rectPositionFromLeft < CenterOfScreen - 10){
-
-//            telemetry.addData("rect X", Cone_Pipeline.getRectX());
-//            telemetry.addData("rect Y", Cone_Pipeline.getRectY());
-//            telemetry.addData("Target CM", Distance_To_Travel);
-//            telemetry.update();
-            rectPositionFromLeft = Cone_Pipeline.getRectX();
-
-
-            if (rectPositionFromLeft < CenterOfScreen) {
-
-                drive.RF.setPower(-power-poweradj);
-                drive.RB.setPower(power);
-                drive.LF.setPower(power+poweradj);
-                drive.LB.setPower(-power);
-
-            } else if (rectPositionFromLeft > CenterOfScreen) {
-
-                drive.RF.setPower(power+poweradj);
-                drive.RB.setPower(-power);
-                drive.LF.setPower(-power-poweradj);
-                drive.LB.setPower(power);
-            }
-        }
-
-        drive.RF.setPower(0);
-        drive.RB.setPower(0);
-        drive.LF.setPower(0);
-        drive.LB.setPower(0);
-
-        Base_Pivot.setPosition(0.1);
-
-        Base_Gripper.setPosition(0.4);
-//        drive.DriveDistanceLong(135, 0.5);
-//
-//        Base_Pivot.setPosition(0.72);
-//
-//        drive.TurnToHeading(-89);
-//
-//        Base_Pivot.setPosition(0.8);
-//
-//        drive.DriveDistanceLong(25, 0.4);
-//        RF.setPower(0);
-//        RB.setPower(0);
-//        LF.setPower(0);
-//        LB.setPower(0);
-//
-//        drive.ResetEncoders();
-//
-//        drive.StrafeDistance_Left(21, 0.5);
-//
-//
-//
-//        drive.TurnToHeading(-102);
-//
-//        drive.DriveDistanceLongReverse(8, 0.4);
-//        telemetry.addData("Finished", "Turning");
-//        telemetry.update();
+        drive.ResetEncoders();
     }
 
     public void DropPreLoad() {
@@ -573,11 +460,16 @@ public class Blue_A2_Start_High extends LinearOpMode {
         //TO DO: Insert WHILE loop
         if (Top_Gripper.getPosition() == 0.3) {
             try {
-                Thread.sleep(50);
+                Thread.sleep(200);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
             Top_Pivot.setPosition(0.4);
+            try {
+                Thread.sleep(300);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
             Right_Slide.setTargetPosition(0);
             Left_Slide.setTargetPosition(0);
             Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -624,6 +516,13 @@ public class Blue_A2_Start_High extends LinearOpMode {
 
         Extend.setPower(-1);
 
+
+        executor.submit(() -> {
+            if (reverse){
+                drive.DriveDistanceRamp(10,0.4);
+            }
+        });
+
         conefound = sensorRange.getDistance(DistanceUnit.MM) < 60;
 
         //extend till we find a cone or get to the slides limit
@@ -644,6 +543,14 @@ public class Blue_A2_Start_High extends LinearOpMode {
         }
         Extend.setPower(0);
 
+        if (!conefound){
+            try {
+                Thread.sleep(500);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }
+
         if (conefound){
 
             //close gripper
@@ -653,7 +560,7 @@ public class Blue_A2_Start_High extends LinearOpMode {
 
             //make sure gripper is closed
             try {
-                Thread.sleep(300);
+                Thread.sleep(150);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
@@ -687,7 +594,7 @@ public class Blue_A2_Start_High extends LinearOpMode {
                     if(Extend.getCurrentPosition() > -100){
                         Base_Gripper.setPosition(0.4);
                     }
-                    if(Extend.getCurrentPosition() > -30){
+                    if(Extend.getCurrentPosition() > -50){
                         //open top gripper
                         Top_Gripper.setPosition(0.35);
 
@@ -697,6 +604,14 @@ public class Blue_A2_Start_High extends LinearOpMode {
                 }
 
                 Extend.setPower(0);
+
+                executor.submit(() -> {
+
+                    if(reverse){
+                        drive.DriveDistanceRamp(-6,0.2);
+                    }
+
+                });
 
                 while (lowering) {
                     CheckVSlidePos();
@@ -710,7 +625,7 @@ public class Blue_A2_Start_High extends LinearOpMode {
                 Base_Pivot.setPosition(1);
 
                 try {
-                    Thread.sleep(250);
+                    Thread.sleep(300);
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }
@@ -767,15 +682,9 @@ public class Blue_A2_Start_High extends LinearOpMode {
                         System.out.println(e.getMessage());
                     }
 
-                    if(reverse){
-                        drive.DriveDistanceRamp(-10,0.2);
-                    }
                     //put base pivot back to zero
-                    Base_Pivot.setPosition(0.1);
 
                     Extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-                    Base_Pivot.setPosition(0.1);
 
                     //Extend vertical slides and drop cone
                     Right_Slide.setTargetPosition(1800);
@@ -783,12 +692,15 @@ public class Blue_A2_Start_High extends LinearOpMode {
                     Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     while (Right_Slide.getCurrentPosition() < 1750 && Left_Slide.getCurrentPosition() < 1750) {
-                        if(reverse){
-                            drive.TurnToHeading(-140,0.45);
-                        }
                         Right_Slide.setPower(1);
                         Left_Slide.setPower(1);
+
+                        if(reverse){
+                            drive.TurnToHeadingFast(48, 0.5);
+                        }
+
                         Top_Pivot.setPosition(0.42);
+
                         if(Right_Slide.getCurrentPosition() > 1650){
                             Top_Pivot.setPosition(0);
                         }
@@ -819,11 +731,15 @@ public class Blue_A2_Start_High extends LinearOpMode {
 
                         Right_Slide.setTargetPosition(0);
                         Left_Slide.setTargetPosition(0);
+
                         Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
                         Right_Slide.setPower(-0.9);
                         Left_Slide.setPower(-0.9);
+
                         Top_Pivot.setPosition(0.4);
+
                         lowering = true;
                     }
 
@@ -841,24 +757,20 @@ public class Blue_A2_Start_High extends LinearOpMode {
 
         }else{
             Extend.setTargetPosition(0);
-            Extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            while (Extend.isBusy()) {
-                if(Right_Slide.getCurrentPosition() < 10 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 10 && !Left_Slide.isBusy()){
-                    Right_Slide.setPower(0);
-                    Left_Slide.setPower(0);
 
-                    Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                    Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                    lowering = false;
-                }else if(lowering){
-                    Right_Slide.setPower(-0.9);
-                    Left_Slide.setPower(-0.9);
-                }
+            Extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            while (Extend.isBusy()) {
+
+                CheckVSlidePos();
                 Extend.setPower(0.8);
+
             }
             Extend.setPower(0);
+
             Destacker_Left.setPosition(De_Pos_5);
             Destacker_Right.setPosition(De_Pos_5);
+
             abort = true;
 
         }
@@ -968,42 +880,55 @@ public class Blue_A2_Start_High extends LinearOpMode {
         }
 
     }
+
     public void Destack_3 () {
 
         Base_Gripper.setPosition(0.4);
-        Base_Pivot.setPosition(0.05);
 
         //cone 1
-        drive.TurnToHeading(-90,0.45);
-        drive.DriveDistanceRamp(10,0.4);
+        Base_Pivot.setPosition(0.05);
+        drive.TurnToHeadingFast(90, 0.8);
 
         Destack(De_Pos_1, true);
+
         if (abort){
             //Drive to position
             Top_Pivot.setPosition(Top_Pivot_Waiting);
             Base_Pivot.setPosition(0.85);
-        }else {
+            drive.DriveDistanceRamp(-20,0.6);
 
+        }else {
             Base_Pivot.setPosition(0.05);
-            drive.TurnToHeading(-90,0.45);
-            drive.DriveDistanceRamp(10,0.4);
+            drive.TurnToHeadingFast(90, 0.8);
+
             //cone 2
             Destack(De_Pos_2, true);
             Base_Pivot.setPosition(0.05);
 
             if (abort){
+
                 //Drive to position
-                Base_Pivot.setPosition(0.1);
                 Top_Pivot.setPosition(Top_Pivot_Waiting);
                 Base_Pivot.setPosition(0.85);
+
+                drive.DriveDistanceRamp(-20,0.6);
+
             }else {
-                drive.TurnToHeading(-90,0.45);
-                drive.DriveDistanceRamp(10,0.4);
                 Base_Pivot.setPosition(0.05);
+                drive.TurnToHeadingFast(90, 0.8);
+
                 //cone 3
                 Destack(De_Pos_3, true);
-                Base_Pivot.setPosition(0.05);
 
+                Base_Pivot.setPosition(1);
+
+                Top_Pivot.setPosition(0.8);
+
+                drive.TurnToHeadingFast(90, 1);
+
+                if (abort){
+                    drive.DriveDistanceRamp(-15,0.6);
+                }
 
             }
 
