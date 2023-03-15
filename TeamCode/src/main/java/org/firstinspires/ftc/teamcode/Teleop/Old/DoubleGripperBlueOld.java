@@ -502,9 +502,9 @@ public class DoubleGripperBlueOld extends OpMode {
             Toppos = Toppos + 1;
 
             if(Toppos == 1){
-                Top_Pivot.setPosition(0.22);
+                Top_Pivot.setPosition(0.3);
             }else if(Toppos == 3){
-                Top_Pivot.setPosition(0.5);
+                Top_Pivot.setPosition(0.4);
             }
             if(Toppos > 2){
                 Toppos = 0;
@@ -656,11 +656,13 @@ public class DoubleGripperBlueOld extends OpMode {
 
                             Base_Pivot.setPosition(0.82);
 
+                            Base_Gripper.setPosition(0);
+
                             Extend.setPower(0.6);
 
-                            if(Extend.getCurrentPosition() > -90){
-                                Base_Gripper.setPosition(0.4);
-                            }
+//                            if(Extend.getCurrentPosition() > -90){
+//                                Base_Gripper.setPosition(0.4);
+//                            }
                             if(Extend.getCurrentPosition() > -20){
                                 //open top gripper
                                 Top_Gripper.setPosition(0.35);
@@ -697,7 +699,7 @@ public class DoubleGripperBlueOld extends OpMode {
                             Base_Gripper.setPosition(0.4);
 
                             try {
-                                Thread.sleep(100);
+                                Thread.sleep(75);
                             }catch (Exception e){
                                 System.out.println(e.getMessage());
                             }
@@ -705,7 +707,7 @@ public class DoubleGripperBlueOld extends OpMode {
                             Base_Pivot.setPosition(Base_Pivot_Out_Way);
 
                             try {
-                                Thread.sleep(100);
+                                Thread.sleep(50);
                             }catch (Exception e){
                                 System.out.println(e.getMessage());
                             }
@@ -713,7 +715,7 @@ public class DoubleGripperBlueOld extends OpMode {
                             Top_Pivot.setPosition(1);
 
                             try {
-                                Thread.sleep(250);
+                                Thread.sleep(50);
                             }catch (Exception e){
                                 System.out.println(e.getMessage());
                             }
@@ -721,7 +723,7 @@ public class DoubleGripperBlueOld extends OpMode {
                             Top_Gripper.setPosition(0);
 
                             try {
-                                Thread.sleep(150);
+                                Thread.sleep(100);
                             }catch (Exception e){
                                 System.out.println(e.getMessage());
                             }
@@ -729,7 +731,7 @@ public class DoubleGripperBlueOld extends OpMode {
                             Top_Pivot.setPosition(0.6);
 
                             try {
-                                Thread.sleep(75);
+                                Thread.sleep(100);
                             }catch (Exception e){
                                 System.out.println(e.getMessage());
                             }
@@ -737,11 +739,10 @@ public class DoubleGripperBlueOld extends OpMode {
                         }
 
 
-
                     Extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
                     try {
-                        Thread.sleep(200);
+                        Thread.sleep(100);
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
                     }
@@ -768,7 +769,7 @@ public class DoubleGripperBlueOld extends OpMode {
 
 
                     try {
-                        Thread.sleep(200);
+                        Thread.sleep(150);
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
                     }
@@ -825,15 +826,15 @@ public class DoubleGripperBlueOld extends OpMode {
 
             AlignToHighCalc();
 
-            Right_Slide.setTargetPosition(1800);
-            Left_Slide.setTargetPosition(1800);
+            Right_Slide.setTargetPosition(1900);
+            Left_Slide.setTargetPosition(1900);
             Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             drive.DriveEncoders();
 
             power = 0.2;
 
-            while(Right_Slide.getCurrentPosition() < 1750 && Left_Slide.getCurrentPosition() < 1750){
+            while(Right_Slide.getCurrentPosition() < 1850 && Left_Slide.getCurrentPosition() < 1850){
                 Right_Slide.setPower(1);
                 Left_Slide.setPower(1);
 
@@ -862,7 +863,7 @@ public class DoubleGripperBlueOld extends OpMode {
             drive.LF.setPower(0);
             drive.LB.setPower(0);
 
-            Top_Pivot.setPosition(0.4);
+            Top_Pivot.setPosition(0.25);
 
 //            if(Math.abs(rectPositionFromLeft - CenterOfScreen) > 45) {
 //                Top_Pivot.setPosition(0.4);
@@ -896,14 +897,14 @@ public class DoubleGripperBlueOld extends OpMode {
             }
         }
 
-        if(gamepad1.left_stick_y < 0 && Base_Pivot.getPosition() != 0.85){
+        if(gamepad2.left_stick_y < 0 && Base_Pivot.getPosition() != 0.85){
             Base_Pivot.setPosition(0.85); //open base gripper if it is closed
             try {
                 Thread.sleep(100);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
-        }else if(gamepad1.left_stick_y > 0 && Base_Pivot.getPosition() != Base_Pivot_Collect ){
+        }else if(gamepad2.left_stick_y > 0 && Base_Pivot.getPosition() != Base_Pivot_Collect ){
             Base_Pivot.setPosition(Base_Pivot_Collect); //close base gripper if it is open
             try {
                 Thread.sleep(100);

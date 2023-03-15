@@ -35,4 +35,5 @@ dependencies {
 
 dependencies {
     implementation 'org.ftclib.ftclib:core:2.0.1'
+    implementation 'com.github.Brickwolves:BetterSensors:v2.1.0'
 }

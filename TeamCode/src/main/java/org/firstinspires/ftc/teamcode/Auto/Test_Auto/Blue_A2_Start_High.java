@@ -23,6 +23,7 @@ package org.firstinspires.ftc.teamcode.Auto.Test_Auto;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -39,9 +40,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Vision.AprilTags.AprilTagDetectionPipeline;
 import org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.Blue_Cone_Pipe;
+import org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.Pole_Pipe;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -57,6 +60,26 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Autonomous
 public class Blue_A2_Start_High extends LinearOpMode {
 
+    public double Distance_To_Travel;
+
+    public BNO055IMU imu         = null;
+    public double Degrees_To_Turn;
+
+    public Orientation yawAngle;
+
+    public double ConversionPixelstoCm = 22;//need to tune this
+
+    public double CenterOfScreen = 300;
+
+    private  double poleDistance = 0;
+
+    private  double TargetPoleDistance = 42;
+
+    private  double TravelDistance = 0;
+
+    private DistanceSensor Back_Distance;
+
+    Pole_Pipe Pole;
 
     private DistanceSensor sensorRange;
     Blue_Cone_Pipe Cone_Pipeline;
@@ -74,18 +97,18 @@ public class Blue_A2_Start_High extends LinearOpMode {
     double Top_Pivot_Ready_Drop = 0.3;
     double Top_Pivot_Drop_Off = 0;
     public double poweradj = 0.085;
-    public double Distance_To_Travel;
 
-    public double ConversionPixelstoCm = 20;//need to tune this
-
-
-    // was 329
-    public double CenterOfScreen = 329;
 
     public double rectPositionFromLeft = 0;
+
+    private double Cone_power;
+
     public ColorSensor colour = null;
+
     FtcDashboard dashboard = FtcDashboard.getInstance();
+
     Telemetry dashboardTelemetry = dashboard.getTelemetry();
+
     public DcMotor Right_Slide = null;
     public DcMotor Left_Slide = null;
 
@@ -144,6 +167,8 @@ public class Blue_A2_Start_High extends LinearOpMode {
     AprilTagDetection tagOfInterest = null;
     public OpenCvWebcam Texpandcamera;
 
+    public OpenCvWebcam Frontcam;
+
     @Override
     public void runOpMode() throws InterruptedException {
 
@@ -153,17 +178,36 @@ public class Blue_A2_Start_High extends LinearOpMode {
         counter = new AtomicInteger();
 
         initialize();
+
         Extend.setDirection(DcMotorSimple.Direction.REVERSE);
+
         drive.init(hardwareMap);
+
         Cone_Pipeline = new Blue_Cone_Pipe();
+
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
 
-        WebcamName Backcam = hardwareMap.get(WebcamName.class, "Backcam");
+
+        int[] viewportContainerIds = OpenCvCameraFactory.getInstance()
+                .splitLayoutForMultipleViewports(
+                        cameraMonitorViewId, //The container we're splitting
+                        2, //The number of sub-containers to create
+                        OpenCvCameraFactory.ViewportSplitMethod.VERTICALLY);
+
+        Frontcam  = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), viewportContainerIds[0]);
+
+        Texpandcamera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Backcam"), viewportContainerIds[1]);
+
+
         aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
-        Texpandcamera = OpenCvCameraFactory.getInstance().createWebcam(Backcam, cameraMonitorViewId);
+
         drive.init(hardwareMap);
+
         Texpandcamera.setPipeline(aprilTagDetectionPipeline);
+
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
+        Frontcam.setPipeline(Cone_Pipeline);
 
         Texpandcamera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
@@ -189,6 +233,36 @@ public class Blue_A2_Start_High extends LinearOpMode {
             @Override
             public void onError(int errorCode) { }
         });
+        Frontcam.setPipeline(Cone_Pipeline);
+
+        Texpandcamera.setPipeline(aprilTagDetectionPipeline);
+
+        Frontcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            @Override
+            public void onOpened() {
+                Frontcam.getExposureControl().setMode(ExposureControl.Mode.Manual);
+
+                Frontcam.getExposureControl().setExposure(20, TimeUnit.MILLISECONDS);
+
+                Frontcam.getGainControl().setGain(50);
+
+                FocusControl.Mode focusmode = FocusControl.Mode.Fixed;
+
+                Frontcam.getFocusControl().setMode(focusmode);
+
+                if (focusmode == FocusControl.Mode.Fixed){
+                    Frontcam.getFocusControl().setFocusLength(400);
+                }
+
+                Frontcam.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
+
+            }
+
+            @Override
+            public void onError(int errorCode) { }
+        });
+
+        Frontcam.setPipeline(Cone_Pipeline);
 
         // Set the pipeline depending on id
         Texpandcamera.setPipeline(aprilTagDetectionPipeline);
@@ -261,6 +335,10 @@ public class Blue_A2_Start_High extends LinearOpMode {
             System.out.println(e.getMessage());
         }
 
+        Pole = new Pole_Pipe();
+
+        Texpandcamera.setPipeline(Pole);
+
         if (tagOfInterest.id == RIGHT) {
             //Position 3
             telemetry.addData("Stop Position", "3");
@@ -324,6 +402,7 @@ public class Blue_A2_Start_High extends LinearOpMode {
     public void initialize() {
         colour = hardwareMap.get(ColorSensor.class, "colour");
         sensorRange = hardwareMap.get(DistanceSensor.class, "sensor_range");
+        Back_Distance = hardwareMap.get(DistanceSensor.class, "Back distance");
 
         RF = hardwareMap.get(DcMotor.class, "RF");
         LF = hardwareMap.get(DcMotor.class, "LF");
@@ -422,9 +501,11 @@ public class Blue_A2_Start_High extends LinearOpMode {
 
         Top_Pivot.setPosition(0.4);
 
-        drive.TurnToHeadingFast(42, 0.8);
+        drive.TurnToHeadingFast(90, 0.8);
 
-        drive.DriveDistanceRamp(4, 0.2);
+        drive.DriveDistanceRamp(10, 0.2);
+
+        drive.TurnToHeadingFast(42, 0.8);
 
         drive.ResetEncoders();
     }
@@ -517,12 +598,6 @@ public class Blue_A2_Start_High extends LinearOpMode {
         Extend.setPower(-1);
 
 
-        executor.submit(() -> {
-            if (reverse){
-                drive.DriveDistanceRamp(10,0.4);
-            }
-        });
-
         conefound = sensorRange.getDistance(DistanceUnit.MM) < 60;
 
         //extend till we find a cone or get to the slides limit
@@ -573,6 +648,12 @@ public class Blue_A2_Start_High extends LinearOpMode {
                 System.out.println(e.getMessage());
             }
 
+            executor.submit(() -> {
+                if(reverse){
+                    drive.TurnToHeadingFast(48, 1);
+                }
+            });
+
             //if the base gripper is closed retract the horizontal slides
             if (Base_Gripper.getPosition() == 0) {
 
@@ -605,13 +686,6 @@ public class Blue_A2_Start_High extends LinearOpMode {
 
                 Extend.setPower(0);
 
-                executor.submit(() -> {
-
-                    if(reverse){
-                        drive.DriveDistanceRamp(-6,0.2);
-                    }
-
-                });
 
                 while (lowering) {
                     CheckVSlidePos();
@@ -695,9 +769,21 @@ public class Blue_A2_Start_High extends LinearOpMode {
                         Right_Slide.setPower(1);
                         Left_Slide.setPower(1);
 
-                        if(reverse){
-                            drive.TurnToHeadingFast(48, 0.5);
+                        for (int i = 1; i <= 50; i++) {
+                            rectPositionFromLeft = Pole.TargetHighrectX;
                         }
+
+                        if (rectPositionFromLeft > -1) {
+                            Degrees_To_Turn = rectPositionFromLeft - CenterOfScreen;
+
+                            Degrees_To_Turn = Degrees_To_Turn / 20;
+
+                            drive.yawAngle = drive.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                        }
+
+//                        TravelDistance = Back_Distance.getDistance(DistanceUnit.CM) - TargetPoleDistance;
+//
+//                        drive.DriveDistanceRamp(-TravelDistance, 0.2);
 
                         Top_Pivot.setPosition(0.42);
 
@@ -707,6 +793,12 @@ public class Blue_A2_Start_High extends LinearOpMode {
                     }
                     Right_Slide.setPower(0);
                     Left_Slide.setPower(0);
+
+
+                    if(Degrees_To_Turn != 0) {
+                        drive.TurnToHeading(drive.yawAngle.firstAngle + Degrees_To_Turn , 0.3);
+                        Degrees_To_Turn = 0;
+                    }
 
                     Top_Pivot.setPosition(0);
 
@@ -718,6 +810,12 @@ public class Blue_A2_Start_High extends LinearOpMode {
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
                     }
+
+                    executor.submit(() -> {
+                        if(reverse){
+                            drive.TurnToHeadingFast(90, 0.8);
+                        }
+                    });
 
                     Top_Gripper.setPosition(0.3);
 
@@ -776,6 +874,43 @@ public class Blue_A2_Start_High extends LinearOpMode {
         }
 
 
+    }
+
+    public void coneAlignmentStrafe(){
+
+        Base_Pivot.setPosition(0.7);
+        try {
+            Thread.sleep(600);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        Cone_power = 0.2;
+        rectPositionFromLeft = Cone_Pipeline.getRectX();
+        while (Math.abs(rectPositionFromLeft - CenterOfScreen) > 25 && (Math.abs(gamepad1.right_stick_x) < 0.1)){
+
+            if(Math.abs(rectPositionFromLeft - CenterOfScreen) > 15 ){
+                Cone_power = 0.15;
+            }
+            rectPositionFromLeft = Cone_Pipeline.getRectX();
+
+            if (rectPositionFromLeft < CenterOfScreen + 10) {
+                drive.RF.setPower(1.3*Cone_power);
+                drive.RB.setPower(Cone_power);
+                drive.LF.setPower(-1.3*Cone_power);
+                drive.LB.setPower(-Cone_power);
+            } else if (rectPositionFromLeft > CenterOfScreen - 10) {
+                drive.RF.setPower(-1.3*Cone_power);
+                drive.RB.setPower(-Cone_power);
+                drive.LF.setPower(1.3*Cone_power);
+                drive.LB.setPower(Cone_power);
+            }
+
+        }
+        drive.RF.setPower(0);
+        drive.RB.setPower(0);
+        drive.LF.setPower(0);
+        drive.LB.setPower(0);
+        Base_Pivot.setPosition(0.05);
     }
 
     public void Destack_5 () {
@@ -885,9 +1020,12 @@ public class Blue_A2_Start_High extends LinearOpMode {
 
         Base_Gripper.setPosition(0.4);
 
+        drive.TurnToHeadingFast(90, 0.8);
+
         //cone 1
         Base_Pivot.setPosition(0.05);
-        drive.TurnToHeadingFast(90, 0.8);
+
+        coneAlignmentStrafe();
 
         Destack(De_Pos_1, true);
 
@@ -895,11 +1033,14 @@ public class Blue_A2_Start_High extends LinearOpMode {
             //Drive to position
             Top_Pivot.setPosition(Top_Pivot_Waiting);
             Base_Pivot.setPosition(0.85);
-            drive.DriveDistanceRamp(-20,0.6);
+            drive.DriveDistanceRamp(-15,0.6);
 
         }else {
             Base_Pivot.setPosition(0.05);
+
             drive.TurnToHeadingFast(90, 0.8);
+
+            coneAlignmentStrafe();
 
             //cone 2
             Destack(De_Pos_2, true);
@@ -911,11 +1052,13 @@ public class Blue_A2_Start_High extends LinearOpMode {
                 Top_Pivot.setPosition(Top_Pivot_Waiting);
                 Base_Pivot.setPosition(0.85);
 
-                drive.DriveDistanceRamp(-20,0.6);
+                drive.DriveDistanceRamp(-15,0.6);
 
             }else {
                 Base_Pivot.setPosition(0.05);
                 drive.TurnToHeadingFast(90, 0.8);
+
+                coneAlignmentStrafe();
 
                 //cone 3
                 Destack(De_Pos_3, true);

@@ -207,10 +207,13 @@ public class DeadWheelsSample extends LinearOpMode {
 
             RRXdist = Xdist*Math.cos(Math.toRadians(360-ConvertedHeading)) - Ydist*Math.sin(Math.toRadians(360-ConvertedHeading));
             RRYdist = Xdist*Math.sin(Math.toRadians(360-ConvertedHeading)) + Ydist*Math.cos(Math.toRadians(360-ConvertedHeading));
+
             ResultantDist = Math.sqrt((Xdist*Xdist) + (Ydist*Ydist));
 
             Vertical = Ydist/ResultantDist;
             Horizontal = Xdist/ResultantDist;
+
+
 
 
             telemetry.addData("Xdist", Xdist);
@@ -357,7 +360,9 @@ public class DeadWheelsSample extends LinearOpMode {
         double TargetXPos = 0;
         double TargetYPos = 0;
         double poweradj = 0.085;
+
         odometry.updatePose();
+
         CurrentXPos = getXpos();
         CurrentYPos = getYpos();
         StartingHeading = getheading();
