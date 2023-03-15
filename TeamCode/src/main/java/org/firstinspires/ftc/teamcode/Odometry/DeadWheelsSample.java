@@ -27,6 +27,7 @@ import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Drivetrain;
  * ports as they are not needed due to not using the drive encoders.
  * The external encoders we are using are REV through-bore.
  */
+
 @TeleOp
 public class DeadWheelsSample extends LinearOpMode {
 
@@ -57,7 +58,7 @@ public class DeadWheelsSample extends LinearOpMode {
     private double pivot;
     private double Distance_to_travel;
     Drivetrain drive = new Drivetrain();
-    public BNO055IMU imu         = null;      // Control/Expansion Hub IMU
+    public BNO055IMU imu = null;      // Control/Expansion Hub IMU
 
     private MotorEx LF, RF, LB, RB;
     private MecanumDrive driveTrain;
@@ -66,18 +67,22 @@ public class DeadWheelsSample extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         parameters.calibrationDataFile = "BNO055IMUCalibration.json";
         parameters.loggingEnabled = true;
         parameters.loggingTag = "IMU";
+
         LF = new MotorEx(hardwareMap, "LF");
         LB = new MotorEx(hardwareMap, "LB");
         RF = new MotorEx(hardwareMap, "RF");
         RB = new MotorEx(hardwareMap, "RB");
+
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
+
         //Telemetry for dashboard
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
