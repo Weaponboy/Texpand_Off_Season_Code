@@ -103,7 +103,7 @@ public class PIDMovement extends OpMode {
         public static double rotationD = 0;
         public static double rotationF = 0;
 
-        public static double targetX = 10, targetY = 10, targetRot = 0;
+        public static double targetX = 10, targetY = 5, targetRot = 0;
 
     }
 
@@ -199,16 +199,15 @@ public class PIDMovement extends OpMode {
         Ydist = targetY - CurrentYPos;
 
         //CONVERT HEADING FOR TRIG CALCS
-        if (StartingHeading <= 0) {
+        if(StartingHeading <= 0) {
             ConvertedHeading = (0 - StartingHeading);
-        }else {
+        }else{
             ConvertedHeading = (360 - StartingHeading);
         }
 
         //CONVERT TARGET TO ROBOT RELATIVE TARGET
-        RRYdist = Xdist*Math.cos(Math.toRadians(360-ConvertedHeading)) - Ydist*Math.sin(Math.toRadians(360-ConvertedHeading));
-
-        RRXdist = Xdist*Math.sin(Math.toRadians(360-ConvertedHeading)) + Ydist*Math.cos(Math.toRadians(360-ConvertedHeading));
+        RRXdist = Xdist*Math.cos(Math.toRadians(360-ConvertedHeading)) + Ydist*Math.sin(Math.toRadians(360-ConvertedHeading));
+        RRYdist = Xdist*Math.sin(Math.toRadians(360-ConvertedHeading)) - Ydist*Math.cos(Math.toRadians(360-ConvertedHeading));
 
         //SET DRIVE CONSTANTS TO THE PIDF CONTROL LOOPS
         Vertical2 = drivePID.calculate(RRXdist);
@@ -227,10 +226,10 @@ public class PIDMovement extends OpMode {
         telemetry.update();
 
         //SET MOTOR POWER USING THE PID OUTPUT
-//        drive.RF.setPower(-Pivot + (Vertical - Horizontal));
-//        drive.RB.setPower((-Pivot*1.4) + (Vertical + (Horizontal*1.3)));
-//        drive.LF.setPower(Pivot + (Vertical + Horizontal));
-//        drive.LB.setPower((Pivot*1.4) + (Vertical - (Horizontal*1.3)));
+//        drive.RF.setPower(-Pivot + (Vertical + Horizontal));
+//        drive.RB.setPower((-Pivot*1.4) + (Vertical - (Horizontal*1.3)));
+//        drive.LF.setPower(Pivot + (Vertical - Horizontal));
+//        drive.LB.setPower((Pivot*1.4) + (Vertical + (Horizontal*1.3)));
 
     }
 
