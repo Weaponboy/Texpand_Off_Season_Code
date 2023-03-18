@@ -34,7 +34,7 @@ public class DeadWheelsSample extends LinearOpMode {
     // The lateral distance between the left and right odometers
     // is called the trackwidth. This is very important for
     // determining angle for turning approximations
-    public static final double TRACKWIDTH = 36.2  ;
+    public static final double TRACKWIDTH = 36.32;
 
     //Telemetry for dashboard
     FtcDashboard dashboard = FtcDashboard.getInstance();
@@ -56,6 +56,7 @@ public class DeadWheelsSample extends LinearOpMode {
     private double vertical;
     private double horizontal;
     private double pivot;
+
     private double Distance_to_travel;
     Drivetrain drive = new Drivetrain();
     public BNO055IMU imu = null;      // Control/Expansion Hub IMU
@@ -123,36 +124,44 @@ public class DeadWheelsSample extends LinearOpMode {
         odometry.updatePose();
         telemetry.addData("Robot Position", imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
         telemetry.update();
+
         waitForStart();
 
-        drive.TurnToHeading(-90,0.3);
+//        drive.TurnToHeading(-90,0.3);
+//
+//        for (int i = 0;  i < 300; i++){
+//            telemetry.addData("Robot Position", imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
+//            telemetry.update();
+//            try {
+//                Thread.sleep(10);
+//            } catch (Exception e) {
+//                System.out.println(e.getMessage());
+//            }
+//        }
+//        drive.TurnToHeading(-90,0.3);
+//
+//        for (int i = 0;  i < 300; i++){
+//            telemetry.addData("Robot Position", imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
+//            telemetry.update();
+//            try {
+//                Thread.sleep(10);
+//            } catch (Exception e) {
+//                System.out.println(e.getMessage());
+//            }
+//        }
+//        TurnOdometry(-90,0.3);
 
-        for (int i = 0;  i < 300; i++){
-            telemetry.addData("Robot Position", imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
-            telemetry.update();
-            try {
-                Thread.sleep(10);
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
-        }
-        drive.TurnToHeading(-90,0.3);
-
-        for (int i = 0;  i < 300; i++){
-            telemetry.addData("Robot Position", imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
-            telemetry.update();
-            try {
-                Thread.sleep(10);
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
-        }
-        drive.TurnToHeading(-90,0.3);
+        TurnOdometry(90, 0.5);
 
         while (opModeIsActive() && !isStopRequested()) {
             // control loop
-            odometry.updatePose(); // update the position
-            telemetry.addData("Robot Position", imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
+            odometry.updatePose();// update the position
+
+            telemetry.addData("Left odo", leftOdometer.getPosition());
+            telemetry.addData("Right odo", rightOdometer.getPosition());
+            telemetry.addData("Robot Position", Math.toDegrees(getheading()));
+            telemetry.addData("Robot Position Y", getYpos());
+            telemetry.addData("Robot Position X", getXpos());
             telemetry.update();
 
 
@@ -197,6 +206,7 @@ public class DeadWheelsSample extends LinearOpMode {
             //Get bot positions
             CurrentXPos = getYpos();
             CurrentYPos = getXpos();
+
             StartingHeading = Math.toDegrees(getheading());
 
             //get converted heading
@@ -217,8 +227,6 @@ public class DeadWheelsSample extends LinearOpMode {
 
             Vertical = Ydist/ResultantDist;
             Horizontal = Xdist/ResultantDist;
-
-
 
 
             telemetry.addData("Xdist", Xdist);
@@ -825,9 +833,6 @@ public class DeadWheelsSample extends LinearOpMode {
 
         double StartingX = getXpos();
 
-
-
-
         // Set the motors to run to the target position
         drive.RF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         drive.RB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -841,15 +846,15 @@ public class DeadWheelsSample extends LinearOpMode {
 
             if (Math.toDegrees(getheading()) < TargetHeading){
                 //turn clockwise
-                drive.RF.setPower(-1.2*power);
+                drive.RF.setPower(-1.4*power);
                 drive.RB.setPower(-power);
-                drive.LF.setPower(1.2*power);
+                drive.LF.setPower(1.4*power);
                 drive.LB.setPower(power);
             }else if (Math.toDegrees(getheading()) > TargetHeading){
                 //turn anti-clockwise
-                drive.RF.setPower(1.2*power);
+                drive.RF.setPower(1.4*power);
                 drive.RB.setPower(power);
-                drive.LF.setPower(-1.2*power);
+                drive.LF.setPower(-1.4*power);
                 drive.LB.setPower(-power);
             }else {
                 drive.RF.setPower(0);
@@ -865,23 +870,25 @@ public class DeadWheelsSample extends LinearOpMode {
         drive.RB.setPower(0);
         drive.LF.setPower(0);
         drive.LB.setPower(0);
-        power = 0.10;
+        power = 0.14;
+
         odometry.updatePose();
+
         while (Math.toDegrees(getheading()) < TargetHeading - 0.25 || Math.toDegrees(getheading()) > TargetHeading + 0.25){
 
             odometry.updatePose();
 
             if (Math.toDegrees(getheading()) < TargetHeading){
                 //turn clockwise
-                drive.RF.setPower(-1.2*power);
+                drive.RF.setPower(-1.4*power);
                 drive.RB.setPower(-power);
-                drive.LF.setPower(1.2*power);
+                drive.LF.setPower(1.4*power);
                 drive.LB.setPower(power);
             }else if (Math.toDegrees(getheading()) > TargetHeading){
                 //turn anti-clockwise
-                drive.RF.setPower(1.2*power);
+                drive.RF.setPower(1.4*power);
                 drive.RB.setPower(power);
-                drive.LF.setPower(-1.2*power);
+                drive.LF.setPower(-1.4*power);
                 drive.LB.setPower(-power);
             }else {
                 drive.RF.setPower(0);

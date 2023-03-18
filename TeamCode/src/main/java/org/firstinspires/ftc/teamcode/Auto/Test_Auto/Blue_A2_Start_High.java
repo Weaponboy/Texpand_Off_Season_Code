@@ -214,7 +214,7 @@ public class Blue_A2_Start_High extends LinearOpMode {
             public void onOpened() {
                 Texpandcamera.getExposureControl().setMode(ExposureControl.Mode.Manual);
 
-                Texpandcamera.getExposureControl().setExposure(20, TimeUnit.MILLISECONDS);
+                Texpandcamera.getExposureControl().setExposure(25, TimeUnit.MILLISECONDS);
 
                 Texpandcamera.getGainControl().setGain(50);
 
@@ -242,7 +242,7 @@ public class Blue_A2_Start_High extends LinearOpMode {
             public void onOpened() {
                 Frontcam.getExposureControl().setMode(ExposureControl.Mode.Manual);
 
-                Frontcam.getExposureControl().setExposure(20, TimeUnit.MILLISECONDS);
+                Frontcam.getExposureControl().setExposure(25, TimeUnit.MILLISECONDS);
 
                 Frontcam.getGainControl().setGain(50);
 
@@ -371,12 +371,11 @@ public class Blue_A2_Start_High extends LinearOpMode {
 
         } else if (tagOfInterest.id == MIDDLE) {
             //Position 2
+            Texpandcamera.setPipeline(Pole);
 
             Reverse_To_Destack();
 
             Base_Gripper.setPosition(0.4);
-
-            DropPreLoad();
 
             Destack_3();
 
@@ -495,17 +494,21 @@ public class Blue_A2_Start_High extends LinearOpMode {
 
     public void Reverse_To_Destack() {
 
-        drive.DriveDistanceRamp(-131, 0.7);
+        drive.DriveDistanceRamp(-128, 0.7);
 
         Base_Pivot.setPosition(0.85);
 
         Top_Pivot.setPosition(0.4);
 
+        drive.TurnToHeadingFast(50, 1);
+
+        PoleAlignment();
+
+        DropPreLoad();
+
         drive.TurnToHeadingFast(90, 0.8);
 
         drive.DriveDistanceRamp(10, 0.2);
-
-        drive.TurnToHeadingFast(42, 0.8);
 
         drive.ResetEncoders();
     }
@@ -597,7 +600,6 @@ public class Blue_A2_Start_High extends LinearOpMode {
 
         Extend.setPower(-1);
 
-
         conefound = sensorRange.getDistance(DistanceUnit.MM) < 60;
 
         //extend till we find a cone or get to the slides limit
@@ -650,7 +652,7 @@ public class Blue_A2_Start_High extends LinearOpMode {
 
             executor.submit(() -> {
                 if(reverse){
-                    drive.TurnToHeadingFast(48, 1);
+                    drive.TurnToHeadingFast(55, 1);
                 }
             });
 
@@ -787,9 +789,7 @@ public class Blue_A2_Start_High extends LinearOpMode {
 
                         Top_Pivot.setPosition(0.42);
 
-                        if(Right_Slide.getCurrentPosition() > 1650){
-                            Top_Pivot.setPosition(0);
-                        }
+
                     }
                     Right_Slide.setPower(0);
                     Left_Slide.setPower(0);
@@ -798,6 +798,16 @@ public class Blue_A2_Start_High extends LinearOpMode {
                     if(Degrees_To_Turn != 0) {
                         drive.TurnToHeading(drive.yawAngle.firstAngle + Degrees_To_Turn , 0.3);
                         Degrees_To_Turn = 0;
+                    }
+
+                    try {
+                        Thread.sleep(100);
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+
+                    if(Right_Slide.getCurrentPosition() > 1650){
+                        Top_Pivot.setPosition(0);
                     }
 
                     Top_Pivot.setPosition(0);
@@ -876,6 +886,31 @@ public class Blue_A2_Start_High extends LinearOpMode {
 
     }
 
+    public void PoleAlignment (){
+        for (int i = 1; i <= 50; i++) {
+            rectPositionFromLeft = Pole.TargetHighrectX;
+        }
+
+        if (rectPositionFromLeft > -1) {
+            Degrees_To_Turn = rectPositionFromLeft - CenterOfScreen;
+
+            Degrees_To_Turn = Degrees_To_Turn / 20;
+
+            yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        }
+
+        try {
+            Thread.sleep(200);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        if(Degrees_To_Turn != 0) {
+            drive.TurnToHeading(yawAngle.firstAngle + Degrees_To_Turn, 0.3);
+            Degrees_To_Turn = 0;
+        }
+    }
+
     public void coneAlignmentStrafe(){
 
         Base_Pivot.setPosition(0.7);
@@ -910,6 +945,7 @@ public class Blue_A2_Start_High extends LinearOpMode {
         drive.RB.setPower(0);
         drive.LF.setPower(0);
         drive.LB.setPower(0);
+
         Base_Pivot.setPosition(0.05);
     }
 

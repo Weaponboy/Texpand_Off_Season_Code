@@ -29,7 +29,7 @@ public class OldDeadwheels extends LinearOpMode {
     // The lateral distance between the left and right odometers
     // is called the trackwidth. This is very important for
     // determining angle for turning approximations
-    public static final double TRACKWIDTH = 36.2  ;
+    public static final double TRACKWIDTH = 36.32;
 
     //Telemetry for dashboard
     FtcDashboard dashboard = FtcDashboard.getInstance();
@@ -104,13 +104,16 @@ public class OldDeadwheels extends LinearOpMode {
 
         waitForStart();
 
-        StrafeOdometry(50,0.6);
 
         while (opModeIsActive() && !isStopRequested()) {
             // control loop
             odometry.updatePose(); // update the position
 
             telemetry.addData("Robot Position", odometry.getPose());
+            telemetry.addData("Robot Position", Math.toDegrees(getheading()));
+            telemetry.addData("Robot Position Y", getYpos());
+            telemetry.addData("Robot Position X", getXpos());
+            telemetry.update();
             telemetry.update();
 
         }

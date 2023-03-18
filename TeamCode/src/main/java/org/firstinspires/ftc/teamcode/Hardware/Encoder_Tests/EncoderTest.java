@@ -8,7 +8,6 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 @Autonomous
-@Disabled
 public class EncoderTest extends LinearOpMode {
     // Declare variables for the motors
     private DcMotor RF;

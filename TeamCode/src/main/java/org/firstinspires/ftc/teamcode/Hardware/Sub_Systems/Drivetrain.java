@@ -169,6 +169,7 @@ public class Drivetrain {
     }
 
     public void TurnToHeading(double Heading,double power){
+
         RF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         RB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         LF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);

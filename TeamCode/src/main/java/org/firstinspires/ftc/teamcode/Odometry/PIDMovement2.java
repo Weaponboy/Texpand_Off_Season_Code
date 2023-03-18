@@ -35,7 +35,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Drivetrain;
 
 @TeleOp
-public class PIDMovement extends OpMode {
+public class PIDMovement2 extends OpMode {
 
     PIDFController drivePID;
     PIDFController strafePID;
@@ -43,15 +43,10 @@ public class PIDMovement extends OpMode {
 
     double Xdist = 0;
     double Ydist = 0;
-
-    double rotdist = 0;
     double RRXdist = 0;
     double RRYdist = 0;
     double Horizontal = 0;
     double Vertical = 0;
-
-    double Horizontal2 = 0;
-    double Vertical2 = 0;
 
     double ConvertedHeading = 0;
     double Pivot = 0;
@@ -90,20 +85,20 @@ public class PIDMovement extends OpMode {
     @Config
     public static class MovePIDTuning{
 
-        public static double driveP = 0.1;
-        public static double driveD = 0.008;
-        public static double driveF = 0;
+        public static double driveP = 0.05;
+        public static double driveD = 0;
+        public static double driveF = 0.4;
 
 
-        public static double strafeP = 0.1;
-        public static double strafeD = 0.005;
-        public static double strafeF = 0;
+        public static double strafeP = 0.06;
+        public static double strafeD = 0;
+        public static double strafeF = 0.4;
 
-        public static double rotationP = 0.02;
+        public static double rotationP = 0;
         public static double rotationD = 0;
         public static double rotationF = 0;
 
-        public static double targetX = 10, targetY = 10, targetRot = 0;
+        public static double targetX, targetY = 10, targetRot = 0;
 
     }
 
@@ -167,10 +162,10 @@ public class PIDMovement extends OpMode {
         odometry.updatePose();
 
         //GET CURRENT X
-        CurrentXPos = getXpos();
+        CurrentXPos = getYpos();
 
         //GET CURRENT Y
-        CurrentYPos = getYpos();
+        CurrentYPos = getXpos();
 
         gyro.update();
 
@@ -179,8 +174,6 @@ public class PIDMovement extends OpMode {
 
         //GET START HEADING WITH ODOMETRY
         StartingHeading = Math.toDegrees(getheading());
-
-        rotdist = (targetRot - StartingHeadinggyro);
 
         //TELEMETRY FOR DASHBOARD
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
@@ -206,31 +199,29 @@ public class PIDMovement extends OpMode {
         }
 
         //CONVERT TARGET TO ROBOT RELATIVE TARGET
-        RRYdist = Xdist*Math.cos(Math.toRadians(360-ConvertedHeading)) - Ydist*Math.sin(Math.toRadians(360-ConvertedHeading));
-
-        RRXdist = Xdist*Math.sin(Math.toRadians(360-ConvertedHeading)) + Ydist*Math.cos(Math.toRadians(360-ConvertedHeading));
+        RRXdist = Xdist*Math.cos(Math.toRadians(360-ConvertedHeading)) + Ydist*Math.sin(Math.toRadians(360-ConvertedHeading));
+        RRYdist = Xdist*Math.sin(Math.toRadians(360-ConvertedHeading)) - Ydist*Math.cos(Math.toRadians(360-ConvertedHeading));
 
         //SET DRIVE CONSTANTS TO THE PIDF CONTROL LOOPS
-        Vertical2 = drivePID.calculate(RRXdist);
-        Horizontal2 = strafePID.calculate(RRYdist);
-        Pivot = PivotPID.calculate(rotdist);
+        Vertical = drivePID.calculate(RRYdist);
+        Horizontal = strafePID.calculate(RRXdist);
+        Pivot = PivotPID.calculate(targetRot - StartingHeadinggyro);
 
-        telemetry.addData("Ydist h", RRYdist);
-        telemetry.addData("Xdist v", RRXdist);
-        telemetry.addData("vertical power", Vertical2);
-        telemetry.addData("horizontal power", Horizontal2);
-//        telemetry.addData("gyro heading", StartingHeadinggyro);
-//        telemetry.addData("starting heading", StartingHeading);
+        telemetry.addData("vertical power", Vertical);
+        telemetry.addData("horizontal power", Horizontal);
+        telemetry.addData("f pivot", rotationF);
+        telemetry.addData("gyro heading", StartingHeadinggyro);
+        telemetry.addData("odo heading", StartingHeading);
         telemetry.addData("converted heading", ConvertedHeading);
         telemetry.addData("X", getXpos());
         telemetry.addData("Y", getYpos());
         telemetry.update();
 
         //SET MOTOR POWER USING THE PID OUTPUT
-//        drive.RF.setPower(-Pivot + (Vertical - Horizontal));
-//        drive.RB.setPower((-Pivot*1.4) + (Vertical + (Horizontal*1.3)));
-//        drive.LF.setPower(Pivot + (Vertical + Horizontal));
-//        drive.LB.setPower((Pivot*1.4) + (Vertical - (Horizontal*1.3)));
+        drive.RF.setPower(-Pivot + (Vertical - Horizontal));
+        drive.RB.setPower((-Pivot*1.4) + (Vertical + (Horizontal*1.3)));
+        drive.LF.setPower(Pivot + (Vertical + Horizontal));
+        drive.LB.setPower((Pivot*1.4) + (Vertical - (Horizontal*1.3)));
 
     }
 
