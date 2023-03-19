@@ -45,6 +45,7 @@ public class PIDMovement extends OpMode {
     double Ydist = 0;
 
     double rotdist = 0;
+
     double RRXdist = 0;
     double RRYdist = 0;
     double Horizontal = 0;
@@ -99,11 +100,11 @@ public class PIDMovement extends OpMode {
         public static double strafeD = 0.005;
         public static double strafeF = 0;
 
-        public static double rotationP = 0.02;
-        public static double rotationD = 0;
+        public static double rotationP = 0.05;
+        public static double rotationD = 0.001;
         public static double rotationF = 0;
 
-        public static double targetX = 10, targetY = 5, targetRot = 0;
+        public static double targetX = 0, targetY = 0, targetRot = 90;
 
     }
 
@@ -180,8 +181,6 @@ public class PIDMovement extends OpMode {
         //GET START HEADING WITH ODOMETRY
         StartingHeading = Math.toDegrees(getheading());
 
-        rotdist = (targetRot - StartingHeadinggyro);
-
         //TELEMETRY FOR DASHBOARD
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -200,36 +199,44 @@ public class PIDMovement extends OpMode {
 
         //CONVERT HEADING FOR TRIG CALCS
         if(StartingHeading <= 0) {
-            ConvertedHeading = (0 - StartingHeading);
+            ConvertedHeading = (360 + StartingHeading);
         }else{
-            ConvertedHeading = (360 - StartingHeading);
+            ConvertedHeading = (0 + StartingHeading);
+        }
+
+        rotdist = (targetRot - ConvertedHeading);
+        if(rotdist < -180) {
+            rotdist = (360 + rotdist);
+        }else if (rotdist > 180){
+            rotdist = (rotdist - 360);
         }
 
         //CONVERT TARGET TO ROBOT RELATIVE TARGET
-        RRXdist = Xdist*Math.cos(Math.toRadians(360-ConvertedHeading)) + Ydist*Math.sin(Math.toRadians(360-ConvertedHeading));
-        RRYdist = Xdist*Math.sin(Math.toRadians(360-ConvertedHeading)) - Ydist*Math.cos(Math.toRadians(360-ConvertedHeading));
+        RRXdist = Xdist*Math.cos(Math.toRadians(360-ConvertedHeading)) - Ydist*Math.sin(Math.toRadians(360-ConvertedHeading));
+
+        RRYdist = Xdist*Math.sin(Math.toRadians(360-ConvertedHeading)) + Ydist*Math.cos(Math.toRadians(360-ConvertedHeading));
 
         //SET DRIVE CONSTANTS TO THE PIDF CONTROL LOOPS
-        Vertical2 = drivePID.calculate(RRXdist);
-        Horizontal2 = strafePID.calculate(RRYdist);
-        Pivot = PivotPID.calculate(rotdist);
+        Vertical = drivePID.calculate(-RRXdist);
+        Horizontal = strafePID.calculate(-RRYdist);
+        Pivot = PivotPID.calculate(-rotdist);
 
         telemetry.addData("Ydist h", RRYdist);
         telemetry.addData("Xdist v", RRXdist);
-        telemetry.addData("vertical power", Vertical2);
-        telemetry.addData("horizontal power", Horizontal2);
-//        telemetry.addData("gyro heading", StartingHeadinggyro);
-//        telemetry.addData("starting heading", StartingHeading);
+        telemetry.addData("vertical power", Vertical);
+        telemetry.addData("horizontal power", Horizontal);
+        telemetry.addData("gyro heading", StartingHeadinggyro);
+        telemetry.addData("Pivot", Pivot);
         telemetry.addData("converted heading", ConvertedHeading);
         telemetry.addData("X", getXpos());
         telemetry.addData("Y", getYpos());
         telemetry.update();
 
         //SET MOTOR POWER USING THE PID OUTPUT
-//        drive.RF.setPower(-Pivot + (Vertical + Horizontal));
-//        drive.RB.setPower((-Pivot*1.4) + (Vertical - (Horizontal*1.3)));
-//        drive.LF.setPower(Pivot + (Vertical - Horizontal));
-//        drive.LB.setPower((Pivot*1.4) + (Vertical + (Horizontal*1.3)));
+        drive.RF.setPower(-Pivot + (Vertical + Horizontal));
+        drive.RB.setPower((-Pivot*1.4) + (Vertical - (Horizontal*1.3)));
+        drive.LF.setPower(Pivot + (Vertical - Horizontal));
+        drive.LB.setPower((Pivot*1.4) + (Vertical + (Horizontal*1.3)));
 
     }
 
