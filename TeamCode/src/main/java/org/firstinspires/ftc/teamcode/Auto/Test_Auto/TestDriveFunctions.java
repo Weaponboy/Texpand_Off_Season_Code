@@ -41,7 +41,7 @@ public class TestDriveFunctions extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        TestTrain.init(hardwareMap);
+        TestTrain.init(hardwareMap, 1);
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;

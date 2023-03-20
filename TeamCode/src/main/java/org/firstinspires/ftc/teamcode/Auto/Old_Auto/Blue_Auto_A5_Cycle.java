@@ -207,7 +207,7 @@ public class Blue_Auto_A5_Cycle extends LinearOpMode {
 
         telemetry.setMsTransmissionInterval(50);
 
-        drive.init(hardwareMap);
+        drive.init(hardwareMap, 1);
 
         /*
          * The INIT-loop:
@@ -412,7 +412,7 @@ public class Blue_Auto_A5_Cycle extends LinearOpMode {
         Base_Pivot.setPosition(0.72);
         Top_Pivot.setPosition(0.4);
 
-        drive.init(hardwareMap);
+        drive.init(hardwareMap, 1);
     }
 
     public void Drive_To_Pos_1() {

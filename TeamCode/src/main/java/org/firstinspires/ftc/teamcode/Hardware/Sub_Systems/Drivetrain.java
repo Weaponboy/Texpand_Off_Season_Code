@@ -167,6 +167,74 @@ public class Drivetrain {
         LB.setPower(0);
 
     }
+    public void TurnToHeadingNoEncoders(double Heading,double power){
+
+        RF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        RB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        LF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        LB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        Current_Heading = yawAngle.firstAngle;
+
+        while (Math.abs(Current_Heading - Heading) > 30) {
+
+            if (Current_Heading > Heading) {
+                LF.setPower(power);
+                LB.setPower(power);
+                RB.setPower(-power);
+                RF.setPower(-power);
+            } else if (Current_Heading < Heading) {
+                LF.setPower(-power);
+                LB.setPower(-power);
+                RB.setPower(power);
+                RF.setPower(power);
+            } else {
+//                RB.setPower(0);
+//                RF.setPower(0);
+//                LF.setPower(0);
+//                LB.setPower(0);
+            }
+
+            yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            Current_Heading = yawAngle.firstAngle;
+        }
+//        RF.setPower(0);
+//        LF.setPower(0);
+//        RB.setPower(0);
+//        LB.setPower(0);
+
+        yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        Current_Heading = yawAngle.firstAngle;
+
+        while (Math.abs(Current_Heading - Heading) > 0.1) {
+
+            if (Current_Heading > (Heading)) {
+                LF.setPower(0.2);
+                LB.setPower(0.2);
+                RB.setPower(-0.2);
+                RF.setPower(-0.2);
+            } else if (Current_Heading < (Heading)) {
+                LF.setPower(-0.2);
+                LB.setPower(-0.2);
+                RB.setPower(0.2);
+                RF.setPower(0.2);
+            } else {
+                RB.setPower(0);
+                RF.setPower(0);
+                LF.setPower(0);
+                LB.setPower(0);
+            }
+            yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            Current_Heading = yawAngle.firstAngle;
+        }
+        RF.setPower(0);
+        LF.setPower(0);
+        RB.setPower(0);
+        LB.setPower(0);
+        yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        Current_Heading = yawAngle.firstAngle;
+    }
 
 
 
@@ -1077,16 +1145,16 @@ public class Drivetrain {
 
     }
 
-    public void init(HardwareMap hwMap) {
+    public void init(HardwareMap hwMap, double IMU) {
 
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.calibrationDataFile = "BNO055IMUCalibration.json";
-        parameters.loggingEnabled = true;
-        parameters.loggingTag = "IMU";
-
-
+        if (IMU == 1){
+            BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+            parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+            parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+            parameters.calibrationDataFile = "BNO055IMUCalibration.json";
+            parameters.loggingEnabled = true;
+            parameters.loggingTag = "IMU";
+        }
 
         hardwareMap = hwMap;
 
@@ -1097,8 +1165,12 @@ public class Drivetrain {
         RB = hardwareMap.get(DcMotor.class, "RB");
         LB = hardwareMap.get(DcMotor.class, "LB");
 
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
-        imu.initialize(parameters);
+        if (IMU == 1){
+            imu = hardwareMap.get(BNO055IMU.class, "imu");
+            BNO055IMU.Parameters parameters = null;
+            imu.initialize(parameters);
+        }
+
         RF.setDirection(DcMotorSimple.Direction.FORWARD);
         LF.setDirection(DcMotorSimple.Direction.REVERSE);
         RB.setDirection(DcMotorSimple.Direction.FORWARD);

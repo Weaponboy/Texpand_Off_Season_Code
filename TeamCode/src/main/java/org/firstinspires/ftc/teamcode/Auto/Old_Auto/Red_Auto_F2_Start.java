@@ -137,7 +137,7 @@ public class Red_Auto_F2_Start extends LinearOpMode {
 
         telemetry.setMsTransmissionInterval(50);
 
-        drive.init(hardwareMap);
+        drive.init(hardwareMap, 1);
 
         /*
          * The INIT-loop:

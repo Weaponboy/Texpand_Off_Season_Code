@@ -105,7 +105,7 @@ public class ChatGPT_PID extends LinearOpMode {
 
         odometry.update(0, 0, 0);
 
-        drive.init(hardwareMap);
+        drive.init(hardwareMap, 1);
 
         odometry.updatePose();
 

@@ -34,7 +34,7 @@ public class Cone_Stack_Vision_Red extends OpMode {
 
     public void init() {
 
-        drive.init(hardwareMap);
+        drive.init(hardwareMap, 1);
 
 //        drive.RB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 //        drive.RF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -66,7 +66,7 @@ public class Cone_Stack_Vision_Red extends OpMode {
     @Override
     public void init_loop() {
 
-        drive.init(hardwareMap);
+        drive.init(hardwareMap, 1);
 
         rectPositionFromLeft = colin.getRectX();
 

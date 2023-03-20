@@ -110,7 +110,7 @@ public class Blue_Cycle_Auto_A2_Starting_Position extends LinearOpMode {
 
         telemetry.setMsTransmissionInterval(50);
 
-        drive.init(hardwareMap);
+        drive.init(hardwareMap, 1);
         top.init(hardwareMap);
         slide.init(hardwareMap, 1);
         bot.init(hardwareMap);

@@ -38,7 +38,7 @@ public class PoleAlignment extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        Drive.init(hardwareMap);
+        Drive.init(hardwareMap, 1);
 
         RF = hardwareMap.get(DcMotor.class, "RF");
         LF = hardwareMap.get(DcMotor.class, "LF");

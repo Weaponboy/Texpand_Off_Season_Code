@@ -70,7 +70,7 @@ public class Pole_Vision extends OpMode {
 
     public void init() {
 
-        drive.init(hardwareMap);
+        drive.init(hardwareMap, 1);
 
 //        drive.RB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 //        drive.RF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -131,7 +131,7 @@ public class Pole_Vision extends OpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         CenterOfScreen = 320;
-        drive.init(hardwareMap);
+        drive.init(hardwareMap, 1);
 
 
         rectPositionFromLeft = Pole.TargetHighrectX;

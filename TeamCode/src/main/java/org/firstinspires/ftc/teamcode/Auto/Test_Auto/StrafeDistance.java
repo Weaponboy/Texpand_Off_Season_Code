@@ -18,7 +18,7 @@ public class StrafeDistance extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-    drive.init(hardwareMap);
+    drive.init(hardwareMap, 1);
 
     waitForStart();
 

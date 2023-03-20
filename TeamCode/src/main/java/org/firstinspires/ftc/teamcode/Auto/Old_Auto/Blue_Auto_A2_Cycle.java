@@ -207,7 +207,7 @@ public class Blue_Auto_A2_Cycle extends LinearOpMode {
         odometry.updatePose(new Pose2d(0, 0, new Rotation2d()));
 
         odometry.update(0, 0, 0);
-        drive.init(hardwareMap);
+        drive.init(hardwareMap, 1);
         odometry.updatePose(); // update the position
 
 
@@ -414,7 +414,7 @@ public class Blue_Auto_A2_Cycle extends LinearOpMode {
         Base_Pivot.setPosition(0.72);
         Top_Pivot.setPosition(0.4);
 
-        drive.init(hardwareMap);
+        drive.init(hardwareMap, 1);
     }
 
     public void Drive_To_Pos_1() {

@@ -73,7 +73,7 @@ public class Cone_Stack_Vision extends OpMode {
     public static int Exposure = 8;
     public void init() {
 
-        drive.init(hardwareMap);
+        drive.init(hardwareMap, 1);
 
         Cone_Pipeline = new Red_Cone_Pipe();
 
@@ -142,7 +142,7 @@ public class Cone_Stack_Vision extends OpMode {
 
         odometry.update(0, 0, 0);
 
-        drive.init(hardwareMap);
+        drive.init(hardwareMap, 1);
 
 
     }
@@ -151,7 +151,7 @@ public class Cone_Stack_Vision extends OpMode {
     @Override
     public void init_loop() {
 
-        drive.init(hardwareMap);
+        drive.init(hardwareMap, 1);
 
 //        //Calculate distance to drive to aline
         rectPositionFromLeft = Cone_Pipeline.getRectX();

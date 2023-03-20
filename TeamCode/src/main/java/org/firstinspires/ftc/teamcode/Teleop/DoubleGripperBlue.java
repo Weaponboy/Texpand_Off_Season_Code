@@ -265,7 +265,7 @@ public class DoubleGripperBlue extends OpMode {
     @Override
     public void init() {
 
-        drive.init(hardwareMap);
+        drive.init(hardwareMap, 1);
 
         top.init(hardwareMap);
 

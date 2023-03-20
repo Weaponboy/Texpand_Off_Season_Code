@@ -45,6 +45,8 @@ public class Bottom_Gripper_Assembly {
         Destacker_Left.setDirection(Servo.Direction.REVERSE);
 
         Base_Gripper.setPosition(0.4);
+
+        Base_Pivot.setPosition(0.8);
     }
 
     public void destacker1(){

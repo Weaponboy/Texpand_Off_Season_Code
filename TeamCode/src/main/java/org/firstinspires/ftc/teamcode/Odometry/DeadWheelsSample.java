@@ -117,7 +117,7 @@ public class DeadWheelsSample extends LinearOpMode {
 
         odometry.update(0, 0, 0);
 
-        drive.init(hardwareMap);
+        drive.init(hardwareMap, 1);
         odometry.updatePose(new Pose2d(0, 0, new Rotation2d()));
 
         odometry.update(0, 0, 0);

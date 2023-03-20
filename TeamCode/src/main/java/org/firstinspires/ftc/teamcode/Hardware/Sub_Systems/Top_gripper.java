@@ -31,8 +31,7 @@ public class Top_gripper {
         Top_Gripper.setDirection(Servo.Direction.FORWARD);
         Top_Pivot.setDirection(Servo.Direction.REVERSE);
 
-        Top_Pivot.setPosition(0.22);
-        Top_Gripper.setPosition(0.3);
+        Top_Gripper.setPosition(0);
     }
 
 }

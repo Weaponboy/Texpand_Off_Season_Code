@@ -1362,7 +1362,7 @@ public class DoubleGripperLatestThreads extends OpMode {
 
         runtime.reset();
 
-        drive.init(hardwareMap);
+        drive.init(hardwareMap, 1);
 
         Pole = new Pole_Pipe();
 

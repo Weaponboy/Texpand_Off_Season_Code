@@ -1440,7 +1440,7 @@ public class DoubleGripperRedOld extends OpMode {
 
         Base_Gripper.setPosition(0.4);
 
-        drive.init(hardwareMap);
+        drive.init(hardwareMap, 1);
 
         Back_Distance.resetDeviceConfigurationForOpMode();
 

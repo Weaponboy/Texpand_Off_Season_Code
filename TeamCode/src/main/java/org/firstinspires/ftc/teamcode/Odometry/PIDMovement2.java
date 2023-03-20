@@ -9,9 +9,9 @@ import static org.firstinspires.ftc.teamcode.Odometry.PIDMovement.MovePIDTuning.
 import static org.firstinspires.ftc.teamcode.Odometry.PIDMovement.MovePIDTuning.strafeD;
 import static org.firstinspires.ftc.teamcode.Odometry.PIDMovement.MovePIDTuning.strafeF;
 import static org.firstinspires.ftc.teamcode.Odometry.PIDMovement.MovePIDTuning.strafeP;
-import static org.firstinspires.ftc.teamcode.Odometry.PIDMovement.MovePIDTuning.targetRot;
-import static org.firstinspires.ftc.teamcode.Odometry.PIDMovement.MovePIDTuning.targetX;
-import static org.firstinspires.ftc.teamcode.Odometry.PIDMovement.MovePIDTuning.targetY;
+import static org.firstinspires.ftc.teamcode.Odometry.PIDMovement.targetRot;
+import static org.firstinspires.ftc.teamcode.Odometry.PIDMovement.targetX;
+import static org.firstinspires.ftc.teamcode.Odometry.PIDMovement.targetY;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -118,7 +118,7 @@ public class PIDMovement2 extends OpMode {
 
         gyro = new Gyro("imu", 0);
 
-        drive.init(hardwareMap);
+        drive.init(hardwareMap, 1);
 
         driveTrain = new MecanumDrive(RB, RF, LB, LF);
 

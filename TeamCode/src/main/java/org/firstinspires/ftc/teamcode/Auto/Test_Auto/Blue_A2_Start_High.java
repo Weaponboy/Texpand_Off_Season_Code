@@ -181,7 +181,7 @@ public class Blue_A2_Start_High extends LinearOpMode {
 
         Extend.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        drive.init(hardwareMap);
+        drive.init(hardwareMap, 1);
 
         Cone_Pipeline = new Blue_Cone_Pipe();
 
@@ -201,7 +201,7 @@ public class Blue_A2_Start_High extends LinearOpMode {
 
         aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
 
-        drive.init(hardwareMap);
+        drive.init(hardwareMap, 1);
 
         Texpandcamera.setPipeline(aprilTagDetectionPipeline);
 
@@ -270,7 +270,7 @@ public class Blue_A2_Start_High extends LinearOpMode {
 
         telemetry.setMsTransmissionInterval(50);
 
-        drive.init(hardwareMap);
+        drive.init(hardwareMap, 1);
 
 
         while (!isStarted() && !isStopRequested()) {

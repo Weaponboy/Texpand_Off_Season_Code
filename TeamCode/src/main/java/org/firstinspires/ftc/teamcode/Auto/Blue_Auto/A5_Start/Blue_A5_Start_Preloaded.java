@@ -19,7 +19,7 @@
  * SOFTWARE.
  */
 
-package org.firstinspires.ftc.teamcode.Auto.Blue_Auto;
+package org.firstinspires.ftc.teamcode.Auto.Blue_Auto.A5_Start;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -136,7 +136,7 @@ public class Blue_A5_Start_Preloaded extends LinearOpMode {
 
         telemetry.setMsTransmissionInterval(50);
 
-        drive.init(hardwareMap);
+        drive.init(hardwareMap, 1);
 
 
         while (!isStarted() && !isStopRequested()) {

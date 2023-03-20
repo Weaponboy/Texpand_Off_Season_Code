@@ -9,9 +9,9 @@ import static org.firstinspires.ftc.teamcode.Odometry.PIDMovement.MovePIDTuning.
 import static org.firstinspires.ftc.teamcode.Odometry.PIDMovement.MovePIDTuning.strafeD;
 import static org.firstinspires.ftc.teamcode.Odometry.PIDMovement.MovePIDTuning.strafeF;
 import static org.firstinspires.ftc.teamcode.Odometry.PIDMovement.MovePIDTuning.strafeP;
-import static org.firstinspires.ftc.teamcode.Odometry.PIDMovement.MovePIDTuning.targetRot;
-import static org.firstinspires.ftc.teamcode.Odometry.PIDMovement.MovePIDTuning.targetX;
-import static org.firstinspires.ftc.teamcode.Odometry.PIDMovement.MovePIDTuning.targetY;
+import static org.firstinspires.ftc.teamcode.Odometry.PIDMovement.targetRot;
+import static org.firstinspires.ftc.teamcode.Odometry.PIDMovement.targetX;
+import static org.firstinspires.ftc.teamcode.Odometry.PIDMovement.targetY;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -104,9 +104,11 @@ public class PIDMovement extends OpMode {
         public static double rotationD = 0.001;
         public static double rotationF = 0;
 
-        public static double targetX = 0, targetY = 0, targetRot = 90;
+
 
     }
+
+    public static double targetX = 0, targetY = 0, targetRot = 0;
 
     @Override
     public void init() {
@@ -124,7 +126,7 @@ public class PIDMovement extends OpMode {
 
         gyro = new Gyro("imu", 0);
 
-        drive.init(hardwareMap);
+        drive.init(hardwareMap, 0);
 
         driveTrain = new MecanumDrive(RB, RF, LB, LF);
 
@@ -194,8 +196,8 @@ public class PIDMovement extends OpMode {
         PivotPID.setPIDF(rotationP, 0, rotationD, rotationF);
 
         //SET DISTANCE TO TRAVEL ERROR
-        Xdist = targetX - CurrentXPos;
-        Ydist = targetY - CurrentYPos;
+        Xdist = (targetX - CurrentXPos)*1.1;
+        Ydist = (targetY - CurrentYPos)*1.1;
 
         //CONVERT HEADING FOR TRIG CALCS
         if(StartingHeading <= 0) {
@@ -232,11 +234,11 @@ public class PIDMovement extends OpMode {
         telemetry.addData("Y", getYpos());
         telemetry.update();
 
-        //SET MOTOR POWER USING THE PID OUTPUT
-        drive.RF.setPower(-Pivot + (Vertical + Horizontal));
-        drive.RB.setPower((-Pivot*1.4) + (Vertical - (Horizontal*1.3)));
-        drive.LF.setPower(Pivot + (Vertical - Horizontal));
-        drive.LB.setPower((Pivot*1.4) + (Vertical + (Horizontal*1.3)));
+//        //SET MOTOR POWER USING THE PID OUTPUT
+//        drive.RF.setPower(-Pivot + (Vertical + Horizontal));
+//        drive.RB.setPower((-Pivot*1.4) + (Vertical - (Horizontal*1.3)));
+//        drive.LF.setPower(Pivot + (Vertical - Horizontal));
+//        drive.LB.setPower((Pivot*1.4) + (Vertical + (Horizontal*1.3)));
 
     }
 

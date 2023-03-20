@@ -136,7 +136,7 @@ public class Red_PARK_ONLY extends LinearOpMode {
 
         telemetry.setMsTransmissionInterval(50);
 
-        drive.init(hardwareMap);
+        drive.init(hardwareMap, 1);
 
         /*
          * The INIT-loop:

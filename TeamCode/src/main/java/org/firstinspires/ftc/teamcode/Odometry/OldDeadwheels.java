@@ -100,7 +100,7 @@ public class OldDeadwheels extends LinearOpMode {
 
         odometry.update(0, 0, 0);
 
-        drive.init(hardwareMap);
+        drive.init(hardwareMap, 1);
 
         waitForStart();
 

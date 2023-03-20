@@ -30,6 +30,7 @@ public class Slides{
     public Slides(Telemetry t){telemetry = t;}
     FtcDashboard dashboard = FtcDashboard.getInstance();
     Telemetry dashboardTelemetry = dashboard.getTelemetry();
+
     public OpenCvWebcam FrontWeb;
     public OpenCvWebcam BackWeb;
 
@@ -72,8 +73,6 @@ public class Slides{
 
         sensorRange = hardwareMap.get(DistanceSensor.class, "sensor_range");
 
-        sensorRange = hardwareMap.get(DistanceSensor.class, "sensor_range");
-
         Back_Distance = hardwareMap.get(DistanceSensor.class, "Back distance");
 
         Odo_raise = hardwareMap.get(DcMotor.class, "Odo_motor");
@@ -85,7 +84,9 @@ public class Slides{
 
         Extend = hardwareMap.get(DcMotor.class, "Extend");
 
-        Right_Slide.setDirection(DcMotorSimple.Direction.REVERSE);
+        Left_Slide.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        Extend.setDirection(DcMotorSimple.Direction.REVERSE);
 
         Odo_raise.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
@@ -104,92 +105,6 @@ public class Slides{
                 .build();
 
         Back_Distance.resetDeviceConfigurationForOpMode();
-
-        Pole = new Pole_Pipe();
-
-        Cone_Pipeline_Blue = new Blue_Cone_Pipe();
-
-        Cone_Pipeline_Red = new Red_Cone_Pipe();
-
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-
-        int[] viewportContainerIds = OpenCvCameraFactory.getInstance()
-                .splitLayoutForMultipleViewports(
-                        cameraMonitorViewId, //The container we're splitting
-                        2, //The number of sub-containers to create
-                        OpenCvCameraFactory.ViewportSplitMethod.VERTICALLY);
-
-        FrontWeb  = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), viewportContainerIds[0]);
-
-        BackWeb = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Backcam"), viewportContainerIds[1]);
-
-        FrontWeb.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-            @Override
-            public void onOpened() {
-
-                if (vision == 1){
-                    FrontWeb.setPipeline(Cone_Pipeline_Blue);
-                } else if (vision == 2) {
-                    FrontWeb.setPipeline(Cone_Pipeline_Red);
-                }
-
-                FrontWeb.getExposureControl().setMode(ExposureControl.Mode.Manual);
-
-                FrontWeb.getExposureControl().setExposure(8, TimeUnit.MILLISECONDS);
-
-                FrontWeb.getGainControl().setGain(1);
-
-                FocusControl.Mode focusmode = FocusControl.Mode.Fixed;
-
-                FrontWeb.getFocusControl().setMode(focusmode);
-
-                if (focusmode == FocusControl.Mode.Fixed){
-                    FrontWeb.getFocusControl().setFocusLength(450);
-                }
-
-                FrontWeb.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
-            }
-            @Override
-            public void onError(int errorCode) { }
-        });
-        if (vision == 1){
-            FrontWeb.setPipeline(Cone_Pipeline_Blue);
-        } else if (vision == 2) {
-            FrontWeb.setPipeline(Cone_Pipeline_Red);
-        }
-
-
-        BackWeb.setPipeline(Pole);
-        BackWeb.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-            @Override
-            public void onOpened() {
-
-
-                BackWeb.getExposureControl().setMode(ExposureControl.Mode.Manual);
-
-                BackWeb.getExposureControl().setExposure(8, TimeUnit.MILLISECONDS);
-
-                BackWeb.getGainControl().setGain(1);
-
-                FocusControl.Mode focusmode = FocusControl.Mode.Fixed;
-
-                BackWeb.getFocusControl().setMode(focusmode);
-
-                if (focusmode == FocusControl.Mode.Fixed){
-                    BackWeb.getFocusControl().setFocusLength(450);
-                }
-
-                BackWeb.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
-            }
-            @Override
-            public void onError(int errorCode) { }
-        });
-        BackWeb.setPipeline(Pole);
-        FtcDashboard.getInstance().startCameraStream(BackWeb,30);
-        // Set the pipeline depending on id
-
-
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
     }
 

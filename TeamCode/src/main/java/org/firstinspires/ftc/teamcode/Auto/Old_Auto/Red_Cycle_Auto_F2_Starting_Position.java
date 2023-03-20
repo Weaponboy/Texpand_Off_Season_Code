@@ -107,7 +107,7 @@ public class Red_Cycle_Auto_F2_Starting_Position extends LinearOpMode {
 //        Base_Pivot.setPosition(0);
         Top_Pivot.setPosition(0.4);
 
-        drive.init(hardwareMap);
+        drive.init(hardwareMap, 1);
 
 
         waitForStart();
