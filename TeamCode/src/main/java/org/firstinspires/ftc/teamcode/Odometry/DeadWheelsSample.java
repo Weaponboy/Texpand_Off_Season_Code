@@ -150,8 +150,8 @@ public class DeadWheelsSample extends LinearOpMode {
 //            }
 //        }
 //        TurnOdometry(-90,0.3);
-
-        TurnOdometry(90, 0.5);
+//
+//        TurnOdometry(90, 0.5);
 
         while (opModeIsActive() && !isStopRequested()) {
             // control loop

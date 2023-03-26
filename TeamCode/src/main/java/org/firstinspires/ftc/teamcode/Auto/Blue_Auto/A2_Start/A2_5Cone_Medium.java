@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Odometry;
+package org.firstinspires.ftc.teamcode.Auto.Blue_Auto.A2_Start;
 
 import static org.firstinspires.ftc.teamcode.Odometry.PIDMovement.MovePIDTuning.driveD;
 import static org.firstinspires.ftc.teamcode.Odometry.PIDMovement.MovePIDTuning.driveF;
@@ -10,8 +10,6 @@ import static org.firstinspires.ftc.teamcode.Odometry.PIDMovement.MovePIDTuning.
 import static org.firstinspires.ftc.teamcode.Odometry.PIDMovement.MovePIDTuning.strafeF;
 import static org.firstinspires.ftc.teamcode.Odometry.PIDMovement.MovePIDTuning.strafeP;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.controller.PIDFController;
 import com.arcrobotics.ftclib.drivebase.MecanumDrive;
 import com.arcrobotics.ftclib.geometry.Pose2d;
@@ -25,7 +23,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.wolfpackmachina.bettersensors.HardwareMapProvider;
 import com.wolfpackmachina.bettersensors.Sensors.Gyro;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.FocusControl;
@@ -36,7 +33,6 @@ import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Slides;
 import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Top_gripper;
 import org.firstinspires.ftc.teamcode.Vision.AprilTags.AprilTagDetectionPipeline;
-import org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.Pole_Pipe;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -44,13 +40,11 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 import java.util.ArrayList;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 
 @Autonomous
-public class Odometry_Test_Method extends LinearOpMode {
+public class A2_5Cone_Medium extends LinearOpMode {
 
     Drivetrain drive = new Drivetrain();
 
@@ -232,7 +226,7 @@ public class Odometry_Test_Method extends LinearOpMode {
             ExtendHighPreloaded();
 
             //Drop Off Position
-            Odo_Drive(112, 0, 150, 0.1, 1, 0);
+            Odo_Drive(112, 0, 45, 0.1, 1, 0);
 
             top.Top_Pivot.setPosition(0.19);
 
@@ -262,7 +256,7 @@ public class Odometry_Test_Method extends LinearOpMode {
             ExtendHighPreloaded();
 
             //Drop Off Position
-            Odo_Drive(112, 0, 150, 0.1, 1, 0);
+            Odo_Drive(112, 0, 45, 0.1, 1, 0);
 
             top.Top_Pivot.setPosition(0.19);
 
@@ -292,7 +286,7 @@ public class Odometry_Test_Method extends LinearOpMode {
             ExtendHighPreloaded();
 
             //Drop Off Position
-            Odo_Drive(112, 0, 150, 0.1, 1, 0);
+            Odo_Drive(112, 0, 45, 0.1, 1, 0);
 
             top.Top_Pivot.setPosition(0.19);
 
@@ -765,13 +759,13 @@ public class Odometry_Test_Method extends LinearOpMode {
             }
 
             if(!Nest_Occupied){
-                top.Top_Pivot.setPosition(0.8);
+//                    Top_Pivot.setPosition(0.8);
                 try {
-                    Thread.sleep(300);
+                    Thread.sleep(50);
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }
-                top.Top_Pivot.setPosition(1);
+//                    Top_Pivot.setPosition(1);
             }
 
             if(!Nest_Occupied){
@@ -871,7 +865,7 @@ public class Odometry_Test_Method extends LinearOpMode {
                 ConvertedHeading = (0 + StartingHeading);
             }
 
-            rotdist = (targetRot - ConvertedHeading)*1.45;
+            rotdist = (targetRot - ConvertedHeading)*1.5;
 
             rotdistForStop = (targetRot - ConvertedHeading);
 
@@ -898,18 +892,18 @@ public class Odometry_Test_Method extends LinearOpMode {
             Pivot = PivotPID.calculate(-rotdist);
 
             if ((Math.abs(rotdistForStop) < 1.5)){
-                Pivot = Pivot*1.4 + RampPower;
+                Pivot = Pivot*1.5 + RampPower;
             }
 
-//            if ((Math.abs(XdistForStop) < 1.5)){
-//                Vertical = Vertical*1.3;
-//                Horizontal = Horizontal*1.3;
-//            }
-//
-//            if ((Math.abs(YdistForStop) < 1.5)){
-//                Vertical = Vertical*1.3;
-//                Horizontal = Horizontal*1.3;
-//            }
+            if ((Math.abs(XdistForStop) < 1.5)){
+                Vertical = Vertical*1.3;
+                Horizontal = Horizontal*1.3;
+            }
+
+            if ((Math.abs(YdistForStop) < 1.5)){
+                Vertical = Vertical*1.3;
+                Horizontal = Horizontal*1.3;
+            }
 
             //SET MOTOR POWER USING THE PID OUTPUT
             drive.RF.setPower(Power_For_Long_Drive*(-Pivot + (Vertical + Horizontal)));
@@ -924,7 +918,7 @@ public class Odometry_Test_Method extends LinearOpMode {
             telemetry.addData("Y", getYpos());
             telemetry.update();
 
-        }while ((Math.abs(XdistForStop) > 0.8 + error) || (Math.abs(YdistForStop) > 0.8 + error) || (Math.abs(rotdistForStop) > 0.9 + error));
+        }while ((Math.abs(XdistForStop) > 0.8 + error) || (Math.abs(YdistForStop) > 0.8 + error) || (Math.abs(rotdistForStop) > 1 + error));
 
         drive.RF.setPower(0);
         drive.RB.setPower(0);
@@ -966,7 +960,7 @@ public class Odometry_Test_Method extends LinearOpMode {
 
         odometry.update(0, 0, 0);
 
-        odometry.updatePose(new Pose2d(0, 0, new Rotation2d(3.141)));
+        odometry.updatePose(new Pose2d(0, 0, new Rotation2d(0)));
 
 //        odometry.updatePose();
 
@@ -1187,7 +1181,7 @@ public class Odometry_Test_Method extends LinearOpMode {
             ExtendHigh();
 
             //Drop Off Position
-            Odo_Drive(124, 18.5, 131 , 0.1, 1, 0.1);
+            Odo_Drive(124, 18.5, 45 , 0.1, 1, 0.1);
 
             DropPreLoad();
         }
@@ -1229,7 +1223,7 @@ public class Odometry_Test_Method extends LinearOpMode {
                 ExtendHigh();
 
                 //Drop Off Position
-                Odo_Drive(124, 18.5, 131 , 0.1, 1, 0.1);
+                Odo_Drive(124, 18.5, 45 , 0.1, 1, 0.1);
 
                 DropPreLoad();
             }
@@ -1268,7 +1262,7 @@ public class Odometry_Test_Method extends LinearOpMode {
                     ExtendHigh();
 
                     //Drop Off Position
-                    Odo_Drive(132, 18.5, 131 , 0.1, 1, 0.1);
+                    Odo_Drive(132, 18.5, 45 , 0.1, 1, 0.1);
 
                     DropPreLoad();
                 }
@@ -1308,7 +1302,7 @@ public class Odometry_Test_Method extends LinearOpMode {
                         ExtendHigh();
 
                         //Drop Off Position
-                        Odo_Drive(124, 18.5, 131 , 0.1, 1, 0.1);
+                        Odo_Drive(124, 18.5, 45 , 0.1, 1, 0.1);
 
                         DropPreLoad();
                     }
@@ -1348,7 +1342,7 @@ public class Odometry_Test_Method extends LinearOpMode {
                             ExtendHigh();
 
                             //Drop Off Position
-                            Odo_Drive(124, 18.5, 131 , 0.1, 1, 0.1);
+                            Odo_Drive(124, 18.5, 45 , 0.1, 1, 0);
 
                             DropPreLoad();
                         }

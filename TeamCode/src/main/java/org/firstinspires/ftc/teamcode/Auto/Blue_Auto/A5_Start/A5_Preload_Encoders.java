@@ -41,7 +41,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 
 @Autonomous
-public class Blue_A5_Start_Preloaded extends LinearOpMode {
+public class A5_Preload_Encoders extends LinearOpMode {
     private DistanceSensor sensorRange;
 
     public DcMotor RF = null;

@@ -1147,14 +1147,12 @@ public class Drivetrain {
 
     public void init(HardwareMap hwMap, double IMU) {
 
-        if (IMU == 1){
-            BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-            parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-            parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-            parameters.calibrationDataFile = "BNO055IMUCalibration.json";
-            parameters.loggingEnabled = true;
-            parameters.loggingTag = "IMU";
-        }
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json";
+        parameters.loggingEnabled = true;
+        parameters.loggingTag = "IMU";
 
         hardwareMap = hwMap;
 
@@ -1167,7 +1165,6 @@ public class Drivetrain {
 
         if (IMU == 1){
             imu = hardwareMap.get(BNO055IMU.class, "imu");
-            BNO055IMU.Parameters parameters = null;
             imu.initialize(parameters);
         }
 

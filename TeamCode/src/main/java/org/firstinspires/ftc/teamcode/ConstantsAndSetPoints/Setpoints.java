@@ -80,7 +80,7 @@ public class Setpoints {
     public double De_Pos_3 = 0.45;
 
     //second from the bottom cone on the stack
-    public double De_Pos_4 = 0.54;
+    public double De_Pos_4 = 0.6;
 
     //normal cone collection position
     public double De_Pos_5 = 0.72;

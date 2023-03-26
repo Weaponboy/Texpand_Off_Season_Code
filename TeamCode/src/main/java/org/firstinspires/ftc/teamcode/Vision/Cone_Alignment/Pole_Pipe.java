@@ -171,8 +171,6 @@ public class Pole_Pipe extends OpenCvPipeline {
                 TargetHighRect = OrderedByWidthrects.get(HighRect);
                 rectangle(output, TargetHighRect, high, 8);
 
-
-
                 Target_High_Rect_Width = TargetHighRect.width;
                 TargetHighrectX = TargetHighRect.x + TargetHighRect.width / 2;
                 TargetHighrectY = TargetHighRect.y + TargetHighRect.height / 2;

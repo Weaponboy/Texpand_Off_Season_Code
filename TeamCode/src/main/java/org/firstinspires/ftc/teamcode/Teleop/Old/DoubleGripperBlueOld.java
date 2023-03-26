@@ -1,7 +1,24 @@
 package org.firstinspires.ftc.teamcode.Teleop.Old;
 
+import static org.firstinspires.ftc.teamcode.Odometry.PIDMovement.MovePIDTuning.driveD;
+import static org.firstinspires.ftc.teamcode.Odometry.PIDMovement.MovePIDTuning.driveF;
+import static org.firstinspires.ftc.teamcode.Odometry.PIDMovement.MovePIDTuning.driveP;
+import static org.firstinspires.ftc.teamcode.Odometry.PIDMovement.MovePIDTuning.rotationD;
+import static org.firstinspires.ftc.teamcode.Odometry.PIDMovement.MovePIDTuning.rotationF;
+import static org.firstinspires.ftc.teamcode.Odometry.PIDMovement.MovePIDTuning.rotationP;
+import static org.firstinspires.ftc.teamcode.Odometry.PIDMovement.MovePIDTuning.strafeD;
+import static org.firstinspires.ftc.teamcode.Odometry.PIDMovement.MovePIDTuning.strafeF;
+import static org.firstinspires.ftc.teamcode.Odometry.PIDMovement.MovePIDTuning.strafeP;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.arcrobotics.ftclib.controller.PIDFController;
+import com.arcrobotics.ftclib.drivebase.MecanumDrive;
+import com.arcrobotics.ftclib.geometry.Pose2d;
+import com.arcrobotics.ftclib.geometry.Rotation2d;
+import com.arcrobotics.ftclib.hardware.motors.Motor;
+import com.arcrobotics.ftclib.hardware.motors.MotorEx;
+import com.arcrobotics.ftclib.kinematics.HolonomicOdometry;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -9,10 +26,14 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.wolfpackmachina.bettersensors.HardwareMapProvider;
+import com.wolfpackmachina.bettersensors.Sensors.Gyro;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -23,7 +44,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Setpoints;
+import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Bottom_Gripper_Assembly;
 import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Drivetrain;
+import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Slides;
+import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Top_gripper;
 import org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.Blue_Cone_Pipe;
 import org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.Pole_Pipe;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -48,6 +73,74 @@ public class DoubleGripperBlueOld extends OpMode {
     public Orientation yawAngle;
     public BNO055IMU imu         = null;      // Control/Expansion Hub IMU
 
+    public static final double CENTER_WHEEL_OFFSET = -17;
+
+    public static final double WHEEL_DIAMETER = 3.5;
+
+    public static final double TICKS_PER_REV = 8192;
+    public static final double DISTANCE_PER_PULSE = Math.PI * WHEEL_DIAMETER / TICKS_PER_REV;
+
+    private boolean lowering = false;
+
+    private boolean Nest_Occupied = false;
+
+    private boolean Extending_High = false;
+
+    private MecanumDrive driveTrain;
+
+    private boolean conefound = false;
+
+    private boolean abort = false;
+
+    private MotorEx LEFTF, RIGHTF, LEFTB, RIGHTB;
+
+    Setpoints setpoints = new Setpoints();
+
+    Gyro gyro;
+
+    PIDFController drivePID;
+    PIDFController strafePID;
+    PIDFController PivotPID;
+
+    double Xdist = 0;
+    double Ydist = 0;
+
+    double rotdist = 0;
+
+    double XdistForStop = 0;
+    double YdistForStop = 0;
+
+    double rotdistForStop = 0;
+
+    double RRXdist = 0;
+    double RRYdist = 0;
+    double Horizontal = 0;
+    double Vertical = 0;
+
+    double Horizontal2 = 0;
+    double Vertical2 = 0;
+
+    double ConvertedHeading = 0;
+    double Pivot = 0;
+
+    Top_gripper top = new Top_gripper();
+
+    Bottom_Gripper_Assembly bottom = new Bottom_Gripper_Assembly();
+
+    Slides slide = new Slides();
+
+    double CurrentXPos = 0;
+    double CurrentYPos = 0;
+
+    double StartingHeading = 0;
+
+    double StartingHeadinggyro = 0;
+
+    private Motor.Encoder leftOdometer, rightOdometer, centerOdometer;
+    private HolonomicOdometry odometry;
+
+    public static final double TRACKWIDTH = 36.32;
+
     public boolean conefoundcycle;
 
     private double power;
@@ -65,7 +158,7 @@ public class DoubleGripperBlueOld extends OpMode {
     double De_Pos_1 = 0.0;
     double De_Pos_2 = 0.12;
     double De_Pos_3 = 0.45;
-    double De_Pos_4 = 0.54;
+    double De_Pos_4 = 0.6;
     double De_Pos_5 = 0.72;
 
     public ColorSensor colour = null;
@@ -74,6 +167,8 @@ public class DoubleGripperBlueOld extends OpMode {
     public DcMotor Left_Slide = null;
 
     public DcMotor Extend = null;
+
+    public DigitalChannel SlideZero;
 
     public Servo Base_Gripper = null;
     public Servo Base_Pivot = null;
@@ -85,8 +180,6 @@ public class DoubleGripperBlueOld extends OpMode {
     private DistanceSensor sensorRange;
 
     private DistanceSensor Back_Distance;
-
-    private boolean Nest_Occupied = false;
 
     private double vertical;
     private double horizontal;
@@ -133,21 +226,25 @@ public class DoubleGripperBlueOld extends OpMode {
 
     public double rectPositionFromLeft = 0;
 
-    private boolean conefound = false;
-
     private boolean SlowPoint = false;
+
     private double slow = 0.4;
     private double Cone_power;
     private double slow1 = 0.4;
 
-    private boolean lowering = false;
 
     @Override
     public void loop() {
+
         runtime.reset();
         slow1 = (gamepad1.left_trigger * 0.6) + 0.4;
 
         drive.WithOutEncoders();
+
+        RF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        RB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        LF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        LB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         vertical = -gamepad1.right_stick_y;
         horizontal = -gamepad1.right_stick_x;
@@ -177,7 +274,6 @@ public class DoubleGripperBlueOld extends OpMode {
         /** */
         PoleAlignmnet = true;
 
-
         if(gamepad2.b && Base_Gripper.getPosition() == 0){
             Base_Gripper.setPosition(0.4); //open base gripper if it is closed
             try {
@@ -197,29 +293,28 @@ public class DoubleGripperBlueOld extends OpMode {
         if (gamepad1.dpad_up) {
             Destacker_Left.setPosition(De_Pos_1);
             Destacker_Right.setPosition(De_Pos_1);
-            Base_Pivot.setPosition(0.12);
+            Base_Pivot.setPosition(Base_Pivot_Collect);
         }
         if (gamepad1.right_bumper) {
             Destacker_Left.setPosition(De_Pos_2);
             Destacker_Right.setPosition(De_Pos_2);
-            Base_Pivot.setPosition(0.12);
+            Base_Pivot.setPosition(Base_Pivot_Collect);
         }
         if (gamepad1.y) {
             Destacker_Left.setPosition(De_Pos_3);
             Destacker_Right.setPosition(De_Pos_3);
-            Base_Pivot.setPosition(0.1);
+            Base_Pivot.setPosition(Base_Pivot_Collect);
         }
         if (gamepad1.b) {
             Destacker_Left.setPosition(De_Pos_4);
             Destacker_Right.setPosition(De_Pos_4);
-            Base_Pivot.setPosition(0.1);
+            Base_Pivot.setPosition(Base_Pivot_Collect);
         }
         if (gamepad1.a) {
             Destacker_Left.setPosition(De_Pos_5);
             Destacker_Right.setPosition(De_Pos_5);
             Base_Pivot.setPosition(Base_Pivot_Collect);
         }
-
 
         //Stop slides if finished running
         if(lowering){
@@ -346,6 +441,11 @@ public class DoubleGripperBlueOld extends OpMode {
                             Left_Slide.setPower(-0.9);
                         }
 
+                        if(Extend.getCurrentPosition() > -300){
+                            Destacker_Left.setPosition(De_Pos_5);
+                            Destacker_Right.setPosition(De_Pos_5);
+                        }
+
                         Base_Gripper.setPosition(0);
 
                         Base_Pivot.setPosition(Base_Pivot_Flip);
@@ -435,7 +535,11 @@ public class DoubleGripperBlueOld extends OpMode {
             }
         }
 
-        if(gamepad1.start || gamepad2.start){
+        if (gamepad1.start){
+            Odo_Drive(180, 0, 1);
+        }
+
+        if(gamepad2.start){
 
             Base_Pivot.setPosition(0.7);
             try {
@@ -469,7 +573,9 @@ public class DoubleGripperBlueOld extends OpMode {
             drive.RB.setPower(0);
             drive.LF.setPower(0);
             drive.LB.setPower(0);
+
             Base_Pivot.setPosition(0.05);
+
         }
 
         try {
@@ -502,31 +608,11 @@ public class DoubleGripperBlueOld extends OpMode {
 
         //toggle position of top pivot
         if (gamepad1.x) {
-            Toppos = Toppos + 1;
-
-            if(Toppos == 1){
-                Top_Pivot.setPosition(0.3);
-            }else if(Toppos == 3){
-                Top_Pivot.setPosition(0.4);
-            }
-            if(Toppos > 2){
-                Toppos = 0;
-            }
-
+            Top_Pivot.setPosition(0.3);
         }
 
         if (gamepad2.x) {
-            Toppos2 = Toppos2 + 1;
-
-            if(Toppos2 == 1){
-                Top_Pivot.setPosition(1);
-            }else if(Toppos2 == 3){
-                Top_Pivot.setPosition(0.65);
-            }
-            if(Toppos2 > 2){
-                Toppos2 = 0;
-            }
-
+            Top_Pivot.setPosition(1);
         }
 
         //set top pivot postition
@@ -829,32 +915,29 @@ public class DoubleGripperBlueOld extends OpMode {
 
             AlignToHighCalc();
 
-            Right_Slide.setTargetPosition(1900);
-            Left_Slide.setTargetPosition(1900);
+            Right_Slide.setTargetPosition(1850);
+            Left_Slide.setTargetPosition(1850);
             Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 //            drive.DriveEncoders();
 
             power = 0.2;
 
-            while(Right_Slide.getCurrentPosition() < 1850 && Left_Slide.getCurrentPosition() < 1850){
+            while(Right_Slide.getCurrentPosition() < 1800 && Left_Slide.getCurrentPosition() < 1800){
+
                 Right_Slide.setPower(1);
                 Left_Slide.setPower(1);
 
                 rectPositionFromLeft = Pole.getRectX();
 
+                if (PoleAlignmnet){
+                    AlignToPoleNoEncoders();
+                }
 
-//                drive.DriveEncoders();
-
-                drive.RF.setPower(0);
-                drive.RB.setPower(0);
-                drive.LF.setPower(0);
-                drive.LB.setPower(0);
+                Top_Pivot.setPosition(0.19);
 
             }
-            if (PoleAlignmnet){
-                AlignToPoleNoEncoders();
-            }
+
             Right_Slide.setPower(0.005);
             Left_Slide.setPower(0.005);
             Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -862,37 +945,23 @@ public class DoubleGripperBlueOld extends OpMode {
 
             rectPositionFromLeft = Pole.getRectX();
 
-//            drive.RF.setPower(0);
-//            drive.RB.setPower(0);
-//            drive.LF.setPower(0);
-//            drive.LB.setPower(0);
+            drive.RF.setPower(0);
+            drive.RB.setPower(0);
+            drive.LF.setPower(0);
+            drive.LB.setPower(0);
 
-            Top_Pivot.setPosition(0.25);
-
-//            if(Math.abs(rectPositionFromLeft - CenterOfScreen) > 45) {
-//                Top_Pivot.setPosition(0.4);
-//            }else{
-//                Top_Pivot.setPosition(0);
-//            }
-
-
-            telemetry.addData("rect X", Pole.getRectX());
-            telemetry.addData("rect Y", Pole.getRectY());
-            telemetry.addData("Distance off by ", Math.abs(rectPositionFromLeft - CenterOfScreen));
-            telemetry.addData("Power ", power);
-            telemetry.update();
-
+            Top_Pivot.setPosition(0.19);
 
         }
 
-        if(gamepad1.left_stick_y > 0 && Base_Pivot.getPosition() != 0.85){
+        if(gamepad1.left_stick_y > 0.5 && Base_Pivot.getPosition() != 0.85){
             Base_Pivot.setPosition(0.85); //open base gripper if it is closed
             try {
                 Thread.sleep(100);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
-        }else if(gamepad1.left_stick_y < 0 && Base_Pivot.getPosition() != Base_Pivot_Collect ){
+        }else if(gamepad1.left_stick_y < -0.5 && Base_Pivot.getPosition() != Base_Pivot_Collect ){
             Base_Pivot.setPosition(Base_Pivot_Collect); //close base gripper if it is open
             try {
                 Thread.sleep(100);
@@ -934,40 +1003,35 @@ public class DoubleGripperBlueOld extends OpMode {
             Right_Slide.setPower(1);
             Left_Slide.setPower(1);
 //            drive.DriveEncoders();
-//            while(Right_Slide.getCurrentPosition() < 850 && Left_Slide.getCurrentPosition() < 850){
-//                Right_Slide.setPower(1);
-//                Left_Slide.setPower(1);
-//
-//                rectPositionFromLeft = Pole.getRectX();
-//                power = 0.27;
-//
-//                if (PoleAlignmnet){
-//                    AlignToPole();
-//                }
-//
-//                telemetry.addData("Distance_To_Travel:", Distance_To_Travel);
-//                telemetry.update();
-//
-//            }
-//            Right_Slide.setPower(0.005);
-//            Left_Slide.setPower(0.005);
 
-//            Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//            Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//
-//            drive.RF.setPower(0);
-//            drive.RB.setPower(0);
-//            drive.LF.setPower(0);
-//            drive.LB.setPower(0);
+            while(Right_Slide.getCurrentPosition() < 850 && Left_Slide.getCurrentPosition() < 850){
 
-            Top_Pivot.setPosition(0.4);
+                Right_Slide.setPower(1);
+                Left_Slide.setPower(1);
 
-//            if(Math.abs(rectPositionFromLeft - CenterOfScreen) > 50) {
-//                Top_Pivot.setPosition(0.4);
-//            }else{
-//                Top_Pivot.setPosition(0);
-//            }
+                rectPositionFromLeft = Pole.getRectX();
 
+                if (PoleAlignmnet){
+                    AlignToPoleNoEncoders();
+                }
+
+                Top_Pivot.setPosition(0.19);
+
+            }
+            Right_Slide.setPower(0.005);
+            Left_Slide.setPower(0.005);
+
+            Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            rectPositionFromLeft = Pole.getRectX();
+
+            drive.RF.setPower(0);
+            drive.RB.setPower(0);
+            drive.LF.setPower(0);
+            drive.LB.setPower(0);
+
+            Top_Pivot.setPosition(0.19);
 
         }
 
@@ -977,20 +1041,37 @@ public class DoubleGripperBlueOld extends OpMode {
             Left_Slide.setPower(-0.9);
         }
 
-        //Stop slides if finished running
-        if(lowering){
-            Right_Slide.setPower(-0.9);
-            Left_Slide.setPower(-0.9);
+        if (gamepad2.right_bumper){
+
+            while (SlideZero.getState() == true){
+                Right_Slide.setPower(-0.2);
+                Left_Slide.setPower(-0.2);
+            }
+
+            telemetry.addData("Loop", "entered");
+            telemetry.update();
+
+            Right_Slide.setPower(0);
+            Left_Slide.setPower(0);
+
+            Right_Slide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            Left_Slide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+            Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         }
 
         //extend slides to collect cone
         if (gamepad2.left_trigger > 0 || gamepad1.back) {
+//
+//            if(Destacker_Right.getPosition() < 0.5){
+//                Base_Pivot.setPosition(0.1);
+//            }else{
+//
+//            }
 
-            if(Destacker_Right.getPosition() < 0.5){
-                Base_Pivot.setPosition(0.1);
-            }else{
-                Base_Pivot.setPosition(Base_Pivot_Collect);
-            }
+            Base_Pivot.setPosition(Base_Pivot_Collect);
 
             RF.setPower(0);
             RB.setPower(0);
@@ -999,7 +1080,7 @@ public class DoubleGripperBlueOld extends OpMode {
 
             Extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             Extend.setPower(-1);
-            conefound = sensorRange.getDistance(DistanceUnit.MM) < 70;
+            conefound = sensorRange.getDistance(DistanceUnit.MM) < 75;
 
             while(!conefound && Extend.getCurrentPosition() > -900){
                 if(Right_Slide.getCurrentPosition() < 50 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 50 && !Left_Slide.isBusy()){
@@ -1014,7 +1095,7 @@ public class DoubleGripperBlueOld extends OpMode {
                     Left_Slide.setPower(-0.9);
                 }
 
-                conefound = sensorRange.getDistance(DistanceUnit.MM) < 70;
+                conefound = sensorRange.getDistance(DistanceUnit.MM) < 75;
 
                 if(Destacker_Right.getPosition() < 0.5){
                     SlowPoint = sensorRange.getDistance(DistanceUnit.MM) < 250;
@@ -1023,8 +1104,10 @@ public class DoubleGripperBlueOld extends OpMode {
                 }
 
 
-                if (SlowPoint){
+                if (SlowPoint && Destacker_Right.getPosition() > 0.5){
                     Extend.setPower(-0.5);
+                }else if(SlowPoint && Destacker_Right.getPosition() < 0.5){
+                    Extend.setPower(-0.3);
                 }else {
                     Extend.setPower(-1);
                 }
@@ -1059,14 +1142,14 @@ public class DoubleGripperBlueOld extends OpMode {
                     System.out.println(e.getMessage());
                 }
 
-                if(Right_Slide.getCurrentPosition() < 50 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 50 && !Left_Slide.isBusy()){
+                if (Right_Slide.getCurrentPosition() < 50 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 50 && !Left_Slide.isBusy()) {
                     Right_Slide.setPower(0);
                     Left_Slide.setPower(0);
 
                     Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                     Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                     lowering = false;
-                }else if(lowering){
+                } else if (lowering) {
                     Right_Slide.setPower(-0.9);
                     Left_Slide.setPower(-0.9);
                 }
@@ -1075,128 +1158,135 @@ public class DoubleGripperBlueOld extends OpMode {
 
                 try {
                     Thread.sleep(125);
-                }catch (Exception e){
+                } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }
 
                 Base_Pivot.setPosition(Base_Pivot_Flip);
 
-                if (Destacker_Left.getPosition() < 0.6){
+                if (Destacker_Left.getPosition() < 0.6) {
 
                     try {
                         Thread.sleep(400);
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         System.out.println(e.getMessage());
                     }
 
                 }
 
+                Extend.setTargetPosition(0);
+                Extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-                    Extend.setTargetPosition(0);
-                    Extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-                    while (Extend.isBusy()) {
-                        if(Right_Slide.getCurrentPosition() < 10 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 10 && !Left_Slide.isBusy()){
-                            Right_Slide.setPower(0);
-                            Left_Slide.setPower(0);
-
-                            Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                            Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                            lowering = false;
-                        }else if(lowering){
-                            Right_Slide.setPower(-0.9);
-                            Left_Slide.setPower(-0.9);
-                        }
-
-                        Base_Gripper.setPosition(0);
-
-                        Base_Pivot.setPosition(Base_Pivot_Flip);
-
-                        Top_Pivot.setPosition(0.6);
-
-                        Extend.setPower(0.8);
-                    }
-
-                    if(Right_Slide.getCurrentPosition() < 10 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 10 && !Left_Slide.isBusy()){
+                while (Extend.isBusy()) {
+                    if (Right_Slide.getCurrentPosition() < 10 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 10 && !Left_Slide.isBusy()) {
                         Right_Slide.setPower(0);
                         Left_Slide.setPower(0);
 
                         Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                         Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                         lowering = false;
-                    }else if(lowering){
+                    } else if (lowering) {
                         Right_Slide.setPower(-0.9);
                         Left_Slide.setPower(-0.9);
                     }
 
-                    Extend.setPower(0);
+                    Base_Pivot.setPosition(Base_Pivot_Flip);
 
-                    Destacker_Left.setPosition(De_Pos_5);
-                    Destacker_Right.setPosition(De_Pos_5);
+                    Extend.setPower(1);
 
-                    if(Base_Pivot.getPosition() > 0.6) {
+                    if(Extend.getCurrentPosition() > -300){
+                        Destacker_Left.setPosition(De_Pos_5);
+                        Destacker_Right.setPosition(De_Pos_5);
+                    }
 
-                        try {
-                            Thread.sleep(100);
-                        }catch (Exception e){
-                            System.out.println(e.getMessage());
-                        }
+                    if(Extend.getCurrentPosition() > -50){
+                        //open top gripper
+                        Top_Gripper.setPosition(0.35);
 
-                        Base_Gripper.setPosition(0.4);
-
-                        try {
-                            Thread.sleep(100);
-                        }catch (Exception e){
-                            System.out.println(e.getMessage());
-                        }
-
-
-                        Base_Pivot.setPosition(Base_Pivot_Out_Way);
-
-                        try {
-                            Thread.sleep(100);
-                        }catch (Exception e){
-                            System.out.println(e.getMessage());
-                        }
-
+                        //take top pivot to pick up the cone
                         Top_Pivot.setPosition(1);
+                    }
 
-                        try {
-                            Thread.sleep(400);
-                        }catch (Exception e){
-                            System.out.println(e.getMessage());
-                        }
+                }
 
-                        Top_Gripper.setPosition(0);
+                if (Right_Slide.getCurrentPosition() < 10 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 10 && !Left_Slide.isBusy()) {
+                    Right_Slide.setPower(0);
+                    Left_Slide.setPower(0);
 
-                        try {
-                            Thread.sleep(200);
-                        }catch (Exception e){
-                            System.out.println(e.getMessage());
-                        }
+                    Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    lowering = false;
+                } else if (lowering) {
+                    Right_Slide.setPower(-0.9);
+                    Left_Slide.setPower(-0.9);
+                }
 
-                        Top_Pivot.setPosition(0.4);
+                Extend.setPower(0);
 
-                        try {
-                            Thread.sleep(75);
-                        }catch (Exception e){
-                            System.out.println(e.getMessage());
-                        }
+                Destacker_Left.setPosition(De_Pos_5);
+                Destacker_Right.setPosition(De_Pos_5);
 
-                        conefoundcycle = colour.blue() > 2000;
+                if (Base_Pivot.getPosition() > 0.6) {
 
-                        if (!conefoundcycle){
-                            Base_Pivot.setPosition(Base_Pivot_Collect);
-                            try {
-                                Thread.sleep(200);
-                            }catch (Exception e){
-                                System.out.println(e.getMessage());
-                            }
-                        }
+                    try {
+                        Thread.sleep(100);
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
 
+                    Base_Gripper.setPosition(0.4);
+
+                    try {
+                        Thread.sleep(100);
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
                     }
 
 
+                    Base_Pivot.setPosition(Base_Pivot_Out_Way);
+
+                    try {
+                        Thread.sleep(100);
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+
+                    Top_Pivot.setPosition(1);
+
+                    try {
+                        Thread.sleep(400);
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+
+                    Top_Gripper.setPosition(0);
+
+                    try {
+                        Thread.sleep(200);
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+
+                    Top_Pivot.setPosition(0.4);
+
+                    try {
+                        Thread.sleep(75);
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+
+                    conefoundcycle = colour.blue() > 2000;
+
+                    if (!conefoundcycle) {
+                        Base_Pivot.setPosition(Base_Pivot_Collect);
+                        try {
+                            Thread.sleep(200);
+                        } catch (Exception e) {
+                            System.out.println(e.getMessage());
+                        }
+                    }
+
+                }
 
                 Extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             }else{
@@ -1255,6 +1345,13 @@ public class DoubleGripperBlueOld extends OpMode {
 
         FtcDashboard.getInstance().startCameraStream(BackWeb,30);
 
+        odometry.updatePose();
+
+        telemetry.addData("Heading", getheading());
+        telemetry.addData("Y:", getYpos());
+        telemetry.addData("X:", getXpos());
+
+        telemetry.addData("Limit", SlideZero.getState());
         telemetry.addData("Right Stick Y:", gamepad2.right_stick_y);
         telemetry.addData("Right Stick X:", gamepad2.right_stick_x);
         telemetry.addData("Odo ticks:", Odo_raise.getCurrentPosition());
@@ -1281,6 +1378,7 @@ public class DoubleGripperBlueOld extends OpMode {
     //init
     @Override
     public void init() {
+
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
@@ -1290,6 +1388,7 @@ public class DoubleGripperBlueOld extends OpMode {
 
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
+
         RF = hardwareMap.get(DcMotor.class, "RF");
         LF = hardwareMap.get(DcMotor.class, "LF");
         RB = hardwareMap.get(DcMotor.class, "RB");
@@ -1299,6 +1398,8 @@ public class DoubleGripperBlueOld extends OpMode {
 
         Right_Slide = hardwareMap.get(DcMotor.class, "Right slide");
         Left_Slide = hardwareMap.get(DcMotor.class, "Left slide");
+
+        SlideZero = hardwareMap.get(DigitalChannel.class, "Limit");
 
         colour = hardwareMap.get(ColorSensor.class, "colour");
 
@@ -1345,6 +1446,8 @@ public class DoubleGripperBlueOld extends OpMode {
         RB.setPower(0);
         LB.setPower(0);
 
+        OdometryInit();
+
         Top_Gripper.setPosition(0.3);
 
         Base_Gripper.setPosition(0.4);
@@ -1356,6 +1459,8 @@ public class DoubleGripperBlueOld extends OpMode {
         customRumbleEffect = new Gamepad.RumbleEffect.Builder()
                 .addStep(0.0, 1.0, 500)  //  Rumble right motor 100% for 500 mSec
                 .build();
+
+        SlideZero.setMode(DigitalChannel.Mode.INPUT);
 
         Pole = new Pole_Pipe();
 
@@ -1451,6 +1556,7 @@ public class DoubleGripperBlueOld extends OpMode {
             yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         }
     }
+
     public void AlignToMedCalc() {
 
         for (int i = 1; i <= 50; i++) {
@@ -1464,6 +1570,7 @@ public class DoubleGripperBlueOld extends OpMode {
             yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         }
     }
+
     public void AlignToPole(){
         if(Degrees_To_Turn != 0) {
             drive.TurnToHeading(yawAngle.firstAngle + Degrees_To_Turn, 0.3);
@@ -1506,5 +1613,238 @@ public class DoubleGripperBlueOld extends OpMode {
         Odo_raise.setPower(0);
     }
 
+    public void OdometryInit(){
 
+        drivePID = new PIDFController(driveP, 0, driveD, driveF);
+        strafePID = new PIDFController(strafeP, 0, strafeD, strafeF);
+        PivotPID = new PIDFController(rotationP, 0, rotationD, rotationF);
+
+        LEFTF = new MotorEx(hardwareMap, "LF");
+        LEFTB = new MotorEx(hardwareMap, "LB");
+        RIGHTF = new MotorEx(hardwareMap, "RF");
+        RIGHTB = new MotorEx(hardwareMap, "RB");
+
+        driveTrain = new MecanumDrive(RIGHTB, RIGHTF, LEFTB, LEFTF);
+
+        leftOdometer = LEFTF.encoder.setDistancePerPulse(DISTANCE_PER_PULSE);
+        rightOdometer = RIGHTF.encoder.setDistancePerPulse(DISTANCE_PER_PULSE);
+        centerOdometer = RIGHTB.encoder.setDistancePerPulse(DISTANCE_PER_PULSE);
+
+        leftOdometer.setDirection(Motor.Direction.FORWARD);
+        rightOdometer.setDirection(Motor.Direction.REVERSE);
+
+        odometry = new HolonomicOdometry(
+                leftOdometer::getDistance,
+                rightOdometer::getDistance,
+                centerOdometer::getDistance,
+                TRACKWIDTH, CENTER_WHEEL_OFFSET
+        );
+
+        odometry.update(0, 0, 0);
+
+        odometry.updatePose(new Pose2d(0, 0, new Rotation2d(3.141)));
+
+    }
+
+    public double getXpos() {
+        return odometry.getPose().getX();
+    }
+
+    public double getYpos() {
+        return odometry.getPose().getY();
+    }
+
+    public double getheading() {
+        return odometry.getPose().getHeading();
+    }
+
+    public void CheckVSlidePosForZero(){
+        if (Right_Slide.getCurrentPosition() < 10 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 10 && !Left_Slide.isBusy()) {
+            Right_Slide.setPower(0);
+            Left_Slide.setPower(0);
+
+            Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            lowering = false;
+
+        }else if (lowering) {
+            Right_Slide.setPower(-0.9);
+            Left_Slide.setPower(-0.9);
+        }
+    }
+
+    public void Odo_Drive(double targetX, double targetY, double targetRot, double error, double Power_For_Long_Drive) {
+
+        do {
+
+            CheckVSlidePosForZero();
+
+            //UPDATE ODOMETRY
+            odometry.updatePose();
+
+            //GET CURRENT X
+            CurrentXPos = getXpos();
+
+            //GET CURRENT Y
+            CurrentYPos = getYpos();
+//
+//            gyro.update();
+//
+//            //GET START HEADING WITH GYRO
+//            StartingHeadinggyro = gyro.angle();
+
+            //GET START HEADING WITH ODOMETRY
+            StartingHeading = Math.toDegrees(getheading());
+
+            //PID FOR DRIVING IN THE Y DIRECTION
+            drivePID.setPIDF(driveP, 0, driveD, driveF);
+
+            //PID FOR DRIVING IN THE X DIRECTION
+            strafePID.setPIDF(strafeP, 0, strafeD, strafeF);
+
+            //PID FOR TURNING
+            PivotPID.setPIDF(rotationP, 0, rotationD, rotationF);
+
+            //SET DISTANCE TO TRAVEL ERROR
+            Xdist = (targetX - CurrentXPos) * 1.3;
+            Ydist = (targetY - CurrentYPos) * 1.3;
+
+            XdistForStop = (targetX - CurrentXPos);
+            YdistForStop = (targetY - CurrentYPos);
+
+            //CONVERT HEADING FOR TRIG CALCS
+            if (StartingHeading <= 0) {
+                ConvertedHeading = (360 + StartingHeading);
+            } else {
+                ConvertedHeading = (0 + StartingHeading);
+            }
+
+            rotdist = (targetRot - ConvertedHeading)*1.5;
+
+            rotdistForStop = (targetRot - ConvertedHeading);
+
+            if (rotdist < -180) {
+                rotdist = (360 + rotdist);
+            } else if (rotdist > 180) {
+                rotdist = (rotdist - 360);
+            }
+
+            if (rotdistForStop < -180) {
+                rotdistForStop = (360 + rotdistForStop);
+            } else if (rotdistForStop > 180) {
+                rotdistForStop = (rotdistForStop - 360);
+            }
+
+            //CONVERT TARGET TO ROBOT RELATIVE TARGET
+            RRXdist = Xdist * Math.cos(Math.toRadians(360 - ConvertedHeading)) - Ydist * Math.sin(Math.toRadians(360 - ConvertedHeading));
+
+            RRYdist = Xdist * Math.sin(Math.toRadians(360 - ConvertedHeading)) + Ydist * Math.cos(Math.toRadians(360 - ConvertedHeading));
+
+            //SET DRIVE CONSTANTS TO THE PIDF CONTROL LOOPS
+            Vertical = drivePID.calculate(-RRXdist);
+            Horizontal = strafePID.calculate(-RRYdist);
+            Pivot = PivotPID.calculate(-rotdist);
+
+            if ((Math.abs(rotdistForStop) < 1.5)){
+                Pivot = Pivot*1.5;
+            }
+
+            if ((Math.abs(XdistForStop) < 1.5)){
+                Vertical = Vertical*1.3;
+                Horizontal = Horizontal*1.3;
+            }
+
+            if ((Math.abs(YdistForStop) < 1.5)){
+                Vertical = Vertical*1.3;
+                Horizontal = Horizontal*1.3;
+            }
+
+            //SET MOTOR POWER USING THE PID OUTPUT
+            drive.RF.setPower(Power_For_Long_Drive*(-Pivot + (Vertical + Horizontal)));
+            drive.RB.setPower(Power_For_Long_Drive*((-Pivot * 1.4) + (Vertical - (Horizontal * 1.3))));
+            drive.LF.setPower(Power_For_Long_Drive*(Pivot + (Vertical - Horizontal)));
+            drive.LB.setPower(Power_For_Long_Drive*((Pivot * 1.4) + (Vertical + (Horizontal * 1.3))));
+
+            telemetry.addData("heading", ConvertedHeading);
+            telemetry.addData("Target", rotdistForStop);
+            telemetry.addData("Target w F", rotdist);
+            telemetry.addData("X", getXpos());
+            telemetry.addData("Y", getYpos());
+            telemetry.update();
+
+        }while ((Math.abs(XdistForStop) > 0.8 + error) || (Math.abs(YdistForStop) > 0.8 + error) || (Math.abs(rotdistForStop) > 1 + error));
+
+        drive.RF.setPower(0);
+        drive.RB.setPower(0);
+        drive.LF.setPower(0);
+        drive.LB.setPower(0);
+
+    }
+
+    public void Odo_Drive(double targetRot, double error, double Power_For_Long_Drive){
+
+        do {
+
+            CheckVSlidePosForZero();
+
+            //UPDATE ODOMETRY
+            odometry.updatePose();
+
+            //GET START HEADING WITH ODOMETRY
+            StartingHeading = Math.toDegrees(getheading());
+
+            //PID FOR TURNING
+            PivotPID.setPIDF(rotationP, 0, rotationD, rotationF);
+
+            //CONVERT HEADING FOR TRIG CALCS
+            if (StartingHeading <= 0) {
+                ConvertedHeading = (360 + StartingHeading);
+            } else {
+                ConvertedHeading = (0 + StartingHeading);
+            }
+
+            rotdist = (targetRot - ConvertedHeading)*1.3;
+
+            rotdistForStop = (targetRot - ConvertedHeading);
+
+            if (rotdist < -180) {
+                rotdist = (360 + rotdist);
+            } else if (rotdist > 180) {
+                rotdist = (rotdist - 360);
+            }
+
+            if (rotdistForStop < -180) {
+                rotdistForStop = (360 + rotdistForStop);
+            } else if (rotdistForStop > 180) {
+                rotdistForStop = (rotdistForStop - 360);
+            }
+
+            //CONVERT TARGET TO ROBOT RELATIVE TARGET
+            Pivot = PivotPID.calculate(-rotdist);
+
+//            if ((Math.abs(rotdistForStop) < 1.5)){
+//                Pivot = Pivot*1.2;
+//            }
+
+            //SET MOTOR POWER USING THE PID OUTPUT
+            RF.setPower(Power_For_Long_Drive*(-Pivot + (Vertical + Horizontal)));
+            RB.setPower(Power_For_Long_Drive*((-Pivot * 1.4) + (Vertical - (Horizontal * 1.3))));
+            LF.setPower(Power_For_Long_Drive*(Pivot + (Vertical - Horizontal)));
+            LB.setPower(Power_For_Long_Drive*((Pivot * 1.4) + (Vertical + (Horizontal * 1.3))));
+
+            telemetry.addData("heading", ConvertedHeading);
+            telemetry.addData("Target", rotdistForStop);
+            telemetry.addData("Target w F", rotdist);
+            telemetry.addData("X", getXpos());
+            telemetry.addData("Y", getYpos());
+            telemetry.update();
+
+        }while ((Math.abs(rotdistForStop) > 1 + error));
+
+        drive.RF.setPower(0);
+        drive.RB.setPower(0);
+        drive.LF.setPower(0);
+        drive.LB.setPower(0);
+
+    }
 }
