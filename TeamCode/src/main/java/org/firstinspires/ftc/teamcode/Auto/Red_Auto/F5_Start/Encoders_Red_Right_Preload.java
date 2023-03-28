@@ -19,9 +19,10 @@
  * SOFTWARE.
  */
 
-package org.firstinspires.ftc.teamcode.Auto.Red_Auto;
+package org.firstinspires.ftc.teamcode.Auto.Red_Auto.F5_Start;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -41,7 +42,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 
 @Autonomous
-public class Red_F5_Start_Preloaded extends LinearOpMode {
+@Disabled
+public class Encoders_Red_Right_Preload extends LinearOpMode {
     private DistanceSensor sensorRange;
 
     public DcMotor RF = null;
@@ -322,16 +324,19 @@ public class Red_F5_Start_Preloaded extends LinearOpMode {
         Top_Gripper.setPosition(0);
         Base_Gripper.setPosition(0.4);
         Base_Pivot.setPosition(0.72);
-        Top_Pivot.setPosition(0.4);
     }
 
     public void Drive_To_Pos_1() {
 
         drive.TurnToHeading(0,0.45);
+
         Top_Pivot.setPosition(0.4);
+
         drive.DriveDistanceLong(10,0.5);
+
         telemetry.addData("Finished", "driving");
         telemetry.update();
+
         drive.StrafeDistance_Left(60,0.5);
 //        telemetry.addData("Finished", "placing");
 //        telemetry.update();
@@ -396,7 +401,11 @@ public class Red_F5_Start_Preloaded extends LinearOpMode {
     public void Drive_To_Destack() {
 
         drive.DriveDistanceLong(116,0.5);
+
+        Top_Pivot.setPosition(0.4);
+
         drive.StrafeDistance_Left(4,0.5);
+
         drive.TurnToHeading(-142,0.45);
 //        drive.DriveDistanceLong(135, 0.5);
 //

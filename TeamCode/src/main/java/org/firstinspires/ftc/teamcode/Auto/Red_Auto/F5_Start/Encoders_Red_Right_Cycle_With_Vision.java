@@ -19,11 +19,12 @@
  * SOFTWARE.
  */
 
-package org.firstinspires.ftc.teamcode.Auto.Red_Auto;
+package org.firstinspires.ftc.teamcode.Auto.Red_Auto.F5_Start;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -49,7 +50,8 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 @Autonomous
-public class Red_F5_Start_Motor_Destack_Ramping extends LinearOpMode {
+@Disabled
+public class Encoders_Red_Right_Cycle_With_Vision extends LinearOpMode {
     private DistanceSensor sensorRange;
     Red_Cone_Pipe Cone_Pipeline;
     public DcMotor RF = null;

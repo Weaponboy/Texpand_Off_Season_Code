@@ -19,11 +19,12 @@
  * SOFTWARE.
  */
 
-package org.firstinspires.ftc.teamcode.Auto.Blue_Auto.A2_Start;
+package org.firstinspires.ftc.teamcode.Auto.Blue_Auto.A5_Start.Encoders;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -49,7 +50,8 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 @Autonomous
-public class A2_Encoder_Ramping extends LinearOpMode {
+@Disabled
+public class Encoders_Blue_Left_Cycle_With_Vision extends LinearOpMode {
     private DistanceSensor sensorRange;
     Blue_Cone_Pipe Cone_Pipeline;
     public DcMotor RF = null;
@@ -78,7 +80,6 @@ public class A2_Encoder_Ramping extends LinearOpMode {
     public ColorSensor colour = null;
     FtcDashboard dashboard = FtcDashboard.getInstance();
     Telemetry dashboardTelemetry = dashboard.getTelemetry();
-
     public DcMotor Right_Slide = null;
     public DcMotor Left_Slide = null;
 
@@ -135,27 +136,17 @@ public class A2_Encoder_Ramping extends LinearOpMode {
     public OpenCvWebcam Texpandcamera;
     @Override
     public void runOpMode() {
-
         initialize();
-
         Extend.setDirection(DcMotorSimple.Direction.REVERSE);
-
         drive.init(hardwareMap, 1);
-
         Cone_Pipeline = new Blue_Cone_Pipe();
-
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
 
         WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
-
         aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
-
         Texpandcamera = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
-
         drive.init(hardwareMap, 1);
-
         Texpandcamera.setPipeline(aprilTagDetectionPipeline);
-
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         Texpandcamera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
@@ -262,7 +253,7 @@ public class A2_Encoder_Ramping extends LinearOpMode {
 
             DropPreLoad();
 
-            Destack_3();
+//            Destack_3();
 
             Drive_To_Pos_3();
 
@@ -274,8 +265,8 @@ public class A2_Encoder_Ramping extends LinearOpMode {
             Drive_To_Destack();
 
             DropPreLoad();
-
-            Destack_3();
+//
+//            Destack_3();
 
             Drive_To_Pos_1();
 
@@ -286,7 +277,7 @@ public class A2_Encoder_Ramping extends LinearOpMode {
 
             DropPreLoad();
 
-            Destack_3();
+//            Destack_3();
 
             Drive_To_Pos_2();
 
@@ -359,13 +350,15 @@ public class A2_Encoder_Ramping extends LinearOpMode {
 
     public void Drive_To_Pos_1() {
 
-        drive.TurnToHeading(-90, 0.35);
+        drive.TurnToHeading(90, 0.35);
 
         Top_Pivot.setPosition(1);
 
         Base_Pivot.setPosition(1);
 
-        drive.StrafeDistance_Left(19, .5);
+        drive.StrafeDistance(18, .8);
+
+        drive.TurnToHeading(90,0.45);
 
         drive.DriveDistanceLongReverse(85, .65);
 
@@ -376,13 +369,14 @@ public class A2_Encoder_Ramping extends LinearOpMode {
     }
 
     public void Drive_To_Pos_2() {
-        drive.TurnDegreesLeft(14);
+
+        drive.TurnToHeading(90, 0.35);
 
         Top_Pivot.setPosition(1);
 
         Base_Pivot.setPosition(1);
 
-        drive.StrafeDistance_Left(18, .5);
+        drive.StrafeDistance(18, .5);
 
         drive.DriveDistanceLongReverse(20, .5);
 
@@ -392,23 +386,24 @@ public class A2_Encoder_Ramping extends LinearOpMode {
 
     public void Drive_To_Pos_3() {
 
-        drive.TurnToHeading(-90, 0.35);
+        drive.TurnToHeading(90, 0.35);
 
         Top_Pivot.setPosition(1);
 
         Base_Pivot.setPosition(0.7);
 
-        drive.StrafeDistance_Left(18, .6);
+        drive.StrafeDistance(18, .6);
 
         drive.TurnToHeading(0,0.35);
 
-        drive.StrafeDistance_Left(33, .6);
+        drive.StrafeDistance(33, .6);
 
-        drive.TurnToHeading(3,0.35);
+        drive.TurnToHeading(0,0.35);
 
     }
 
     public void Drive_To_Destack() {
+
         telemetry.addData("Stop Position", "2");
         telemetry.update();
         drive.DriveDistanceRamp(140,0.9);
@@ -421,7 +416,8 @@ public class A2_Encoder_Ramping extends LinearOpMode {
         telemetry.addData("Target", 140*510/(Math.PI * 2 * (9.6 / 2.0)));
         telemetry.update();
 
-        drive.TurnToHeading(-101,0.3);
+        drive.TurnToHeading(101,0.3);
+
         telemetry.addData("Angle", drive.yawAngle.firstAngle);
         telemetry.update();
 
@@ -475,7 +471,7 @@ public class A2_Encoder_Ramping extends LinearOpMode {
         drive.RB.setPower(-0.05);
         drive.LF.setPower(-0.05);
         drive.LB.setPower(-0.05);
-        drive.TurnToHeading(-101,0.3);
+        drive.TurnToHeading(101,0.3);
         try {
             Thread.sleep(100);
         } catch (Exception e) {
@@ -534,7 +530,7 @@ public class A2_Encoder_Ramping extends LinearOpMode {
         drive.LF.setPower(0);
         drive.LB.setPower(0);
 
-        drive.TurnToHeading(-101,0.2);
+        drive.TurnToHeading(101,0.2);
 
 //
 //        telemetry.addData("Angle", drive.yawAngle.firstAngle);
@@ -583,8 +579,11 @@ public class A2_Encoder_Ramping extends LinearOpMode {
     public void Reverse_To_Destack() {
 
         drive.DriveDistanceLong(140,0.7);
-        drive.TurnToHeading(-100,0.45);
+
+        drive.TurnToHeading(101,0.45);
+
         drive.DriveDistanceLong(15,0.5);
+
         Texpandcamera.setPipeline(Cone_Pipeline);
 
         rectPositionFromLeft = 0;
@@ -698,6 +697,7 @@ public class A2_Encoder_Ramping extends LinearOpMode {
 //        telemetry.addData("Finished", "Turning");
 //        telemetry.update();
     }
+
     public void DropPreLoad() {
         Top_Pivot.setPosition(0.5);
 
@@ -764,7 +764,6 @@ public class A2_Encoder_Ramping extends LinearOpMode {
 
         Destacker_Left.setPosition(De_pos);
         Destacker_Right.setPosition(De_pos);
-
         if(Destacker_Left.getPosition() == De_Pos_1){
             Base_Pivot.setPosition(0.1);
         }else{
@@ -810,13 +809,11 @@ public class A2_Encoder_Ramping extends LinearOpMode {
                 System.out.println(e.getMessage());
             }
             Base_Pivot.setPosition(0.82);
-
             try {
-                Thread.sleep(2000);
+                Thread.sleep(250);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
-
             //if the base gripper is closed retract the horizontal slides
             if (Base_Gripper.getPosition() == 0) {
 
@@ -824,11 +821,8 @@ public class A2_Encoder_Ramping extends LinearOpMode {
                 Extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
                 while (Extend.isBusy()) {
-
                     CheckVSlidePos();
-
                     Base_Pivot.setPosition(0.82);
-
                     Extend.setPower(0.6);
 
                     if(Extend.getCurrentPosition() > -350){
@@ -861,7 +855,7 @@ public class A2_Encoder_Ramping extends LinearOpMode {
                 Base_Pivot.setPosition(1);
 
                 try {
-                    Thread.sleep(250);
+                    Thread.sleep(150);
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }
@@ -916,7 +910,6 @@ public class A2_Encoder_Ramping extends LinearOpMode {
 
                     //put base pivot back to zero
                     Base_Pivot.setPosition(0.1);
-
                     Extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
                     Base_Pivot.setPosition(0.1);

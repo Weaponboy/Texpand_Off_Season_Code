@@ -19,11 +19,12 @@
  * SOFTWARE.
  */
 
-package org.firstinspires.ftc.teamcode.Auto.Red_Auto;
+package org.firstinspires.ftc.teamcode.Auto.Blue_Auto.A2_Start.Encoders;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -38,7 +39,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.FocusCo
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Vision.AprilTags.AprilTagDetectionPipeline;
-import org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.Red_Cone_Pipe;
+import org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.Blue_Cone_Pipe;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -49,9 +50,10 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 @Autonomous
-public class Red_F2_Start_Motor_Destack_Ramping extends LinearOpMode {
+@Disabled
+public class Encoders_Blue_Right_Cycle_With_Vision extends LinearOpMode {
     private DistanceSensor sensorRange;
-    Red_Cone_Pipe Cone_Pipeline;
+    Blue_Cone_Pipe Cone_Pipeline;
     public DcMotor RF = null;
     public DcMotor LF = null;
     public DcMotor RB = null;
@@ -78,6 +80,7 @@ public class Red_F2_Start_Motor_Destack_Ramping extends LinearOpMode {
     public ColorSensor colour = null;
     FtcDashboard dashboard = FtcDashboard.getInstance();
     Telemetry dashboardTelemetry = dashboard.getTelemetry();
+
     public DcMotor Right_Slide = null;
     public DcMotor Left_Slide = null;
 
@@ -134,17 +137,27 @@ public class Red_F2_Start_Motor_Destack_Ramping extends LinearOpMode {
     public OpenCvWebcam Texpandcamera;
     @Override
     public void runOpMode() {
+
         initialize();
+
         Extend.setDirection(DcMotorSimple.Direction.REVERSE);
+
         drive.init(hardwareMap, 1);
-        Cone_Pipeline = new Red_Cone_Pipe();
+
+        Cone_Pipeline = new Blue_Cone_Pipe();
+
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
 
         WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
+
         aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
+
         Texpandcamera = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
+
         drive.init(hardwareMap, 1);
+
         Texpandcamera.setPipeline(aprilTagDetectionPipeline);
+
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         Texpandcamera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
@@ -799,11 +812,13 @@ public class Red_F2_Start_Motor_Destack_Ramping extends LinearOpMode {
                 System.out.println(e.getMessage());
             }
             Base_Pivot.setPosition(0.82);
+
             try {
-                Thread.sleep(250);
+                Thread.sleep(2000);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
+
             //if the base gripper is closed retract the horizontal slides
             if (Base_Gripper.getPosition() == 0) {
 
@@ -811,8 +826,11 @@ public class Red_F2_Start_Motor_Destack_Ramping extends LinearOpMode {
                 Extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
                 while (Extend.isBusy()) {
+
                     CheckVSlidePos();
+
                     Base_Pivot.setPosition(0.82);
+
                     Extend.setPower(0.6);
 
                     if(Extend.getCurrentPosition() > -350){
@@ -840,18 +858,18 @@ public class Red_F2_Start_Motor_Destack_Ramping extends LinearOpMode {
                 //open base gripper
                 Base_Gripper.setPosition(0.4);
 
-                Nest_Occupied = colour.red() > 2000;
+                Nest_Occupied = colour.blue() > 2000;
 
                 Base_Pivot.setPosition(1);
 
                 try {
-                    Thread.sleep(150);
+                    Thread.sleep(250);
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }
 
 
-                Nest_Occupied = colour.red() > 2000;
+                Nest_Occupied = colour.blue() > 2000;
 
                 if(!Nest_Occupied){
                     try {
@@ -867,7 +885,7 @@ public class Red_F2_Start_Motor_Destack_Ramping extends LinearOpMode {
                     }
                 }
 
-                Nest_Occupied = colour.red() > 2000;
+                Nest_Occupied = colour.blue() > 2000;
                 if(!Nest_Occupied){
                     try {
                         Thread.sleep(250);
@@ -876,7 +894,7 @@ public class Red_F2_Start_Motor_Destack_Ramping extends LinearOpMode {
                     }
                 }
 
-                Nest_Occupied = colour.red() > 2000;
+                Nest_Occupied = colour.blue() > 2000;
 
                 if (Nest_Occupied) {
 
@@ -900,6 +918,7 @@ public class Red_F2_Start_Motor_Destack_Ramping extends LinearOpMode {
 
                     //put base pivot back to zero
                     Base_Pivot.setPosition(0.1);
+
                     Extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
                     Base_Pivot.setPosition(0.1);
@@ -1044,6 +1063,7 @@ public class Red_F2_Start_Motor_Destack_Ramping extends LinearOpMode {
         }
 
     }
+
     public void Destack_4 () {
         Base_Gripper.setPosition(0.4);
         Base_Pivot.setPosition(0.12);
@@ -1091,6 +1111,7 @@ public class Red_F2_Start_Motor_Destack_Ramping extends LinearOpMode {
         }
 
     }
+
     public void Destack_3 () {
         Base_Gripper.setPosition(0.4);
         Base_Pivot.setPosition(0.12);

@@ -19,9 +19,10 @@
  * SOFTWARE.
  */
 
-package org.firstinspires.ftc.teamcode.Auto.Blue_Auto.Park_Only;
+package org.firstinspires.ftc.teamcode.Auto.Park_Only;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -30,7 +31,6 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Vision.AprilTags.AprilTagDetectionPipeline;
 import org.openftc.apriltag.AprilTagDetection;
@@ -41,7 +41,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 
 @Autonomous
-public class BLUE_PARK_ONLY extends LinearOpMode {
+@Disabled
+public class Encoders_Park_Only extends LinearOpMode {
     private DistanceSensor sensorRange;
 
     public DcMotor RF = null;

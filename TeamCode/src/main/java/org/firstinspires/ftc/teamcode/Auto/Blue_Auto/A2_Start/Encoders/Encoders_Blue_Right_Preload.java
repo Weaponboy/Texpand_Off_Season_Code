@@ -19,9 +19,10 @@
  * SOFTWARE.
  */
 
-package org.firstinspires.ftc.teamcode.Auto.Blue_Auto.A5_Start;
+package org.firstinspires.ftc.teamcode.Auto.Blue_Auto.A2_Start.Encoders;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -41,7 +42,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 
 @Autonomous
-public class A5_Preload_Encoders extends LinearOpMode {
+@Disabled
+public class Encoders_Blue_Right_Preload extends LinearOpMode {
     private DistanceSensor sensorRange;
 
     public DcMotor RF = null;
@@ -226,17 +228,7 @@ public class A5_Preload_Encoders extends LinearOpMode {
 
             Drive_To_Destack();
 
-//            while (sensorRange.getDistance(DistanceUnit.MM) > 370){
-//
-//                drive.StrafeDistance(1, 0.4);
-//
-//                telemetry.addData("Distance", sensorRange.getDistance(DistanceUnit.MM));
-//                telemetry.update();
-//            }
-
             DropPreLoad();
-
-//            Destack_5();
 
             Drive_To_Pos_1();
 
@@ -245,17 +237,10 @@ public class A5_Preload_Encoders extends LinearOpMode {
             telemetry.addData("Stop Position", "2");
             telemetry.update();
 
+
             Drive_To_Destack();
 
-//            while (sensorRange.getDistance(DistanceUnit.MM) > 370){
-//                drive.StrafeDistance(0.5, 0.4);
-//                telemetry.addData("Distance", sensorRange.getDistance(DistanceUnit.MM));
-//                telemetry.update();
-//            }
-
             DropPreLoad();
-
-//            Destack_5();
 
             Drive_To_Pos_2();
 
@@ -326,11 +311,12 @@ public class A5_Preload_Encoders extends LinearOpMode {
     }
 
     public void Drive_To_Pos_1() {
-        drive.TurnToHeading(8,0.45);
-        Top_Pivot.setPosition(1);
-        drive.DriveDistanceLong(10,0.5);
-        drive.StrafeDistance(52,0.5);
 
+        drive.TurnToHeading(0, 0.35);
+        Top_Pivot.setPosition(1);
+        telemetry.addData("Finished", "driving");
+        telemetry.update();
+        drive.StrafeDistance_Left(53,0.5);
 //        telemetry.addData("Finished", "placing");
 //        telemetry.update();
 //        drive.TurnToHeading(-90);
@@ -347,13 +333,12 @@ public class A5_Preload_Encoders extends LinearOpMode {
     }
 
     public void Drive_To_Pos_2() {
-        drive.TurnToHeading(8,0.35);
+        drive.TurnToHeading(0,0.35);
         Top_Pivot.setPosition(1);
-        drive.StrafeDistance_Left(8,0.5);
 
-        telemetry.addData("Finished", "placing 2");
-        telemetry.update();
 
+//        telemetry.addData("Finished", "placing");
+//        telemetry.update();
 //        drive.TurnToHeading(-90);
 //        drive.StrafeDistance(10, .5);
 //
@@ -368,13 +353,11 @@ public class A5_Preload_Encoders extends LinearOpMode {
     }
 
     public void Drive_To_Pos_3() {
-        drive.TurnToHeading(8, 0.35);
 
+        drive.TurnToHeading(0,0.35);
         Top_Pivot.setPosition(1);
-        telemetry.addData("Finished", "driving 3");
-        telemetry.update();
-        drive.StrafeDistance_Left(65,0.5);
-
+        drive.DriveDistanceLong(10,0.5);
+        drive.StrafeDistance(65,0.5);
 
 
 //        telemetry.addData("Finished", "placing");
@@ -395,9 +378,9 @@ public class A5_Preload_Encoders extends LinearOpMode {
 
     public void Drive_To_Destack() {
 
-        drive.DriveDistanceLong(130,0.5);
-
-        drive.TurnToHeading(130,0.35);
+        drive.DriveDistanceLong(129,0.5);
+        drive.StrafeDistance_Left(5,0.5);
+        drive.TurnToHeading(-125 ,0.4);
 //        drive.DriveDistanceLong(135, 0.5);
 //
 //        Base_Pivot.setPosition(0.72);
@@ -433,7 +416,7 @@ public class A5_Preload_Encoders extends LinearOpMode {
         Left_Slide.setTargetPosition(1900);
         Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        while (Right_Slide.getCurrentPosition() < 1890 && Left_Slide.getCurrentPosition() < 1890) {
+        while (Right_Slide.getCurrentPosition() < 1850 && Left_Slide.getCurrentPosition() < 1850) {
             Right_Slide.setPower(1);
             Left_Slide.setPower(1);
             Top_Pivot.setPosition(0.3);

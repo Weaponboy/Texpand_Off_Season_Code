@@ -19,9 +19,10 @@
  * SOFTWARE.
  */
 
-package org.firstinspires.ftc.teamcode.Auto.Red_Auto;
+package org.firstinspires.ftc.teamcode.Auto.Red_Auto.F2_Start;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -41,7 +42,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 
 @Autonomous
-public class Red_F2_Start_Preloaded extends LinearOpMode {
+@Disabled
+public class Encoders_Red_Left_Preload extends LinearOpMode {
     private DistanceSensor sensorRange;
 
     public DcMotor RF = null;
@@ -322,7 +324,6 @@ public class Red_F2_Start_Preloaded extends LinearOpMode {
         Top_Gripper.setPosition(0);
         Base_Gripper.setPosition(0.4);
         Base_Pivot.setPosition(0.72);
-        Top_Pivot.setPosition(0.4);
     }
 
     public void Drive_To_Pos_1() {
@@ -396,6 +397,9 @@ public class Red_F2_Start_Preloaded extends LinearOpMode {
     public void Drive_To_Destack() {
 
         drive.DriveDistanceLong(116,0.5);
+
+        Top_Pivot.setPosition(0.4);
+
         drive.StrafeDistance(4,0.5);
         drive.TurnToHeading(138,0.45);
 //        drive.DriveDistanceLong(135, 0.5);

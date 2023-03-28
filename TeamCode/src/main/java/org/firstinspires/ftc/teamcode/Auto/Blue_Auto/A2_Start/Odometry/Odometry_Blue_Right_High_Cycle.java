@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Auto.Blue_Auto.A2_Start;
+package org.firstinspires.ftc.teamcode.Auto.Blue_Auto.A2_Start.Odometry;
 
 import static org.firstinspires.ftc.teamcode.Odometry.PIDMovement.MovePIDTuning.driveD;
 import static org.firstinspires.ftc.teamcode.Odometry.PIDMovement.MovePIDTuning.driveF;
@@ -20,6 +20,7 @@ import com.arcrobotics.ftclib.kinematics.HolonomicOdometry;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.wolfpackmachina.bettersensors.HardwareMapProvider;
 import com.wolfpackmachina.bettersensors.Sensors.Gyro;
 
@@ -44,7 +45,7 @@ import java.util.concurrent.TimeUnit;
 
 
 @Autonomous
-public class A2_5Cone_Medium extends LinearOpMode {
+public class Odometry_Blue_Right_High_Cycle extends LinearOpMode {
 
     Drivetrain drive = new Drivetrain();
 
@@ -54,6 +55,8 @@ public class A2_5Cone_Medium extends LinearOpMode {
 
     public static final double TICKS_PER_REV = 8192;
     public static final double DISTANCE_PER_PULSE = Math.PI * WHEEL_DIAMETER / TICKS_PER_REV;
+
+    private ElapsedTime runtime = new ElapsedTime();
 
     private boolean lowering = false;
 
@@ -214,7 +217,10 @@ public class A2_5Cone_Medium extends LinearOpMode {
         }
 
 
+
         if(tagOfInterest.id == RIGHT){
+
+            runtime.reset();
 
             Texpandcamera.closeCameraDevice();
 
@@ -226,7 +232,7 @@ public class A2_5Cone_Medium extends LinearOpMode {
             ExtendHighPreloaded();
 
             //Drop Off Position
-            Odo_Drive(112, 0, 45, 0.1, 1, 0);
+            Odo_Drive(112, 0, 150, 0.1, 1, 0);
 
             top.Top_Pivot.setPosition(0.19);
 
@@ -246,6 +252,8 @@ public class A2_5Cone_Medium extends LinearOpMode {
 
         }else if (tagOfInterest.id == LEFT){
 
+            runtime.reset();
+
             Texpandcamera.closeCameraDevice();
 
             telemetry.addData("Stop Position", "1");
@@ -256,7 +264,7 @@ public class A2_5Cone_Medium extends LinearOpMode {
             ExtendHighPreloaded();
 
             //Drop Off Position
-            Odo_Drive(112, 0, 45, 0.1, 1, 0);
+            Odo_Drive(112, 0, 150, 0.1, 1, 0);
 
             top.Top_Pivot.setPosition(0.19);
 
@@ -276,6 +284,8 @@ public class A2_5Cone_Medium extends LinearOpMode {
 
         }else if (tagOfInterest.id == MIDDLE){
 
+            runtime.reset();
+
             Texpandcamera.closeCameraDevice();
 
             telemetry.addData("Stop Position", "2");
@@ -286,7 +296,7 @@ public class A2_5Cone_Medium extends LinearOpMode {
             ExtendHighPreloaded();
 
             //Drop Off Position
-            Odo_Drive(112, 0, 45, 0.1, 1, 0);
+            Odo_Drive(112, 0, 150, 0.1, 1, 0);
 
             top.Top_Pivot.setPosition(0.19);
 
@@ -621,14 +631,6 @@ public class A2_5Cone_Medium extends LinearOpMode {
         }
         slide.Extend.setPower(0);
 
-        if (!conefound){
-            try {
-                Thread.sleep(500);
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
-        }
-
         if (conefound || slide.Extend.getCurrentPosition() <= -890){
 
             //close gripper
@@ -759,13 +761,13 @@ public class A2_5Cone_Medium extends LinearOpMode {
             }
 
             if(!Nest_Occupied){
-//                    Top_Pivot.setPosition(0.8);
+                top.Top_Pivot.setPosition(0.8);
                 try {
-                    Thread.sleep(50);
+                    Thread.sleep(300);
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }
-//                    Top_Pivot.setPosition(1);
+                top.Top_Pivot.setPosition(1);
             }
 
             if(!Nest_Occupied){
@@ -852,8 +854,8 @@ public class A2_5Cone_Medium extends LinearOpMode {
             PivotPID.setPIDF(rotationP, 0, rotationD, rotationF);
 
             //SET DISTANCE TO TRAVEL ERROR
-            Xdist = (targetX - CurrentXPos) * 1.3;
-            Ydist = (targetY - CurrentYPos) * 1.3;
+            Xdist = (targetX - CurrentXPos) * 1.4;
+            Ydist = (targetY - CurrentYPos) * 1.4;
 
             XdistForStop = (targetX - CurrentXPos);
             YdistForStop = (targetY - CurrentYPos);
@@ -865,7 +867,7 @@ public class A2_5Cone_Medium extends LinearOpMode {
                 ConvertedHeading = (0 + StartingHeading);
             }
 
-            rotdist = (targetRot - ConvertedHeading)*1.5;
+            rotdist = (targetRot - ConvertedHeading)*1.55;
 
             rotdistForStop = (targetRot - ConvertedHeading);
 
@@ -891,19 +893,19 @@ public class A2_5Cone_Medium extends LinearOpMode {
             Horizontal = strafePID.calculate(-RRYdist);
             Pivot = PivotPID.calculate(-rotdist);
 
-            if ((Math.abs(rotdistForStop) < 1.5)){
-                Pivot = Pivot*1.5 + RampPower;
-            }
+//            if ((Math.abs(rotdistForStop) < 1.5)){
+//                Pivot = Pivot*1.4 + RampPower;
+//            }
 
-            if ((Math.abs(XdistForStop) < 1.5)){
-                Vertical = Vertical*1.3;
-                Horizontal = Horizontal*1.3;
-            }
-
-            if ((Math.abs(YdistForStop) < 1.5)){
-                Vertical = Vertical*1.3;
-                Horizontal = Horizontal*1.3;
-            }
+//            if ((Math.abs(XdistForStop) < 1.5)){
+//                Vertical = Vertical*1.3;
+//                Horizontal = Horizontal*1.3;
+//            }
+//
+//            if ((Math.abs(YdistForStop) < 1.5)){
+//                Vertical = Vertical*1.3;
+//                Horizontal = Horizontal*1.3;
+//            }
 
             //SET MOTOR POWER USING THE PID OUTPUT
             drive.RF.setPower(Power_For_Long_Drive*(-Pivot + (Vertical + Horizontal)));
@@ -918,7 +920,7 @@ public class A2_5Cone_Medium extends LinearOpMode {
             telemetry.addData("Y", getYpos());
             telemetry.update();
 
-        }while ((Math.abs(XdistForStop) > 0.8 + error) || (Math.abs(YdistForStop) > 0.8 + error) || (Math.abs(rotdistForStop) > 1 + error));
+        }while ((Math.abs(XdistForStop) > 1 + error) || (Math.abs(YdistForStop) > 1 + error) || (Math.abs(rotdistForStop) > 1.2 + error));
 
         drive.RF.setPower(0);
         drive.RB.setPower(0);
@@ -960,7 +962,7 @@ public class A2_5Cone_Medium extends LinearOpMode {
 
         odometry.update(0, 0, 0);
 
-        odometry.updatePose(new Pose2d(0, 0, new Rotation2d(0)));
+        odometry.updatePose(new Pose2d(0, 0, new Rotation2d(3.141)));
 
 //        odometry.updatePose();
 
@@ -1165,7 +1167,7 @@ public class A2_5Cone_Medium extends LinearOpMode {
 
         bottom.Base_Gripper.setPosition(0.4);
 
-        bottom.Base_Pivot.setPosition(0.1);
+        bottom.Base_Pivot.setPosition(0.05);
 
         //Collect Cone Position
         Odo_Drive(132, 28, 90, 0.1, 1, 0);
@@ -1175,16 +1177,20 @@ public class A2_5Cone_Medium extends LinearOpMode {
 
         top.Top_Gripper.setPosition(0);
 
+        abort = runtime.milliseconds() > 27000;
+
         if (!abort){
             top.Top_Gripper.setPosition(0);
 
             ExtendHigh();
 
             //Drop Off Position
-            Odo_Drive(124, 18.5, 45 , 0.1, 1, 0.1);
+            Odo_Drive(132, 19.5, 128 , 0.1, 1, 0.1);
 
             DropPreLoad();
         }
+
+        abort = runtime.milliseconds() > 27000;
 
         if (abort){
 
@@ -1202,18 +1208,14 @@ public class A2_5Cone_Medium extends LinearOpMode {
 
             bottom.Base_Gripper.setPosition(0.4);
 
-            bottom.Base_Pivot.setPosition(0.1);
-
-            try {
-                Thread.sleep(100);
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
+            bottom.Base_Pivot.setPosition(0.05);
 
             //cone 2
             CollectCone(setpoints.De_Pos_2);
 
             top.Top_Gripper.setPosition(0);
+
+            abort = runtime.milliseconds() > 27000;
 
             //Drop Off Position
             if (!abort){
@@ -1223,10 +1225,12 @@ public class A2_5Cone_Medium extends LinearOpMode {
                 ExtendHigh();
 
                 //Drop Off Position
-                Odo_Drive(124, 18.5, 45 , 0.1, 1, 0.1);
+                Odo_Drive(132, 19.5, 128 , 0.1, 1, 0.1);
 
                 DropPreLoad();
             }
+
+            abort = runtime.milliseconds() > 27000;
 
             if (abort){
 
@@ -1242,18 +1246,14 @@ public class A2_5Cone_Medium extends LinearOpMode {
 
                 bottom.Base_Gripper.setPosition(0.4);
 
-                bottom.Base_Pivot.setPosition(0.1);
-
-                try {
-                    Thread.sleep(100);
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
-                }
+                bottom.Base_Pivot.setPosition(0.05);
 
                 //cone 3
                 CollectCone(setpoints.De_Pos_3);
 
                 top.Top_Gripper.setPosition(0);
+
+                abort = runtime.milliseconds() > 27000;
 
                 if (!abort){
 
@@ -1262,10 +1262,12 @@ public class A2_5Cone_Medium extends LinearOpMode {
                     ExtendHigh();
 
                     //Drop Off Position
-                    Odo_Drive(132, 18.5, 45 , 0.1, 1, 0.1);
+                    Odo_Drive(132, 19.5, 128 , 0.1, 1, 0.1);
 
                     DropPreLoad();
                 }
+
+                abort = runtime.milliseconds() > 27000;
 
                 if (abort){
 
@@ -1273,7 +1275,7 @@ public class A2_5Cone_Medium extends LinearOpMode {
 
                     bottom.Base_Pivot.setPosition(0.72);
 
-                }else {
+                }else{
 
                     bottom.Base_Pivot.setPosition(0.2);
 
@@ -1282,18 +1284,14 @@ public class A2_5Cone_Medium extends LinearOpMode {
 
                     bottom.Base_Gripper.setPosition(0.4);
 
-                    bottom.Base_Pivot.setPosition(0.1);
-
-                    try {
-                        Thread.sleep(100);
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                    }
+                    bottom.Base_Pivot.setPosition(0.05);
 
                     //cone 4
                     CollectCone(setpoints.De_Pos_4);
 
                     top.Top_Gripper.setPosition(0);
+
+                    abort = runtime.milliseconds() > 27000;
 
                     if (!abort){
 
@@ -1302,10 +1300,12 @@ public class A2_5Cone_Medium extends LinearOpMode {
                         ExtendHigh();
 
                         //Drop Off Position
-                        Odo_Drive(124, 18.5, 45 , 0.1, 1, 0.1);
+                        Odo_Drive(132, 19.5, 128 , 0.1, 1, 0.1);
 
                         DropPreLoad();
                     }
+
+                    abort = runtime.milliseconds() > 27000;
 
                     if (abort) {
 
@@ -1313,7 +1313,7 @@ public class A2_5Cone_Medium extends LinearOpMode {
 
                         bottom.Base_Pivot.setPosition(0.72);
 
-                    }else {
+                    }else{
 
                         bottom.Base_Pivot.setPosition(0.2);
 
@@ -1322,18 +1322,14 @@ public class A2_5Cone_Medium extends LinearOpMode {
 
                         bottom.Base_Gripper.setPosition(0.4);
 
-                        bottom.Base_Pivot.setPosition(0.1);
-
-                        try {
-                            Thread.sleep(100);
-                        } catch (Exception e) {
-                            System.out.println(e.getMessage());
-                        }
+                        bottom.Base_Pivot.setPosition(0.05);
 
                         //cone 5
                         CollectCone(setpoints.De_Pos_5);
 
                         top.Top_Gripper.setPosition(0);
+
+                        abort = runtime.milliseconds() > 27000;
 
                         if (!abort){
 
@@ -1342,7 +1338,7 @@ public class A2_5Cone_Medium extends LinearOpMode {
                             ExtendHigh();
 
                             //Drop Off Position
-                            Odo_Drive(124, 18.5, 45 , 0.1, 1, 0);
+                            Odo_Drive(132, 19.5, 128 , 0.1, 1, 0.1);
 
                             DropPreLoad();
                         }
