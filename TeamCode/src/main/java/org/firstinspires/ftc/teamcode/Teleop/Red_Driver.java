@@ -1066,12 +1066,6 @@ public class Red_Driver extends OpMode {
 
         //extend slides to collect cone
         if (gamepad2.left_trigger > 0 || gamepad1.back) {
-//
-//            if(Destacker_Right.getPosition() < 0.5){
-//                Base_Pivot.setPosition(0.1);
-//            }else{
-//
-//            }
 
             Base_Pivot.setPosition(Base_Pivot_Collect);
 

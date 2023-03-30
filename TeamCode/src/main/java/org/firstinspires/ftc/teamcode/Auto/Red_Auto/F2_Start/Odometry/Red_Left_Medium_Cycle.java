@@ -985,7 +985,7 @@ public class Red_Left_Medium_Cycle extends LinearOpMode {
 
         odometry.update(0, 0, 0);
 
-        odometry.updatePose(new Pose2d(0, 0, new Rotation2d(0)));
+        odometry.updatePose(new Pose2d(0, 6, new Rotation2d(0)));
 
 //        odometry.updatePose();
 
