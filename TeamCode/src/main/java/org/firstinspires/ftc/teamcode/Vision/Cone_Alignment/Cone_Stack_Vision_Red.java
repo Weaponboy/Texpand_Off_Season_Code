@@ -4,6 +4,7 @@ package org.firstinspires.ftc.teamcode.Vision.Cone_Alignment;
 //import static org.firstinspires.ftc.teamcode.zLibraries.Utilities.OpModeUtils.setOpMode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -15,6 +16,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 
 @Autonomous
+@Disabled
 public class Cone_Stack_Vision_Red extends OpMode {
     Drivetrain drive = new Drivetrain();
 

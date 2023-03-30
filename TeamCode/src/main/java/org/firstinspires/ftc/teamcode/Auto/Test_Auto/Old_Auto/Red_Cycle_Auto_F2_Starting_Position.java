@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Auto.Old_Auto;
+package org.firstinspires.ftc.teamcode.Auto.Test_Auto.Old_Auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Drivetrain;
 
 @Autonomous
 @Disabled
-public class Red_Cycle_Auto_F5_Starting_Position extends LinearOpMode {
+public class Red_Cycle_Auto_F2_Starting_Position extends LinearOpMode {
 
     public DcMotor RF = null;
     public DcMotor LF = null;
@@ -103,8 +103,8 @@ public class Red_Cycle_Auto_F5_Starting_Position extends LinearOpMode {
         LB.setPower(0);
 
         Top_Gripper.setPosition(0);
-        Base_Gripper.setPosition(0.4);
-        Base_Pivot.setPosition(0);
+//        Base_Gripper.setPosition(0.4);
+//        Base_Pivot.setPosition(0);
         Top_Pivot.setPosition(0.4);
 
         drive.init(hardwareMap, 1);
@@ -112,23 +112,24 @@ public class Red_Cycle_Auto_F5_Starting_Position extends LinearOpMode {
 
         waitForStart();
 
-
         drive.DriveDistanceLong(140, 0.6);
 
-        drive.TurnToHeading(90,0.45);
+        drive.TurnDegreesLeft(90);
 
-        drive.StrafeDistance_Left(25, 0.6);
+        drive.StrafeDistance(25, 0.6);
 
-        drive.DriveDistance(20, 0.6);
+        drive.DriveDistance(24, 0.6);
 
-        drive.TurnToHeading(14,0.45);
+        drive.TurnDegreesLeft(13);
 
-        drive.StrafeDistance(14, 0.6);
+        drive.StrafeDistance_Left(15, 0.6);
 
         drive.DriveDistance(5, 0.6);
 
         Top_Pivot.setPosition(0.5);
+
         DropPreLoad();
+
         try {
             Thread.sleep(20);
         }catch (Exception e){
@@ -170,70 +171,6 @@ public class Red_Cycle_Auto_F5_Starting_Position extends LinearOpMode {
         Destacker_Right.setPosition(0.85);
         Destack();
 
-//        line.runOpMode();
-//
-////        drive.TurnDegrees(-15);
-////        drive.StrafeDistance(15,0.75);
-////        drive.DriveDistance(-59,0.75);
-//
-////        sleeve.runOpMode();
-//
-//        if(sleeve.Pos_1 = true){
-//            //Code for cycling and stopping in position 1 goes here
-//            drive.DriveDistance(119, .75);
-//            try {
-//                Thread.sleep(2000);
-//            }catch (Exception e){
-//                System.out.println(e.getMessage());
-//            }
-//            drive.TurnDegrees(105);
-//            try {
-//                Thread.sleep(2000);
-//            }catch (Exception e){
-//                System.out.println(e.getMessage());
-//            }
-//            line.runOpMode();
-////            B_grip.Base_Gripper.setPosition(0.45);
-////            top.Top_Gripper.setPosition(0);
-////            top.Top_Pivot.setPosition(0.4);
-////            driv.Top_pole();
-////            driv.return_Zero();
-////            driv.Destack_5();
-//            drive.TurnDegrees(-15);
-//            drive.StrafeDistance(15,0.75);
-//            drive.DriveDistance(-59,0.75);
-//
-//        }else if(sleeve.Pos_2 = true){
-//            //Code for cycling and stopping in position 2 goes here
-//            drive.DriveDistance(119, .75);
-//            drive.TurnDegrees(105);
-//            line.runOpMode();
-//            B_grip.Base_Gripper.setPosition(0.45);
-//            top.Top_Gripper.setPosition(0);
-//            top.Top_Pivot.setPosition(0.4);
-//            slide.Top_pole();
-//            slide.return_Zero();
-//            slide.Destack_5();
-//            drive.TurnDegrees(-15);
-//            drive.StrafeDistance(15,0.75);
-//
-//
-//        }else if(sleeve.Pos_3 = true){
-//            //Code for cycling and stopping in position 3 goes here
-//            drive.DriveDistance(119, .75);
-//            drive.TurnDegrees(105);
-//            line.runOpMode();
-//            B_grip.Base_Gripper.setPosition(0.45);
-//            top.Top_Gripper.setPosition(0);
-//            top.Top_Pivot.setPosition(0.4);
-//            slide.Top_pole();
-//            slide.return_Zero();
-//            slide.Destack_5();
-//            drive.TurnDegrees(-15);
-//            drive.StrafeDistance(15,0.75);
-//            drive.DriveDistance(59,0.75);
-//
-//      }
     }
     public void DropPreLoad(){
         //Extend vertical slides and drop cone
@@ -277,6 +214,7 @@ public class Red_Cycle_Auto_F5_Starting_Position extends LinearOpMode {
             lowering = true;
         }
     }
+
     public void CheckVSlidePos() {
         if(Right_Slide.getCurrentPosition() < 10 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 10 && !Left_Slide.isBusy()){
             Right_Slide.setPower(0);

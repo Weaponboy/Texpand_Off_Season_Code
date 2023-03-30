@@ -19,7 +19,7 @@
  * SOFTWARE.
  */
 
-package org.firstinspires.ftc.teamcode.Auto.Old_Auto;
+package org.firstinspires.ftc.teamcode.Auto.Test_Auto.Old_Auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -42,7 +42,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 @Disabled
 @Autonomous
-public class Red_Auto_F2_Start extends LinearOpMode {
+public class Red_Auto_F5_Start extends LinearOpMode {
     private DistanceSensor sensorRange;
 
     public DcMotor RF = null;
@@ -324,15 +324,16 @@ public class Red_Auto_F2_Start extends LinearOpMode {
         drive.TurnDegreesLeft(14);
 
         Top_Pivot.setPosition(0.4);
+
         Base_Pivot.setPosition(1);
 
-        drive.StrafeDistance(18, .5);
+        drive.StrafeDistance_Left(18, .5);
 
-        drive.DriveDistanceLongReverse(-22, .5);
+        drive.DriveDistanceLongReverse(22, .5);
 
-        drive.StrafeDistance(60, .5);
+        drive.StrafeDistance_Left(60, .5);
 
-        drive.TurnDegreesLeft(90);
+        drive.TurnToHeading(90,0.45);
 
         drive.StrafeDistance_Left(60, .5);
     }
@@ -341,30 +342,32 @@ public class Red_Auto_F2_Start extends LinearOpMode {
         drive.TurnDegreesLeft(14);
 
         Top_Pivot.setPosition(0.4);
+
         Base_Pivot.setPosition(1);
 
-        drive.StrafeDistance(18, .5);
+        drive.StrafeDistance_Left(18, .5);
 
-        drive.DriveDistanceLongReverse(-22, .5);
+        drive.DriveDistanceLongReverse(22, .5);
 
-        drive.StrafeDistance(60, .5);
+        drive.StrafeDistance_Left(60, .5);
 
-        drive.TurnDegreesLeft(90);
+        drive.TurnToHeading(90,0.45);
     }
 
     public void Drive_To_Pos_3() {
         drive.TurnDegreesLeft(14);
 
         Top_Pivot.setPosition(0.4);
+
         Base_Pivot.setPosition(1);
 
-        drive.StrafeDistance(18, .5);
+        drive.StrafeDistance_Left(18, .5);
 
-        drive.DriveDistanceLongReverse(-22, .5);
+        drive.DriveDistanceLongReverse(22, .5);
 
-        drive.StrafeDistance(60, .5);
+        drive.StrafeDistance_Left(60, .5);
 
-        drive.TurnDegreesLeft(90);
+        drive.TurnToHeading(90,0.45);
 
         drive.StrafeDistance(50, .5);
     }
@@ -388,15 +391,15 @@ public class Red_Auto_F2_Start extends LinearOpMode {
 
         Base_Pivot.setPosition(1);
 
-        drive.TurnToHeading(90,0.45);
+        drive.TurnDegreesLeft(90);
 
         drive.DriveDistance(20, 0.6);
 
         drive.ResetEncoders();
 
-        drive.StrafeDistance_Left(15, 0.6);
+        drive.StrafeDistance(15, 0.6);
 
-        drive.TurnToHeading(18,0.45);
+        drive.TurnDegreesLeft(18);
     }
 
     public void DropPreLoad() {

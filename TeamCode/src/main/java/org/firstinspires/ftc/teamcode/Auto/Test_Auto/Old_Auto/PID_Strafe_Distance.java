@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Auto.Old_Auto;
+package org.firstinspires.ftc.teamcode.Auto.Test_Auto.Old_Auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.ColorSensor;

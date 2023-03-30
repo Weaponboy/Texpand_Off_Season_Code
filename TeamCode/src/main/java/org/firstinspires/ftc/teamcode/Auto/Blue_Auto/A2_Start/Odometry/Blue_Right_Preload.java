@@ -44,7 +44,7 @@ import java.util.concurrent.TimeUnit;
 
 
 @Autonomous
-public class Odometry_Blue_Right_Preload extends LinearOpMode {
+public class Blue_Right_Preload extends LinearOpMode {
 
     Drivetrain drive = new Drivetrain();
 
@@ -226,9 +226,15 @@ public class Odometry_Blue_Right_Preload extends LinearOpMode {
             ExtendHigh();
 
             //Drop Off Position
-            Odo_Drive(115, 0, 150, 0.1, 1, 0);
+            Odo_Drive(112, 0, 150, 0.1, 1, 0);
 
             top.Top_Pivot.setPosition(0.19);
+
+            try {
+                Thread.sleep(200);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
 
             DropPreLoad();
 
@@ -250,9 +256,15 @@ public class Odometry_Blue_Right_Preload extends LinearOpMode {
             ExtendHigh();
 
             //Drop Off Position
-            Odo_Drive(115, 0, 150, 0.1, 1, 0);
+            Odo_Drive(112, 0, 150, 0.1, 1, 0);
 
             top.Top_Pivot.setPosition(0.19);
+
+            try {
+                Thread.sleep(200);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
 
             DropPreLoad();
 
@@ -274,9 +286,15 @@ public class Odometry_Blue_Right_Preload extends LinearOpMode {
             ExtendHigh();
 
             //Drop Off Position
-            Odo_Drive(115, 0, 150, 0.1, 1, 0);
+            Odo_Drive(112, 0, 150, 0.1, 1, 0);
 
             top.Top_Pivot.setPosition(0.19);
+
+            try {
+                Thread.sleep(200);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
 
             DropPreLoad();
 

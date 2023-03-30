@@ -53,7 +53,9 @@ import java.util.concurrent.TimeUnit;
 @Disabled
 public class Encoders_Blue_Right_Cycle_With_Vision extends LinearOpMode {
     private DistanceSensor sensorRange;
+
     Blue_Cone_Pipe Cone_Pipeline;
+
     public DcMotor RF = null;
     public DcMotor LF = null;
     public DcMotor RB = null;

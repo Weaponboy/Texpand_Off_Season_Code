@@ -10,6 +10,7 @@ import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.arcrobotics.ftclib.kinematics.HolonomicOdometry;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -29,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 
 @Autonomous
 @Config
+@Disabled
 public class Cone_Stack_Vision extends OpMode {
 
     public static final double TRACKWIDTH = 36.2  ;

@@ -19,7 +19,7 @@
  * SOFTWARE.
  */
 
-package org.firstinspires.ftc.teamcode.Auto.Red_Auto.F2_Start;
+package org.firstinspires.ftc.teamcode.Auto.Red_Auto.F5_Start.Encoders;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -51,7 +51,7 @@ import java.util.concurrent.TimeUnit;
 
 @Autonomous
 @Disabled
-public class Encoders_Red_Left_Cycle_With_Vision extends LinearOpMode {
+public class Encoders_Red_Right_Cycle_With_Vision extends LinearOpMode {
     private DistanceSensor sensorRange;
     Red_Cone_Pipe Cone_Pipeline;
     public DcMotor RF = null;
@@ -253,7 +253,7 @@ public class Encoders_Red_Left_Cycle_With_Vision extends LinearOpMode {
 
             DropPreLoad();
 
-            Destack_3();
+//            Destack_3();
 
             Drive_To_Pos_3();
 
@@ -265,8 +265,8 @@ public class Encoders_Red_Left_Cycle_With_Vision extends LinearOpMode {
             Drive_To_Destack();
 
             DropPreLoad();
-
-            Destack_3();
+//
+//            Destack_3();
 
             Drive_To_Pos_1();
 
@@ -277,7 +277,7 @@ public class Encoders_Red_Left_Cycle_With_Vision extends LinearOpMode {
 
             DropPreLoad();
 
-            Destack_3();
+//            Destack_3();
 
             Drive_To_Pos_2();
 
@@ -350,13 +350,15 @@ public class Encoders_Red_Left_Cycle_With_Vision extends LinearOpMode {
 
     public void Drive_To_Pos_1() {
 
-        drive.TurnToHeading(-90, 0.35);
+        drive.TurnToHeading(90, 0.35);
 
         Top_Pivot.setPosition(1);
 
         Base_Pivot.setPosition(1);
 
-        drive.StrafeDistance_Left(19, .5);
+        drive.StrafeDistance(18, .8);
+
+        drive.TurnToHeading(90,0.45);
 
         drive.DriveDistanceLongReverse(85, .65);
 
@@ -364,16 +366,18 @@ public class Encoders_Red_Left_Cycle_With_Vision extends LinearOpMode {
 
         Top_Pivot.setPosition(1);
 
+
     }
 
     public void Drive_To_Pos_2() {
-        drive.TurnDegreesLeft(14);
+
+        drive.TurnToHeading(90, 0.35);
 
         Top_Pivot.setPosition(1);
 
         Base_Pivot.setPosition(1);
 
-        drive.StrafeDistance_Left(18, .5);
+        drive.StrafeDistance(18, .5);
 
         drive.DriveDistanceLongReverse(20, .5);
 
@@ -383,23 +387,24 @@ public class Encoders_Red_Left_Cycle_With_Vision extends LinearOpMode {
 
     public void Drive_To_Pos_3() {
 
-        drive.TurnToHeading(-90, 0.35);
+        drive.TurnToHeading(90, 0.35);
 
         Top_Pivot.setPosition(1);
 
         Base_Pivot.setPosition(0.7);
 
-        drive.StrafeDistance_Left(18, .6);
+        drive.StrafeDistance(18, .6);
 
         drive.TurnToHeading(0,0.35);
 
-        drive.StrafeDistance_Left(33, .6);
+        drive.StrafeDistance(33, .6);
 
-        drive.TurnToHeading(3,0.35);
+        drive.TurnToHeading(0,0.35);
 
     }
 
     public void Drive_To_Destack() {
+
         telemetry.addData("Stop Position", "2");
         telemetry.update();
         drive.DriveDistanceRamp(140,0.9);
@@ -412,7 +417,8 @@ public class Encoders_Red_Left_Cycle_With_Vision extends LinearOpMode {
         telemetry.addData("Target", 140*510/(Math.PI * 2 * (9.6 / 2.0)));
         telemetry.update();
 
-        drive.TurnToHeading(-101,0.3);
+        drive.TurnToHeading(101,0.3);
+
         telemetry.addData("Angle", drive.yawAngle.firstAngle);
         telemetry.update();
 
@@ -466,7 +472,7 @@ public class Encoders_Red_Left_Cycle_With_Vision extends LinearOpMode {
         drive.RB.setPower(-0.05);
         drive.LF.setPower(-0.05);
         drive.LB.setPower(-0.05);
-        drive.TurnToHeading(-101,0.3);
+        drive.TurnToHeading(101,0.3);
         try {
             Thread.sleep(100);
         } catch (Exception e) {
@@ -525,7 +531,7 @@ public class Encoders_Red_Left_Cycle_With_Vision extends LinearOpMode {
         drive.LF.setPower(0);
         drive.LB.setPower(0);
 
-        drive.TurnToHeading(-101,0.2);
+        drive.TurnToHeading(101,0.2);
 
 //
 //        telemetry.addData("Angle", drive.yawAngle.firstAngle);
@@ -574,8 +580,11 @@ public class Encoders_Red_Left_Cycle_With_Vision extends LinearOpMode {
     public void Reverse_To_Destack() {
 
         drive.DriveDistanceLong(140,0.7);
-        drive.TurnToHeading(-100,0.45);
+
+        drive.TurnToHeading(101,0.45);
+
         drive.DriveDistanceLong(15,0.5);
+
         Texpandcamera.setPipeline(Cone_Pipeline);
 
         rectPositionFromLeft = 0;
@@ -689,6 +698,7 @@ public class Encoders_Red_Left_Cycle_With_Vision extends LinearOpMode {
 //        telemetry.addData("Finished", "Turning");
 //        telemetry.update();
     }
+
     public void DropPreLoad() {
         Top_Pivot.setPosition(0.5);
 
@@ -755,7 +765,6 @@ public class Encoders_Red_Left_Cycle_With_Vision extends LinearOpMode {
 
         Destacker_Left.setPosition(De_pos);
         Destacker_Right.setPosition(De_pos);
-
         if(Destacker_Left.getPosition() == De_Pos_1){
             Base_Pivot.setPosition(0.1);
         }else{
@@ -1046,6 +1055,7 @@ public class Encoders_Red_Left_Cycle_With_Vision extends LinearOpMode {
         }
 
     }
+
     public void Destack_4 () {
         Base_Gripper.setPosition(0.4);
         Base_Pivot.setPosition(0.12);
@@ -1093,6 +1103,7 @@ public class Encoders_Red_Left_Cycle_With_Vision extends LinearOpMode {
         }
 
     }
+
     public void Destack_3 () {
         Base_Gripper.setPosition(0.4);
         Base_Pivot.setPosition(0.12);

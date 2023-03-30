@@ -19,7 +19,7 @@
  * SOFTWARE.
  */
 
-package org.firstinspires.ftc.teamcode.Auto.Red_Auto.F5_Start;
+package org.firstinspires.ftc.teamcode.Auto.Red_Auto.F2_Start.Encoders;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -43,7 +43,7 @@ import java.util.ArrayList;
 
 @Autonomous
 @Disabled
-public class Encoders_Red_Right_Preload extends LinearOpMode {
+public class Encoders_Red_Left_Preload extends LinearOpMode {
     private DistanceSensor sensorRange;
 
     public DcMotor RF = null;
@@ -329,14 +329,10 @@ public class Encoders_Red_Right_Preload extends LinearOpMode {
     public void Drive_To_Pos_1() {
 
         drive.TurnToHeading(0,0.45);
-
         Top_Pivot.setPosition(0.4);
-
         drive.DriveDistanceLong(10,0.5);
-
         telemetry.addData("Finished", "driving");
         telemetry.update();
-
         drive.StrafeDistance_Left(60,0.5);
 //        telemetry.addData("Finished", "placing");
 //        telemetry.update();
@@ -356,7 +352,7 @@ public class Encoders_Red_Right_Preload extends LinearOpMode {
     public void Drive_To_Pos_2() {
         drive.TurnToHeading(0,0.45);
         Top_Pivot.setPosition(0.4);
-        drive.DriveDistanceLong(10, 0.5);
+        drive.DriveDistanceLong(4,0.5);
         drive.StrafeDistance_Left(5,0.4);
 
 //        telemetry.addData("Finished", "placing");
@@ -404,9 +400,8 @@ public class Encoders_Red_Right_Preload extends LinearOpMode {
 
         Top_Pivot.setPosition(0.4);
 
-        drive.StrafeDistance_Left(4,0.5);
-
-        drive.TurnToHeading(-142,0.45);
+        drive.StrafeDistance(4,0.5);
+        drive.TurnToHeading(138,0.45);
 //        drive.DriveDistanceLong(135, 0.5);
 //
 //        Base_Pivot.setPosition(0.72);

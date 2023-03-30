@@ -1,6 +1,7 @@
-package org.firstinspires.ftc.teamcode.Teleop;
+package org.firstinspires.ftc.teamcode.Teleop.Old;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -13,9 +14,9 @@ import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Bottom_Gripper_Assemb
 import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Slides;
 import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Top_gripper;
-
 @TeleOp
-public class DoubleGripperRed extends OpMode {
+@Disabled
+public class DoubleGripperBlue extends OpMode {
     private double vertical;
     private double horizontal;
     private double pivot;
@@ -124,7 +125,6 @@ public class DoubleGripperRed extends OpMode {
             ConeAlignment();
         }
 
-
         //Reduce robot speed
         if(gamepad1.start && constants.slow == 0.6){
             constants.slow = 0.4;
@@ -206,7 +206,7 @@ public class DoubleGripperRed extends OpMode {
         }
 
         //toggle base pivot
-        if(gamepad2.a && bottom.Base_Pivot.getPosition() != 0.85){
+        if(gamepad2.a && bottom.Base_Pivot.getPosition() != setpoints.Base_Pivot_Flip){
            B_Pivot_Up();
         }else if(gamepad2.a && bottom.Base_Pivot.getPosition() != setpoints.Base_Pivot_Collect ){
            B_Pivot_Down();
@@ -273,7 +273,7 @@ public class DoubleGripperRed extends OpMode {
 
         bottom.init(hardwareMap);
 
-        slide.init(hardwareMap, 2);
+        slide.init(hardwareMap, 1);
 
     }
 

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Auto.Blue_Auto.A5_Start.Odometry;
+package org.firstinspires.ftc.teamcode.Auto.Blue_Auto.A2_Start.Odometry;
 
 import static org.firstinspires.ftc.teamcode.Odometry.PIDMovement.MovePIDTuning.driveD;
 import static org.firstinspires.ftc.teamcode.Odometry.PIDMovement.MovePIDTuning.driveF;
@@ -45,7 +45,7 @@ import java.util.concurrent.TimeUnit;
 
 
 @Autonomous
-public class Odometry_Blue_Left_Medium_Cycle extends LinearOpMode {
+public class Blue_Right_Medium_Cycle extends LinearOpMode {
 
     Drivetrain drive = new Drivetrain();
 
@@ -115,6 +115,8 @@ public class Odometry_Blue_Left_Medium_Cycle extends LinearOpMode {
     double StartingHeadinggyro = 0;
 
     private Motor.Encoder leftOdometer, rightOdometer, centerOdometer;
+
+    private boolean time = false;
     private HolonomicOdometry odometry;
 
     public static final double TRACKWIDTH = 36.32;
@@ -231,9 +233,15 @@ public class Odometry_Blue_Left_Medium_Cycle extends LinearOpMode {
             ExtendHighPreloaded();
 
             //Drop Off Position
-            Odo_Drive(124, 0, 312, 0.1, 1, 0);
+            Odo_Drive(124, 0, 48, 0.1, 1, 0);
 
             top.Top_Pivot.setPosition(0.19);
+
+            try {
+                Thread.sleep(100);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
 
             DropPreLoad();
 
@@ -257,9 +265,15 @@ public class Odometry_Blue_Left_Medium_Cycle extends LinearOpMode {
             ExtendHighPreloaded();
 
             //Drop Off Position
-            Odo_Drive(124, 0, 312, 0.1, 1, 0);
+            Odo_Drive(124, 0, 48, 0.1, 1, 0);
 
             top.Top_Pivot.setPosition(0.19);
+
+            try {
+                Thread.sleep(100);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
 
             DropPreLoad();
 
@@ -283,9 +297,15 @@ public class Odometry_Blue_Left_Medium_Cycle extends LinearOpMode {
             ExtendHighPreloaded();
 
             //Drop Off Position
-            Odo_Drive(124, 0, 312, 0.1, 1, 0);
+            Odo_Drive(124, 0, 48, 0.1, 1, 0);
 
             top.Top_Pivot.setPosition(0.19);
+
+            try {
+                Thread.sleep(100);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
 
             DropPreLoad();
 
@@ -1168,29 +1188,29 @@ public class Odometry_Blue_Left_Medium_Cycle extends LinearOpMode {
         bottom.Base_Pivot.setPosition(0.05);
 
         //Collect Cone Position
-        Odo_Drive(120, -20, 270, 0, 1, 0);
+        Odo_Drive(120, 20, 90, 0, 1, 0);
 
         //cone 1
         CollectCone(setpoints.De_Pos_1);
 
         top.Top_Gripper.setPosition(0);
 
-        abort = runtime.milliseconds() > 27000;
+        time  = runtime.milliseconds() > 27000;
 
-        if (!abort){
+        if (!abort && !time){
             top.Top_Gripper.setPosition(0);
 
             ExtendMedium();
 
             //Drop Off Position
-            Odo_Drive(120, 0, 314, 0.1, 1, 0);
+            Odo_Drive(120, 0, 46, 0.1, 1, 0);
 
             DropPreLoad();
         }
 
-        abort = runtime.milliseconds() > 27000;
+        time = runtime.milliseconds() > 27000;
 
-        if (abort){
+        if (abort || time){
 
             //Drive to position
             top.Top_Pivot.setPosition(setpoints.Top_Pivot_Waiting_For_Cone);
@@ -1202,7 +1222,7 @@ public class Odometry_Blue_Left_Medium_Cycle extends LinearOpMode {
             bottom.Base_Pivot.setPosition(0.2);
 
             //Collect Cone Position
-            Odo_Drive(120, -20, 270, 0, 1, 0);
+            Odo_Drive(120, 20, 90, 0, 1, 0.1);
 
             bottom.Base_Gripper.setPosition(0.4);
 
@@ -1213,24 +1233,24 @@ public class Odometry_Blue_Left_Medium_Cycle extends LinearOpMode {
 
             top.Top_Gripper.setPosition(0);
 
-            abort = runtime.milliseconds() > 27000;
+            time = runtime.milliseconds() > 27000;
 
             //Drop Off Position
-            if (!abort){
+            if (!abort && !time){
 
                 top.Top_Gripper.setPosition(0);
 
                 ExtendMedium();
 
                 //Drop Off Position
-                Odo_Drive(120, 0, 314, 0.1, 1, 0);
+                Odo_Drive(120, 0, 46, 0.1, 1, 0);
 
                 DropPreLoad();
             }
 
-            abort = runtime.milliseconds() > 27000;
+            time = runtime.milliseconds() > 27000;
 
-            if (abort){
+            if (abort || time){
 
                 top.Top_Pivot.setPosition(setpoints.Top_Pivot_Waiting_For_Cone);
 
@@ -1240,7 +1260,7 @@ public class Odometry_Blue_Left_Medium_Cycle extends LinearOpMode {
                 bottom.Base_Pivot.setPosition(0.2);
 
                 //Collect Cone Position
-                Odo_Drive(120, -20, 270, 0, 1, 0);
+                Odo_Drive(120, 20, 90, 0, 1, 0.1);
 
                 bottom.Base_Gripper.setPosition(0.4);
 
@@ -1251,23 +1271,23 @@ public class Odometry_Blue_Left_Medium_Cycle extends LinearOpMode {
 
                 top.Top_Gripper.setPosition(0);
 
-                abort = runtime.milliseconds() > 27000;
+                time = runtime.milliseconds() > 27000;
 
-                if (!abort){
+                if (!abort && !time){
 
                     top.Top_Gripper.setPosition(0);
 
                     ExtendMedium();
 
                     //Drop Off Position
-                    Odo_Drive(120, 0, 314, 0.1, 1, 0);
+                    Odo_Drive(120, 0, 46, 0.1, 1, 0);
 
                     DropPreLoad();
                 }
 
-                abort = runtime.milliseconds() > 27000;
+                time = runtime.milliseconds() > 27000;
 
-                if (abort){
+                if (abort || time){
 
                     top.Top_Pivot.setPosition(setpoints.Top_Pivot_Waiting_For_Cone);
 
@@ -1278,7 +1298,7 @@ public class Odometry_Blue_Left_Medium_Cycle extends LinearOpMode {
                     bottom.Base_Pivot.setPosition(0.2);
 
                     //Collect Cone Position
-                    Odo_Drive(120, -20, 270, 0, 1, 0);
+                    Odo_Drive(120, 20, 90, 0, 1, 0.1);
 
                     bottom.Base_Gripper.setPosition(0.4);
 
@@ -1291,21 +1311,21 @@ public class Odometry_Blue_Left_Medium_Cycle extends LinearOpMode {
 
                     abort = runtime.milliseconds() > 27000;
 
-                    if (!abort){
+                    if (!abort && !time){
 
                         top.Top_Gripper.setPosition(0);
 
                         ExtendMedium();
 
                         //Drop Off Position
-                        Odo_Drive(120, 0, 314, 0.1, 1, 0);
+                        Odo_Drive(120, 0, 46, 0.1, 1, 0);
 
                         DropPreLoad();
                     }
 
-                    abort = runtime.milliseconds() > 27000;
+                    time = runtime.milliseconds() > 27000;
 
-                    if (abort) {
+                    if (abort || time) {
 
                         top.Top_Pivot.setPosition(setpoints.Top_Pivot_Waiting_For_Cone);
 
@@ -1316,7 +1336,7 @@ public class Odometry_Blue_Left_Medium_Cycle extends LinearOpMode {
                         bottom.Base_Pivot.setPosition(0.2);
 
                         //Collect Cone Position
-                        Odo_Drive(120, -20, 270, 0, 1, 0);
+                        Odo_Drive(120, 20, 90, 0, 1, 0.1);
 
                         bottom.Base_Gripper.setPosition(0.4);
 
@@ -1327,16 +1347,16 @@ public class Odometry_Blue_Left_Medium_Cycle extends LinearOpMode {
 
                         top.Top_Gripper.setPosition(0);
 
-                        abort = runtime.milliseconds() > 27000;
+                        time = runtime.milliseconds() > 27000;
 
-                        if (!abort){
+                        if (!abort && !time){
 
                             top.Top_Gripper.setPosition(0);
 
                             ExtendMedium();
 
                             //Drop Off Position
-                            Odo_Drive(120, 0, 314, 0.1, 1, 0);
+                            Odo_Drive(120, 0, 46, 0.1, 1, 0);
 
                             DropPreLoad();
                         }

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Teleop.Old;
+package org.firstinspires.ftc.teamcode.Teleop;
 
 import static org.firstinspires.ftc.teamcode.Odometry.PIDMovement.MovePIDTuning.driveD;
 import static org.firstinspires.ftc.teamcode.Odometry.PIDMovement.MovePIDTuning.driveF;
@@ -20,7 +20,6 @@ import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.arcrobotics.ftclib.kinematics.HolonomicOdometry;
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -30,9 +29,7 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.wolfpackmachina.bettersensors.HardwareMapProvider;
 import com.wolfpackmachina.bettersensors.Sensors.Gyro;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -60,7 +57,7 @@ import java.util.concurrent.TimeUnit;
 
 @TeleOp
 
-public class DoubleGripperBlueOld extends OpMode {
+public class Blue_Driver extends OpMode {
     FtcDashboard dashboard = FtcDashboard.getInstance();
     Telemetry dashboardTelemetry = dashboard.getTelemetry();
     OpenCvWebcam FrontWeb;
@@ -237,6 +234,7 @@ public class DoubleGripperBlueOld extends OpMode {
     public void loop() {
 
         runtime.reset();
+
         slow1 = (gamepad1.left_trigger * 0.6) + 0.4;
 
         drive.WithOutEncoders();
@@ -250,9 +248,9 @@ public class DoubleGripperBlueOld extends OpMode {
         horizontal = -gamepad1.right_stick_x;
         pivot = gamepad1.left_stick_x;
 
-        RF.setPower(slow1*1.3*(-pivot + (vertical - horizontal)));
+        RF.setPower((slow1*1.4)*(-pivot + (vertical - horizontal)));
         RB.setPower(slow1*(-pivot + (vertical + horizontal)));
-        LF.setPower(slow1*1.3*(pivot + (vertical + horizontal)));
+        LF.setPower((slow1*1.4)*(pivot + (vertical + horizontal)));
         LB.setPower(slow1*(pivot + (vertical - horizontal)));
 
         if (gamepad1.right_bumper && gamepad2.right_bumper){
@@ -680,7 +678,7 @@ public class DoubleGripperBlueOld extends OpMode {
                     SlowPoint = sensorRange.getDistance(DistanceUnit.MM) < 180;
 
                     if (SlowPoint){
-                        Extend.setPower(-0.5);
+                        Extend.setPower(-0.55);
                     }else {
                         Extend.setPower(-1);
                     }
@@ -752,7 +750,7 @@ public class DoubleGripperBlueOld extends OpMode {
 //                            if(Extend.getCurrentPosition() > -90){
 //                                Base_Gripper.setPosition(0.4);
 //                            }
-                            if(Extend.getCurrentPosition() > -20){
+                            if(Extend.getCurrentPosition() > -40){
                                 //open top gripper
                                 Top_Gripper.setPosition(0.35);
 
@@ -820,7 +818,7 @@ public class DoubleGripperBlueOld extends OpMode {
                             Top_Pivot.setPosition(0.6);
 
                             try {
-                                Thread.sleep(100);
+                                Thread.sleep(50);
                             }catch (Exception e){
                                 System.out.println(e.getMessage());
                             }
@@ -836,15 +834,17 @@ public class DoubleGripperBlueOld extends OpMode {
                         System.out.println(e.getMessage());
                     }
 
-                    Right_Slide.setTargetPosition(1800);
-                    Left_Slide.setTargetPosition(1800);
+                    Right_Slide.setTargetPosition(1850);
+                    Left_Slide.setTargetPosition(1850);
                     Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    while (Right_Slide.getCurrentPosition() < 1750 && Left_Slide.getCurrentPosition() < 1750) {
+                    while (Right_Slide.getCurrentPosition() < 1800 && Left_Slide.getCurrentPosition() < 1800) {
                         Right_Slide.setPower(1);
                         Left_Slide.setPower(1);
-                        Top_Pivot.setPosition(0.3);
-                        if(Right_Slide.getCurrentPosition() > 1650){
+
+                        Top_Pivot.setPosition(0.15);
+
+                        if(Right_Slide.getCurrentPosition() > 1800){
                             Top_Pivot.setPosition(0);
                         }
                     }
@@ -858,12 +858,13 @@ public class DoubleGripperBlueOld extends OpMode {
 
 
                     try {
-                        Thread.sleep(150);
+                        Thread.sleep(50);
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
                     }
 
                     Top_Gripper.setPosition(Top_Pivot_Collect);
+
                     if(Top_Gripper.getPosition() == Top_Pivot_Collect) {
 
                         Right_Slide.setTargetPosition(0);
@@ -1352,25 +1353,17 @@ public class DoubleGripperBlueOld extends OpMode {
         telemetry.addData("X:", getXpos());
 
         telemetry.addData("Limit", SlideZero.getState());
-        telemetry.addData("Right Stick Y:", gamepad2.right_stick_y);
-        telemetry.addData("Right Stick X:", gamepad2.right_stick_x);
-        telemetry.addData("Odo ticks:", Odo_raise.getCurrentPosition());
         telemetry.addData("Destacker Left:", Destacker_Left.getPosition());
         telemetry.addData("Destacker Right:", Destacker_Right.getPosition());
-        telemetry.addData("Base Pivot:", Base_Pivot.getPosition());
-        telemetry.addData("Top Gripper:", Top_Gripper.getPosition());
-        telemetry.addData("Stacker pos:", stakerpos);
 
         telemetry.addData("MM range b:", sensorRange.getDistance(DistanceUnit.MM));
         telemetry.addData("MM range f", Back_Distance.getDistance(DistanceUnit.MM));
-        telemetry.addData("Blue:", colour.blue());
+        telemetry.addData("Red:", colour.blue());
         telemetry.addData("RF Power:", RF.getPower());
         telemetry.addData("RB Power:", RB.getPower());
         telemetry.addData("LF Power:", LF.getPower());
         telemetry.addData("LB Power:", LB.getPower());
         telemetry.addData("motor ticks extend:", Extend.getCurrentPosition());
-        telemetry.addData("Pole X:", Pole.getRectX());
-        telemetry.addData("Cone X", Cone_Pipeline.getRectX());
         telemetry.update();
 
     }
