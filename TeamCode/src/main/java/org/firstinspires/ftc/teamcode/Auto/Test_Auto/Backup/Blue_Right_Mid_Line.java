@@ -19,7 +19,7 @@
  * SOFTWARE.
  */
 
-package org.firstinspires.ftc.teamcode.Auto.Test_Auto;
+package org.firstinspires.ftc.teamcode.Auto.Test_Auto.Backup;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -60,7 +60,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Autonomous
 @Disabled
-public class Blue_A2_Start_High extends LinearOpMode {
+public class Blue_Right_Mid_Line extends LinearOpMode {
 
     public double Distance_To_Travel;
 

@@ -19,6 +19,7 @@ import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.arcrobotics.ftclib.kinematics.HolonomicOdometry;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.wolfpackmachina.bettersensors.HardwareMapProvider;
@@ -41,6 +42,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 
 @Autonomous
+@Disabled
 public class Odometry_Test_Method_2 extends LinearOpMode {
 
     Drivetrain drive = new Drivetrain();

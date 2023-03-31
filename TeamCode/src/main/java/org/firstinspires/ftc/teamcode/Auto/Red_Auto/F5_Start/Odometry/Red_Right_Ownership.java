@@ -1068,7 +1068,6 @@ public class Red_Right_Ownership extends LinearOpMode {
 
             //CONVERT TARGET TO ROBOT RELATIVE TARGET
             RRXdist = Xdist * Math.cos(Math.toRadians(360 - ConvertedHeading)) - Ydist * Math.sin(Math.toRadians(360 - ConvertedHeading));
-
             RRYdist = Xdist * Math.sin(Math.toRadians(360 - ConvertedHeading)) + Ydist * Math.cos(Math.toRadians(360 - ConvertedHeading));
 
             //SET DRIVE CONSTANTS TO THE PIDF CONTROL LOOPS
