@@ -289,6 +289,18 @@ public class Red_Driver extends OpMode {
             }
         }
 
+        if (gamepad2.dpad_up) {
+            AlignToLowCalc();
+
+            try {
+                Thread.sleep(100);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+
+            AlignToPoleNoEncoders();
+        }
+
         if (gamepad1.dpad_up) {
             Destacker_Left.setPosition(De_Pos_1);
             Destacker_Right.setPosition(De_Pos_1);
@@ -1558,6 +1570,21 @@ public class Red_Driver extends OpMode {
             yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         }
     }
+
+    public void AlignToLowCalc() {
+        for (int i = 1; i <= 50; i++) {
+            rectPositionFromLeft = Pole.TargetLowrectX;
+        }
+
+        if (rectPositionFromLeft > -1) {
+            Degrees_To_Turn = rectPositionFromLeft - CenterOfScreen;
+
+            Degrees_To_Turn = Degrees_To_Turn / 20;
+
+            yawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        }
+    }
+
 
     public void AlignToPole(){
         if(Degrees_To_Turn != 0) {
