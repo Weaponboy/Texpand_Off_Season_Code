@@ -836,11 +836,6 @@ public class Blue_Left_High_Cycle extends LinearOpMode {
 
             //GET CURRENT Y
             CurrentYPos = getYpos();
-//
-//            gyro.update();
-//
-//            //GET START HEADING WITH GYRO
-//            StartingHeadinggyro = gyro.angle();
 
             //GET START HEADING WITH ODOMETRY
             StartingHeading = Math.toDegrees(getheading());
@@ -894,32 +889,12 @@ public class Blue_Left_High_Cycle extends LinearOpMode {
             Horizontal = strafePID.calculate(-RRYdist);
             Pivot = PivotPID.calculate(-rotdist);
 
-//            if ((Math.abs(rotdistForStop) < 1.5)){
-//                Pivot = Pivot*1.4 + RampPower;
-//            }
-
-//            if ((Math.abs(XdistForStop) < 1.5)){
-//                Vertical = Vertical*1.3;
-//                Horizontal = Horizontal*1.3;
-//            }
-//
-//            if ((Math.abs(YdistForStop) < 1.5)){
-//                Vertical = Vertical*1.3;
-//                Horizontal = Horizontal*1.3;
-//            }
-
             //SET MOTOR POWER USING THE PID OUTPUT
             drive.RF.setPower(Power_For_Long_Drive*(-Pivot + (Vertical + Horizontal)));
             drive.RB.setPower(Power_For_Long_Drive*((-Pivot * 1.4) + (Vertical - (Horizontal * 1.3))));
             drive.LF.setPower(Power_For_Long_Drive*(Pivot + (Vertical - Horizontal)));
             drive.LB.setPower(Power_For_Long_Drive*((Pivot * 1.4) + (Vertical + (Horizontal * 1.3))));
 
-            telemetry.addData("heading", ConvertedHeading);
-            telemetry.addData("Target", rotdistForStop);
-            telemetry.addData("Target w F", rotdist);
-            telemetry.addData("X", getXpos());
-            telemetry.addData("Y", getYpos());
-            telemetry.update();
 
         }while ((Math.abs(XdistForStop) > 1 + error) || (Math.abs(YdistForStop) > 1 + error) || (Math.abs(rotdistForStop) > 1.2 + error));
 

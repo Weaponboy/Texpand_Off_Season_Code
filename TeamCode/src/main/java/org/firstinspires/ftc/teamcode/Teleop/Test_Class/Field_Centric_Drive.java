@@ -41,6 +41,7 @@ public class Field_Centric_Drive extends LinearOpMode {
 
     public BNO055IMU imu;
 
+
     Orientation angles;
     Acceleration gravity;
 
@@ -106,6 +107,7 @@ public class Field_Centric_Drive extends LinearOpMode {
 
             gamepadXCoordinate = gamepad1.right_stick_x; //this simply gives our x value relative to the driver
             gamepadYCoordinate = -gamepad1.right_stick_y; //this simply gives our y vaue relative to the driver
+
             gamepadHypot = Range.clip(Math.hypot(gamepadXCoordinate, gamepadYCoordinate), 0, 1);
             //finds just how much power to give the robot based on how much x and y given by gamepad
             //range.clip helps us keep our power within positive 1

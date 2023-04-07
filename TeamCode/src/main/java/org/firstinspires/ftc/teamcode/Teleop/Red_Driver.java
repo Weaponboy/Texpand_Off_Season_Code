@@ -254,7 +254,7 @@ public class Red_Driver extends OpMode {
         LF.setPower((slow1*1.4)*(pivot + (vertical + horizontal)));
         LB.setPower(slow1*(pivot + (vertical - horizontal)));
 
-        if (gamepad1.right_bumper && gamepad2.right_bumper){
+        if (gamepad1.left_stick_button && gamepad2.left_stick_button){
 
             TopposP = TopposP + 1;
 
@@ -1355,7 +1355,9 @@ public class Red_Driver extends OpMode {
 
         odometry.updatePose();
 
-        telemetry.addData("Heading", getheading());
+        telemetry.addData("Pole Vision", PoleAlignmnet);
+
+        telemetry.addData("Heading", Math.toDegrees(getheading()));
         telemetry.addData("Y:", getYpos());
         telemetry.addData("X:", getXpos());
 
