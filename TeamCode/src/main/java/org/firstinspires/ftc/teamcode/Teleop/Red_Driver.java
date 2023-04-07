@@ -270,9 +270,6 @@ public class Red_Driver extends OpMode {
 
         }
 
-        /** */
-        PoleAlignmnet = true;
-
         if(gamepad2.b && Base_Gripper.getPosition() == 0){
             Base_Gripper.setPosition(0.4); //open base gripper if it is closed
             try {
