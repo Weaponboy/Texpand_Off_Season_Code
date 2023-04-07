@@ -142,6 +142,8 @@ public class DoubleGripperLatestCamera extends OpMode {
 
         drive.WithOutEncoders();
 
+
+
         vertical = -gamepad1.right_stick_y;
         horizontal = -gamepad1.right_stick_x;
         pivot = gamepad1.left_stick_x;
