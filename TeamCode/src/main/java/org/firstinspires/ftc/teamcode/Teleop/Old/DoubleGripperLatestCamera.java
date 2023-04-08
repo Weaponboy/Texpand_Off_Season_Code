@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Teleop.Test_Class;
+package org.firstinspires.ftc.teamcode.Teleop.Old;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -15,29 +15,22 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.Exposur
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.FocusControl;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Drivetrain;
-import org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.Blue_Cone_Pipe;
-import org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.Pole_Pipe;
+import org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.ConeDetectionPipelines.Blue_Cone_Pipe;
+import org.firstinspires.ftc.teamcode.Vision.Pole_Alinement.Pipeline.Pole_Pipe;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @TeleOp
-public class DoubleGripperLatestThreads extends OpMode {
+public class DoubleGripperLatestCamera extends OpMode {
 
     public DcMotor RF = null;
     public DcMotor LF = null;
     public DcMotor RB = null;
     public DcMotor LB = null;
-
-    private ExecutorService executor;
-
-    private AtomicInteger counter;
 
     private double power;
 
@@ -140,6 +133,8 @@ public class DoubleGripperLatestThreads extends OpMode {
         slow1 = (gamepad1.left_trigger * 0.6) + 0.4;
 
         drive.WithOutEncoders();
+
+
 
         vertical = -gamepad1.right_stick_y;
         horizontal = -gamepad1.right_stick_x;
@@ -1056,42 +1051,38 @@ public class DoubleGripperLatestThreads extends OpMode {
                             Right_Slide.setPower(-0.9);
                             Left_Slide.setPower(-0.9);
                         }
-                        executor.submit(() -> {
-                            frontWeb.closeCameraDeviceAsync(new OpenCvCamera.AsyncCameraCloseListener() {
-                                @Override
-                                public void onClose() {
-                                    BackWeb.stopStreaming();
-                                }
-                            });
-
-                            BackWeb.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-                                @Override
-                                public void onOpened() {
-
-                                    BackWeb.getExposureControl().setMode(ExposureControl.Mode.Manual);
-
-                                    BackWeb.getExposureControl().setExposure(30, TimeUnit.MILLISECONDS);
-
-                                    BackWeb.getGainControl().setGain(100);
-
-                                    FocusControl.Mode focusmode = FocusControl.Mode.Fixed;
-
-                                    BackWeb.getFocusControl().setMode(focusmode);
-
-                                    if (focusmode == FocusControl.Mode.Fixed){
-                                        BackWeb.getFocusControl().setFocusLength(450);
-                                    }
-
-                                    BackWeb.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
-
-                                }
-
-                                @Override
-                                public void onError(int errorCode) { }
-                            });
-
+                        frontWeb.closeCameraDeviceAsync(new OpenCvCamera.AsyncCameraCloseListener() {
+                            @Override
+                            public void onClose() {
+                                BackWeb.stopStreaming();
+                            }
                         });
 
+                        BackWeb.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+                            @Override
+                            public void onOpened() {
+
+                                BackWeb.getExposureControl().setMode(ExposureControl.Mode.Manual);
+
+                                BackWeb.getExposureControl().setExposure(30, TimeUnit.MILLISECONDS);
+
+                                BackWeb.getGainControl().setGain(100);
+
+                                FocusControl.Mode focusmode = FocusControl.Mode.Fixed;
+
+                                BackWeb.getFocusControl().setMode(focusmode);
+
+                                if (focusmode == FocusControl.Mode.Fixed){
+                                    BackWeb.getFocusControl().setFocusLength(450);
+                                }
+
+                                BackWeb.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
+
+                            }
+
+                            @Override
+                            public void onError(int errorCode) { }
+                        });
 
                         Base_Gripper.setPosition(0);
 
@@ -1207,42 +1198,38 @@ public class DoubleGripperLatestThreads extends OpMode {
 
                 Top_Pivot.setPosition(0.6);
 
-                executor.submit(() -> {
-                    BackWeb.closeCameraDeviceAsync(new OpenCvCamera.AsyncCameraCloseListener() {
-                        @Override
-                        public void onClose() {
-                            BackWeb.stopStreaming();
-                        }
-                    });
-
-                    frontWeb.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-                        @Override
-                        public void onOpened() {
-
-                            BackWeb.getExposureControl().setMode(ExposureControl.Mode.Manual);
-
-                            BackWeb.getExposureControl().setExposure(30, TimeUnit.MILLISECONDS);
-
-                            BackWeb.getGainControl().setGain(100);
-
-                            FocusControl.Mode focusmode = FocusControl.Mode.Fixed;
-
-                            BackWeb.getFocusControl().setMode(focusmode);
-
-                            if (focusmode == FocusControl.Mode.Fixed){
-                                BackWeb.getFocusControl().setFocusLength(450);
-                            }
-
-                            BackWeb.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
-
-                        }
-
-                        @Override
-                        public void onError(int errorCode) { }
-                    });
+                BackWeb.closeCameraDeviceAsync(new OpenCvCamera.AsyncCameraCloseListener() {
+                    @Override
+                    public void onClose() {
+                        BackWeb.stopStreaming();
+                    }
                 });
 
+                frontWeb.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+                    @Override
+                    public void onOpened() {
 
+                        BackWeb.getExposureControl().setMode(ExposureControl.Mode.Manual);
+
+                        BackWeb.getExposureControl().setExposure(30, TimeUnit.MILLISECONDS);
+
+                        BackWeb.getGainControl().setGain(100);
+
+                        FocusControl.Mode focusmode = FocusControl.Mode.Fixed;
+
+                        BackWeb.getFocusControl().setMode(focusmode);
+
+                        if (focusmode == FocusControl.Mode.Fixed){
+                            BackWeb.getFocusControl().setFocusLength(450);
+                        }
+
+                        BackWeb.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
+
+                    }
+
+                    @Override
+                    public void onError(int errorCode) { }
+                });
 
                 Right_Slide.setPower(-0.9);
                 Left_Slide.setPower(-0.9);
@@ -1264,9 +1251,10 @@ public class DoubleGripperLatestThreads extends OpMode {
             Left_Slide.setPower(-0.9);
         }
 
-        telemetry.addData("Odo ticks:", Odo_raise.getCurrentPosition());
+
         telemetry.addData("Camera front", frontWeb.getFps());
         telemetry.addData("Camera Back", BackWeb.getFps());
+        telemetry.addData("Odo ticks:", Odo_raise.getCurrentPosition());
         telemetry.addData("Destacker Left:", Destacker_Left.getPosition());
         telemetry.addData("Destacker Right:", Destacker_Right.getPosition());
         telemetry.addData("Base Pivot:", Base_Pivot.getPosition());
@@ -1282,13 +1270,6 @@ public class DoubleGripperLatestThreads extends OpMode {
         telemetry.addData("Rect X:", Pole.getRectX());
 
         telemetry.update();
-
-        executor.shutdown();
-        try {
-            executor.awaitTermination(1, TimeUnit.MINUTES);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
 
     }
 
@@ -1355,13 +1336,6 @@ public class DoubleGripperLatestThreads extends OpMode {
         Base_Pivot.setPosition(Base_Pivot_Collect);
         Base_Gripper.setPosition(0.4);
 
-        executor = Executors.newFixedThreadPool(2);
-
-        // Create a shared counter that is incremented by the threads
-        counter = new AtomicInteger();
-
-        runtime.reset();
-
         drive.init(hardwareMap, 1);
 
         Pole = new Pole_Pipe();
@@ -1378,7 +1352,7 @@ public class DoubleGripperLatestThreads extends OpMode {
 
         BackWeb = OpenCvCameraFactory.getInstance().createWebcam(backcam, cameraMonitorViewId);
 
-        frontWeb = OpenCvCameraFactory.getInstance().createWebcam(backcam, cameraMonitorViewId);
+        frontWeb = OpenCvCameraFactory.getInstance().createWebcam(frontcam, cameraMonitorViewId);
 
         BackWeb.setPipeline(Pole);
 

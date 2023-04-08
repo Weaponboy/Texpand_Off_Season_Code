@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.Vision.TFOD;
+package org.firstinspires.ftc.teamcode.Vision.TFOD.BlueConeDetection;
 
 import static org.firstinspires.ftc.robotcore.external.tfod.TfodCurrentGame.TFOD_MODEL_ASSET;
 
@@ -61,7 +61,6 @@ import java.util.List;
 @Disabled
 public class Blue_Cone_Detection extends LinearOpMode {
 
-    /** To do*/
     /*
      * Specify the source for the Tensor Flow Model.
      * If the TensorFlowLite object model is included in the Robot Controller App as an "asset",

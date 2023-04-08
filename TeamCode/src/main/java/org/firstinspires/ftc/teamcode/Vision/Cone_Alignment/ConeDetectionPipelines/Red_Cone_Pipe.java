@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Vision.Cone_Alignment;
+package org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.ConeDetectionPipelines;
 
 import static org.firstinspires.ftc.teamcode.Vision.Vision_From_Collin.VisionDash.dilate_const;
 import static org.firstinspires.ftc.teamcode.Vision.Vision_From_Collin.VisionDash.erode_const;

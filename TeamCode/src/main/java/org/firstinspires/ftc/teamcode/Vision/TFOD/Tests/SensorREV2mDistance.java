@@ -30,15 +30,16 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
 TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.firstinspires.ftc.teamcode.Vision.TFOD;
+package org.firstinspires.ftc.teamcode.Vision.TFOD.Tests;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 /**
- * {@link Colour} illustrates how to use the REV Robotics
+ * {@link SensorREV2mDistance} illustrates how to use the REV Robotics
  * Time-of-Flight Range Sensor.
  *
  * The op mode assumes that the range sensor is configured with a name of "sensor_range".
@@ -49,17 +50,19 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
  * @see <a href="http://revrobotics.com">REV Robotics Web Page</a>
  */
 @Disabled
-@TeleOp
-public class Colour extends LinearOpMode {
+@TeleOp(name = "Sensor: REV2mDistance", group = "Sensor")
+public class SensorREV2mDistance extends LinearOpMode {
 
-    private ColorSensor colour;
+    private DistanceSensor sensorRange;
+
+    private DigitalChannel digitalTouch;
 
     @Override
     public void runOpMode() {
         // you can use this as a regular DistanceSensor.
 //        sensorRange = hardwareMap.get(DistanceSensor.class, "sensor_range");
 
-        colour = hardwareMap.get(ColorSensor.class, "colour");
+        digitalTouch = hardwareMap.get(DigitalChannel.class, "sensor_touch");
 
         // you can also cast this to a Rev2mDistanceSensor if you want to use added
         // methods associated with the Rev2mDistanceSensor class.
@@ -70,10 +73,22 @@ public class Colour extends LinearOpMode {
 
         waitForStart();
 
+        digitalTouch.setMode(DigitalChannel.Mode.INPUT);
 
         while (opModeIsActive()) {
 
-            telemetry.addData("Colour", colour.blue());
+            // send the info back to driver station using telemetry function.
+            // if the digital channel returns true it's HIGH and the button is unpressed.
+            if (digitalTouch.getState() == true) {
+
+                telemetry.addData("Digital Touch", "Is Not Pressed");
+
+            }else if(digitalTouch.getState() == false){
+
+                telemetry.addData("Digital Touch", "Is Pressed");
+
+            }
+
             telemetry.update();
 
         }

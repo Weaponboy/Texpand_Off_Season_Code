@@ -4,7 +4,7 @@
  So, feel free to add onto this and make it better
  */
 
-package org.firstinspires.ftc.teamcode.Teleop.Test_Class;
+package org.firstinspires.ftc.teamcode.Teleop.Old;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;

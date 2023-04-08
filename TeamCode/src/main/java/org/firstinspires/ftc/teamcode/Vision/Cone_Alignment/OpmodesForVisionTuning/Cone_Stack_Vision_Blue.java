@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Vision.Cone_Alignment;
+package org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.OpmodesForVisionTuning;
 
 //import static org.firstinspires.ftc.teamcode.zLibraries.Utilities.OpModeUtils.multTelemetry;
 //import static org.firstinspires.ftc.teamcode.zLibraries.Utilities.OpModeUtils.setOpMode;
@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Drivetrain;
+import org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.ConeDetectionPipelines.Blue_Cone_Pipe;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -17,11 +18,11 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 @Autonomous
 @Disabled
-public class Cone_Stack_Vision_Red extends OpMode {
+public class Cone_Stack_Vision_Blue extends OpMode {
     Drivetrain drive = new Drivetrain();
 
     private ElapsedTime runtime = new ElapsedTime();
-    Red_Cone_Pipe colin;
+    Blue_Cone_Pipe colin;
 
     private OpenCvCamera webcam;
 
@@ -43,7 +44,7 @@ public class Cone_Stack_Vision_Red extends OpMode {
 //        drive.LB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 //        drive.LF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        colin = new Red_Cone_Pipe();
+        colin = new Blue_Cone_Pipe();
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
 

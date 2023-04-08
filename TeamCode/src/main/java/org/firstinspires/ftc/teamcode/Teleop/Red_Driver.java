@@ -46,9 +46,8 @@ import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Bottom_Gripper_Assemb
 import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Slides;
 import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Top_gripper;
-import org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.Blue_Cone_Pipe;
-import org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.Pole_Pipe;
-import org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.Red_Cone_Pipe;
+import org.firstinspires.ftc.teamcode.Vision.Pole_Alinement.Pipeline.Pole_Pipe;
+import org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.ConeDetectionPipelines.Red_Cone_Pipe;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
