@@ -869,8 +869,6 @@ public class Red_Driver extends OpMode {
                     Right_Slide.setPower(0.005);
                     Left_Slide.setPower(0.005);
 
-                    Top_Pivot.setPosition(0.1);
-
                     Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                     Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
