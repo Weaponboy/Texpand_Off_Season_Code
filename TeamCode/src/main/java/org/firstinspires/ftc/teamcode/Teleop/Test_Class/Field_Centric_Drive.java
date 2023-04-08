@@ -66,7 +66,7 @@ public class Field_Centric_Drive extends OpMode {
     public DcMotor LB = null;
 
     public Orientation yawAngle;
-    public BNO055IMU imu         = null;      // Control/Expansion Hub IMU
+    public BNO055IMU imu = null;// Control/Expansion Hub IMU
 
     double RRXdist = 0;
     double RRYdist = 0;

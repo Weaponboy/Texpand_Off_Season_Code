@@ -37,9 +37,13 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Drivetrain;
 
 import java.util.List;
 
@@ -75,6 +79,18 @@ public class Blue_Cone_Detection extends LinearOpMode {
             "2 Cone stack"
     };
 
+
+    public double ConversionPixelstoCm = 22;//need to tune this
+
+    public double CenterOfScreen = 300;
+    private int TopposP = 0;
+
+    private boolean PoleAlignmnet = true;
+
+    public double rectPositionFromLeft = 0;
+
+    public double Distance_To_Travel;
+
     /*
      * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
      * 'parameters.vuforiaLicenseKey' is initialized is for illustration only, and will not function.
@@ -102,12 +118,23 @@ public class Blue_Cone_Detection extends LinearOpMode {
      */
     private TFObjectDetector tfod;
 
+    private double ConePos = 0;
+
+    private double ConeWidth = 0;
+
+    public double Degrees_To_Turn;
+
+    Drivetrain drive = new Drivetrain();
+
     @Override
     public void runOpMode() {
         // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
         // first.
         initVuforia();
         initTfod();
+
+        drive.init(hardwareMap, 1);
+
 
         /**
          * Activate TensorFlow Object Detection before we wait for the start command.
@@ -146,9 +173,24 @@ public class Blue_Cone_Detection extends LinearOpMode {
 
                         telemetry.addData("# Objects Detected", updatedRecognitions.size());
 
+
                         // step through the list of recognitions and display image position/size information for each one
                         // Note: "Image number" refers to the randomized image orientation/number
                         for (Recognition recognition : updatedRecognitions) {
+
+                            if (recognition.getLabel().equals("Blue Cone") && gamepad1.a){
+
+                                for (int i = 0; i < 50; i++){
+                                    ConeWidth = recognition.getWidth();
+
+                                    ConePos = recognition.getLeft();
+
+                                }
+
+                                AlignToConeCalc();
+
+                                AlignToCone();
+                            }
 
                             double col = (recognition.getLeft() + recognition.getRight()) / 2 ;
                             double row = (recognition.getTop()  + recognition.getBottom()) / 2 ;
@@ -199,5 +241,25 @@ public class Blue_Cone_Detection extends LinearOpMode {
         // Use loadModelFromFile() if you have downloaded a custom team model to the Robot Controller's FLASH.
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
 //        tfod.loadModelFromFile(TFOD_MODEL_FILE, LABELS);
+    }
+
+    public void AlignToConeCalc() {
+
+        if (ConePos > -1) {
+            ConePos = (ConeWidth / 2) + ConePos;
+
+            Degrees_To_Turn = ConePos - CenterOfScreen;
+
+            Degrees_To_Turn = Degrees_To_Turn / 20;
+
+            drive.yawAngle = drive.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        }
+    }
+
+    public void AlignToCone(){
+        if(Degrees_To_Turn != 0) {
+            drive.TurnToHeadingNoEncoders(drive.yawAngle.firstAngle + Degrees_To_Turn, 0.6);
+            Degrees_To_Turn = 0;
+        }
     }
 }

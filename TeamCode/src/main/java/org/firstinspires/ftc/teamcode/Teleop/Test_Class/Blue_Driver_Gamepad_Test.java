@@ -290,18 +290,10 @@ public class Blue_Driver_Gamepad_Test extends OpMode {
 
         if(!currentGamepad2.b && previousGamepad2.b && Base_Gripper.getPosition() == 0) {
             Base_Gripper.setPosition(0.4); //open base gripper if it is closed
-            try {
-                Thread.sleep(50);
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
+
         }else if(!currentGamepad2.b && previousGamepad2.b && Base_Gripper.getPosition() > 0){
             Base_Gripper.setPosition(0); //close base gripper if it is open
-            try {
-                Thread.sleep(50);
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
+
         }
 
         if (gamepad2.dpad_up) {
@@ -603,7 +595,6 @@ public class Blue_Driver_Gamepad_Test extends OpMode {
             Right_Slide.setPower(-0.9);
             Left_Slide.setPower(-0.9);
         }
-
 
         //toggle position of top pivot
         if (gamepad1.x) {
