@@ -20,7 +20,7 @@ dependencies {
     implementation 'org.firstinspires.ftc:FtcCommon:8.1.1'
     implementation 'org.tensorflow:tensorflow-lite-task-vision:0.2.0'
     implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'com.acmerobotics.dashboard:dashboard:0.4.6'
+    implementation 'com.acmerobotics.dashboard:dashboard:0.4.8'
     implementation 'org.firstinspires.ftc:gameAssets-PowerPlay:1.0.0'
 //    implementation 'org.ftclib.ftclib:core:2.0.1'
 }

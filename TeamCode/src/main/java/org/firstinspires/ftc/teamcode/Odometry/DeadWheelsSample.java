@@ -923,7 +923,7 @@ public class DeadWheelsSample extends LinearOpMode {
 
         //Turning
         double HeadingToTurnTo = HeadingPositionTarget - CurrentHeading;
-        
+
         if (getheading() < 10 || getheading() > 350){
 
             DriveOdometry(XDistanceToDrive, 0.6);

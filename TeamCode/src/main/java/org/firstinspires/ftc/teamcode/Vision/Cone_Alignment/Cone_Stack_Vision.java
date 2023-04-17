@@ -116,6 +116,7 @@ public class Cone_Stack_Vision extends OpMode {
         Texpandcamera.setPipeline(Cone_Pipeline);
 
         FtcDashboard.getInstance().startCameraStream(Texpandcamera,30);
+
         LF = new MotorEx(hardwareMap, "LF");
         LB = new MotorEx(hardwareMap, "LB");
         RF = new MotorEx(hardwareMap, "RF");

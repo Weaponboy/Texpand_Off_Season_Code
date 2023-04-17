@@ -21,7 +21,7 @@ public class Cone_Stack_Vision_Red extends OpMode {
     Drivetrain drive = new Drivetrain();
 
     private ElapsedTime runtime = new ElapsedTime();
-    Red_Cone_Pipe colin;
+    Blue_Cone_Pipe colin;
 
     private OpenCvCamera webcam;
 
@@ -43,7 +43,7 @@ public class Cone_Stack_Vision_Red extends OpMode {
 //        drive.LB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 //        drive.LF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        colin = new Red_Cone_Pipe();
+        colin = new Blue_Cone_Pipe();
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
 
