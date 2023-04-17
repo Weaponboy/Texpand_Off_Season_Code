@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.Hardware.Sub_Systems;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -11,18 +10,10 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.FocusControl;
-import org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.Blue_Cone_Pipe;
-import org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.Pole_Pipe;
-import org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.Red_Cone_Pipe;
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.ConeDetectionPipelines.Blue_Cone_Pipe;
+import org.firstinspires.ftc.teamcode.Vision.Pole_Alinement.Pipeline.Pole_Pipe;
+import org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.ConeDetectionPipelines.Red_Cone_Pipe;
 import org.openftc.easyopencv.OpenCvWebcam;
-
-import java.util.concurrent.TimeUnit;
 
 public class Slides{
 

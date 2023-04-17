@@ -27,11 +27,15 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.Teleop.Test_Class;
+package org.firstinspires.ftc.teamcode.Teleop.Old;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.TouchSensor;
+
+import java.util.Base64;
 
 /*
  * This is an example LinearOpMode that shows how to use
@@ -56,13 +60,13 @@ public class SensorDigitalTouchV1 extends LinearOpMode {
 
     DigitalChannel digitalTouch;  // Hardware Device Object
 
-
-
     @Override
     public void runOpMode() {
 
         // get a reference to our digitalTouch object.
         digitalTouch = hardwareMap.get(DigitalChannel.class, "Limit");
+
+
 
         // set the digital channel to input.
         digitalTouch.setMode(DigitalChannel.Mode.INPUT);

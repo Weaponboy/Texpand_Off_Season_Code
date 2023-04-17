@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Vision.Cone_Alignment;
+package org.firstinspires.ftc.teamcode.Vision.Pole_Alinement.Pipeline;
 
 import static org.firstinspires.ftc.teamcode.Vision.Vision_From_Collin.VisionDash.High_pole_max_width;
 import static org.firstinspires.ftc.teamcode.Vision.Vision_From_Collin.VisionDash.High_pole_min_width;
@@ -169,6 +169,7 @@ public class Pole_Pipe extends OpenCvPipeline {
 //        }
 
         if(rects.size() > 0) {
+
             //order the rectangles by width and find the first one that is the expected pole width
             OrderedByWidthrects = VisionUtils.sortRectsByMaxOption(rects.size(), VisionUtils.RECT_OPTION.WIDTH, rects);
             //find the widths expected for a high pole and a medium pole

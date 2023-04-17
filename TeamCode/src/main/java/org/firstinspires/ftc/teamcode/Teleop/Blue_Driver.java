@@ -46,8 +46,8 @@ import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Bottom_Gripper_Assemb
 import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Slides;
 import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Top_gripper;
-import org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.Blue_Cone_Pipe;
-import org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.Pole_Pipe;
+import org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.ConeDetectionPipelines.Blue_Cone_Pipe;
+import org.firstinspires.ftc.teamcode.Vision.Pole_Alinement.Pipeline.Pole_Pipe;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -213,6 +213,14 @@ public class Blue_Driver extends OpMode {
 
     public double Distance_To_Travel;
 
+    Gamepad currentGamepad1 = new Gamepad();
+
+    Gamepad currentGamepad2 = new Gamepad();
+
+    Gamepad previousGamepad1 = new Gamepad();
+
+    Gamepad previousGamepad2 = new Gamepad();
+
 
     public double ConversionPixelstoCm = 22;//need to tune this
 
@@ -229,11 +237,22 @@ public class Blue_Driver extends OpMode {
     private double Cone_power;
     private double slow1 = 0.4;
 
+    public double time = 0;
+
 
     @Override
     public void loop() {
 
-        runtime.reset();
+        if (time == 0){
+            time++;
+            runtime.reset();
+        }
+
+        previousGamepad1.copy(currentGamepad1);
+        previousGamepad2.copy(currentGamepad2);
+
+        currentGamepad1.copy(gamepad1);
+        currentGamepad2.copy(gamepad2);
 
         slow1 = (gamepad1.left_trigger * 0.6) + 0.4;
 
@@ -253,7 +272,7 @@ public class Blue_Driver extends OpMode {
         LF.setPower((slow1*1.4)*(pivot + (vertical + horizontal)));
         LB.setPower(slow1*(pivot + (vertical - horizontal)));
 
-        if (gamepad1.right_bumper && gamepad2.right_bumper){
+        if (gamepad2.left_stick_button && gamepad1.left_stick_button){
 
             TopposP = TopposP + 1;
 
@@ -268,9 +287,6 @@ public class Blue_Driver extends OpMode {
             }
 
         }
-
-        /** */
-        PoleAlignmnet = true;
 
         if(gamepad2.b && Base_Gripper.getPosition() == 0){
             Base_Gripper.setPosition(0.4); //open base gripper if it is closed
@@ -547,6 +563,10 @@ public class Blue_Driver extends OpMode {
 
         if (gamepad1.start){
             Odo_Drive(180, 0, 1);
+        }
+
+        if (runtime.milliseconds() > 90000){
+            gamepad2.runRumbleEffect(customRumbleEffect);
         }
 
         if(gamepad2.start){
@@ -863,8 +883,6 @@ public class Blue_Driver extends OpMode {
                     Right_Slide.setPower(0.005);
                     Left_Slide.setPower(0.005);
 
-                    Top_Pivot.setPosition(0.1);
-
                     Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                     Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
@@ -1049,7 +1067,7 @@ public class Blue_Driver extends OpMode {
         }
 
         //Stop slides if finished running
-        if(lowering){
+        if(lowering) {
             Right_Slide.setPower(-0.9);
             Left_Slide.setPower(-0.9);
         }
@@ -1360,7 +1378,9 @@ public class Blue_Driver extends OpMode {
 
         odometry.updatePose();
 
-        telemetry.addData("Heading", getheading());
+        telemetry.addData("Pole Vision", PoleAlignmnet);
+
+        telemetry.addData("Heading", Math.toDegrees(getheading()));
         telemetry.addData("Y:", getYpos());
         telemetry.addData("X:", getXpos());
 
@@ -1462,7 +1482,7 @@ public class Blue_Driver extends OpMode {
         Back_Distance.resetDeviceConfigurationForOpMode();
 
         customRumbleEffect = new Gamepad.RumbleEffect.Builder()
-                .addStep(0.0, 1.0, 500)  //  Rumble right motor 100% for 500 mSec
+                .addStep(0.5, 0.5, 100)  //  Rumble right motor 100% for 500 mSec
                 .build();
 
         SlideZero.setMode(DigitalChannel.Mode.INPUT);

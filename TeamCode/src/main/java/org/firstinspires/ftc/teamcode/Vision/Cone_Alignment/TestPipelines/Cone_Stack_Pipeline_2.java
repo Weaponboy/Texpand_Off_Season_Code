@@ -1,4 +1,7 @@
-package org.firstinspires.ftc.teamcode.Vision.Cone_Alignment;
+package org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.TestPipelines;
+
+//import static org.firstinspires.ftc.teamcode.zLibraries.Utilities.OpModeUtils.multTelemetry;
+//import static org.firstinspires.ftc.teamcode.zLibraries.Utilities.OpModeUtils.setOpMode;
 
 import static org.firstinspires.ftc.teamcode.Vision.Vision_From_Collin.VisionDash.dilate_const;
 import static org.firstinspires.ftc.teamcode.Vision.Vision_From_Collin.VisionDash.erode_const;
@@ -9,7 +12,6 @@ import static org.opencv.imgproc.Imgproc.COLOR_RGB2HSV_FULL;
 import static org.opencv.imgproc.Imgproc.FONT_HERSHEY_COMPLEX;
 import static org.opencv.imgproc.Imgproc.RETR_TREE;
 import static org.opencv.imgproc.Imgproc.boundingRect;
-import static org.opencv.imgproc.Imgproc.circle;
 import static org.opencv.imgproc.Imgproc.dilate;
 import static org.opencv.imgproc.Imgproc.drawContours;
 import static org.opencv.imgproc.Imgproc.erode;
@@ -29,7 +31,8 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Cone_Stack_Pipeline extends OpenCvPipeline {
+
+public class Cone_Stack_Pipeline_2 extends OpenCvPipeline {
 
     //Initiated variables needed later
     private static int IMG_HEIGHT = 0;
@@ -104,10 +107,11 @@ public class Cone_Stack_Pipeline extends OpenCvPipeline {
 //        rectX = largestRect.x + largestRect.width/2;
 //        rectY = largestRect.y + largestRect.height/2;
 
+
         numrects = rects.size();
         drawContours(output, contours, -1, orange);
         contours.clear();
-        return output;
+        return modified;
     }
 
     public double getRectX() {
