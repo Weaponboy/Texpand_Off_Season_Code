@@ -20,6 +20,7 @@ import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.arcrobotics.ftclib.kinematics.HolonomicOdometry;
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -56,7 +57,7 @@ import org.openftc.easyopencv.OpenCvWebcam;
 import java.util.concurrent.TimeUnit;
 
 @TeleOp
-
+@Disabled
 public class Blue_Driver_Gamepad_Test extends OpMode {
     FtcDashboard dashboard = FtcDashboard.getInstance();
     Telemetry dashboardTelemetry = dashboard.getTelemetry();
@@ -272,26 +273,16 @@ public class Blue_Driver_Gamepad_Test extends OpMode {
         LF.setPower((slow1*1.4)*(pivot + (vertical + horizontal)));
         LB.setPower(slow1*(pivot + (vertical - horizontal)));
 
-        if (gamepad2.left_stick_button && gamepad1.left_stick_button){
-
-            TopposP = TopposP + 1;
-
-            if(TopposP == 1){
-                PoleAlignmnet = false;
-            }else if(TopposP == 3){
-                PoleAlignmnet = true;
-            }
-
-            if(TopposP > 2){
-                Toppos = 0;
-            }
-
+        if (gamepad2.left_stick_button && gamepad2.right_stick_button && PoleAlignmnet){
+            PoleAlignmnet = false;
+        } else if (gamepad2.left_stick_button && gamepad2.right_stick_button && !PoleAlignmnet) {
+            PoleAlignmnet = true;
         }
 
-        if(!currentGamepad2.b && previousGamepad2.b && Base_Gripper.getPosition() == 0) {
+        if(currentGamepad2.b && !previousGamepad2.b && Base_Gripper.getPosition() == 0) {
             Base_Gripper.setPosition(0.4); //open base gripper if it is closed
 
-        }else if(!currentGamepad2.b && previousGamepad2.b && Base_Gripper.getPosition() > 0){
+        }else if(currentGamepad2.b && !previousGamepad2.b && Base_Gripper.getPosition() > 0){
             Base_Gripper.setPosition(0); //close base gripper if it is open
 
         }
@@ -611,11 +602,11 @@ public class Blue_Driver_Gamepad_Test extends OpMode {
         }
 
         //toggle positioin of top gripper
-        if(!currentGamepad2.y && previousGamepad2.y && Top_Gripper.getPosition() == 0){
+        if(currentGamepad2.y && !previousGamepad2.y && Top_Gripper.getPosition() == 0){
             Top_Gripper.setPosition(Top_Pivot_Collect); //lift up top griper if it is down
             Right_Slide.setPower(0);
             Left_Slide.setPower(0);
-        }else if(!currentGamepad2.y && previousGamepad2.y && Top_Gripper.getPosition() > 0){
+        }else if(currentGamepad2.y && !previousGamepad2.y && Top_Gripper.getPosition() > 0){
             Top_Gripper.setPosition(0); //lower top gripper if it is up
             Right_Slide.setPower(0);
             Left_Slide.setPower(0);
@@ -937,36 +928,10 @@ public class Blue_Driver_Gamepad_Test extends OpMode {
 
         }
 
-        if(gamepad1.left_stick_y > 0.5 && Base_Pivot.getPosition() != 0.85){
+        if(currentGamepad2.a && !previousGamepad2.a && Base_Pivot.getPosition() < 0.1){
             Base_Pivot.setPosition(0.85); //open base gripper if it is closed
-            try {
-                Thread.sleep(100);
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
-        }else if(gamepad1.left_stick_y < -0.5 && Base_Pivot.getPosition() != Base_Pivot_Collect ){
+        }else if(currentGamepad2.a && !previousGamepad2.a && Base_Pivot.getPosition() > 0){
             Base_Pivot.setPosition(Base_Pivot_Collect); //close base gripper if it is open
-            try {
-                Thread.sleep(100);
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
-        }
-
-        if(gamepad2.left_stick_y < 0 && Base_Pivot.getPosition() != 0.85){
-            Base_Pivot.setPosition(0.85); //open base gripper if it is closed
-            try {
-                Thread.sleep(100);
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
-        }else if(gamepad2.left_stick_y > 0 && Base_Pivot.getPosition() != Base_Pivot_Collect ){
-            Base_Pivot.setPosition(Base_Pivot_Collect); //close base gripper if it is open
-            try {
-                Thread.sleep(100);
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
         }
 
         //set slides to Medium pole
@@ -1331,6 +1296,9 @@ public class Blue_Driver_Gamepad_Test extends OpMode {
         odometry.updatePose();
 
         telemetry.addData("Pole Vision", PoleAlignmnet);
+
+        telemetry.addData("stick button left", gamepad2.left_stick_button);
+        telemetry.addData("stick button right", gamepad2.right_stick_button);
 
         telemetry.addData("Heading", Math.toDegrees(getheading()));
         telemetry.addData("Y:", getYpos());

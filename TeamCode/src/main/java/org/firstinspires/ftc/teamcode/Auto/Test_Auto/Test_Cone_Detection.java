@@ -9,6 +9,7 @@ import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Vision.Piplines.Old.OpenCVPipelinetest;
 
 @Autonomous
+@Disabled
 public class Test_Cone_Detection extends LinearOpMode {
 
     ElapsedTime time = new ElapsedTime();

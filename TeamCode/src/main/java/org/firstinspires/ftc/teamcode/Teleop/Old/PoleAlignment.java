@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Teleop.Old;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -14,6 +15,7 @@ import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Drivetrain;
 import org.openftc.apriltag.AprilTagDetection;
 
 @TeleOp
+@Disabled
 public class PoleAlignment extends LinearOpMode {
 
     private DistanceSensor sensorRange;

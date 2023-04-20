@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Teleop.Old;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -28,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @TeleOp
+@Disabled
 public class DoubleGripperLatestThreads extends OpMode {
 
     public DcMotor RF = null;

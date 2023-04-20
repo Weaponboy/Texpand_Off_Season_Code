@@ -20,6 +20,7 @@ import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.arcrobotics.ftclib.kinematics.HolonomicOdometry;
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -47,7 +48,6 @@ import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Slides;
 import org.firstinspires.ftc.teamcode.Hardware.Sub_Systems.Top_gripper;
 import org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.ConeDetectionPipelines.Blue_Cone_Pipe;
-import org.firstinspires.ftc.teamcode.Vision.Cone_Alignment.ConeDetectionPipelines.Red_Cone_Pipe;
 import org.firstinspires.ftc.teamcode.Vision.Pole_Alinement.Pipeline.Pole_Pipe;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -57,8 +57,7 @@ import org.openftc.easyopencv.OpenCvWebcam;
 import java.util.concurrent.TimeUnit;
 
 @TeleOp
-
-public class Red_Driver extends OpMode {
+public class Blue_Driver_Old extends OpMode {
     FtcDashboard dashboard = FtcDashboard.getInstance();
     Telemetry dashboardTelemetry = dashboard.getTelemetry();
     OpenCvWebcam FrontWeb;
@@ -137,7 +136,7 @@ public class Red_Driver extends OpMode {
     private Motor.Encoder leftOdometer, rightOdometer, centerOdometer;
     private HolonomicOdometry odometry;
 
-    public static final double TRACKWIDTH = 36.32;
+    public static final double TRACKWIDTH = 37;
 
     public boolean conefoundcycle;
 
@@ -188,7 +187,7 @@ public class Red_Driver extends OpMode {
     private double Base_Pivot_Flip = 0.78;
 
     private double Base_Pivot_Out_Way = 1;
-    Red_Cone_Pipe Cone_Pipeline;
+    Blue_Cone_Pipe Cone_Pipeline;
     private double Top_Pivot_Collect = 0.35;
 
     private double Top_Gripper_Collect_Wide = 0.36;
@@ -273,18 +272,36 @@ public class Red_Driver extends OpMode {
         LF.setPower((slow1*1.4)*(pivot + (vertical + horizontal)));
         LB.setPower(slow1*(pivot + (vertical - horizontal)));
 
-        if (gamepad2.left_stick_button && gamepad2.right_stick_button && PoleAlignmnet){
-            PoleAlignmnet = false;
-        } else if (gamepad2.left_stick_button && gamepad2.right_stick_button && !PoleAlignmnet) {
-            PoleAlignmnet = true;
+        if (gamepad2.left_stick_button && gamepad1.left_stick_button){
+
+            TopposP = TopposP + 1;
+
+            if(TopposP == 1){
+                PoleAlignmnet = false;
+            }else if(TopposP == 3){
+                PoleAlignmnet = true;
+            }
+
+            if(TopposP > 2){
+                Toppos = 0;
+            }
+
         }
 
-        if(currentGamepad2.b && !previousGamepad2.b && Base_Gripper.getPosition() == 0) {
+        if(gamepad2.b && Base_Gripper.getPosition() == 0){
             Base_Gripper.setPosition(0.4); //open base gripper if it is closed
-
-        }else if(currentGamepad2.b && !previousGamepad2.b && Base_Gripper.getPosition() > 0){
+            try {
+                Thread.sleep(50);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }else if(gamepad2.b && Base_Gripper.getPosition() > 0){
             Base_Gripper.setPosition(0); //close base gripper if it is open
-
+            try {
+                Thread.sleep(50);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
         }
 
         if (gamepad2.dpad_up) {
@@ -346,7 +363,7 @@ public class Red_Driver extends OpMode {
             conefound = sensorRange.getDistance(DistanceUnit.MM) < 70;
 
 
-            while(!conefound && Extend.getCurrentPosition() > -880){
+            while(!conefound && Extend.getCurrentPosition() > -900){
                 if(Right_Slide.getCurrentPosition() < 50 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 50 && !Left_Slide.isBusy()){
                     Right_Slide.setPower(0);
                     Left_Slide.setPower(0);
@@ -528,6 +545,22 @@ public class Red_Driver extends OpMode {
             }
         }
 
+        if(gamepad2.b && Base_Gripper.getPosition() == 0){
+            Base_Gripper.setPosition(0.4); //open base gripper if it is closed
+            try {
+                Thread.sleep(50);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }else if(gamepad2.b && Base_Gripper.getPosition() > 0){
+            Base_Gripper.setPosition(0); //close base gripper if it is open
+            try {
+                Thread.sleep(50);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }
+
         if (gamepad1.start){
             Odo_Drive(180, 0, 1);
         }
@@ -587,6 +620,22 @@ public class Red_Driver extends OpMode {
             Left_Slide.setPower(-0.9);
         }
 
+        if(gamepad2.b && Base_Gripper.getPosition() == 0){
+            Base_Gripper.setPosition(0.4); //open base gripper if it is closed
+            try {
+                Thread.sleep(50);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }else if(gamepad2.b && Base_Gripper.getPosition() > 0){
+            Base_Gripper.setPosition(0); //close base gripper if it is open
+            try {
+                Thread.sleep(50);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }
+
         //toggle position of top pivot
         if (gamepad1.x) {
             Top_Pivot.setPosition(0.3);
@@ -602,14 +651,24 @@ public class Red_Driver extends OpMode {
         }
 
         //toggle positioin of top gripper
-        if(currentGamepad2.y && !previousGamepad2.y && Top_Gripper.getPosition() == 0){
+        if(gamepad2.y && Top_Gripper.getPosition() == 0){
             Top_Gripper.setPosition(Top_Pivot_Collect); //lift up top griper if it is down
             Right_Slide.setPower(0);
             Left_Slide.setPower(0);
-        }else if(currentGamepad2.y && !previousGamepad2.y && Top_Gripper.getPosition() > 0){
+            try {
+                Thread.sleep(100);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }else if(gamepad2.y && Top_Gripper.getPosition() > 0){
             Top_Gripper.setPosition(0); //lower top gripper if it is up
             Right_Slide.setPower(0);
             Left_Slide.setPower(0);
+            try {
+                Thread.sleep(100);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
         }
 
         try {
@@ -633,7 +692,7 @@ public class Red_Driver extends OpMode {
                 Extend.setPower(-1);
                 conefound = sensorRange.getDistance(DistanceUnit.MM) < 70;
 
-                while(!conefound && Extend.getCurrentPosition() > -880){
+                while(!conefound && Extend.getCurrentPosition() > -900){
                     if(Right_Slide.getCurrentPosition() < 50 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 50 && !Left_Slide.isBusy()){
                         Right_Slide.setPower(0);
                         Left_Slide.setPower(0);
@@ -824,8 +883,6 @@ public class Red_Driver extends OpMode {
                     Right_Slide.setPower(0.005);
                     Left_Slide.setPower(0.005);
 
-                    Top_Pivot.setPosition(0.1);
-
                     Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                     Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
@@ -928,10 +985,36 @@ public class Red_Driver extends OpMode {
 
         }
 
-        if(currentGamepad2.a && !previousGamepad2.a && Base_Pivot.getPosition() < 0.1){
+        if(gamepad1.left_stick_y > 0.5 && Base_Pivot.getPosition() != 0.85){
             Base_Pivot.setPosition(0.85); //open base gripper if it is closed
-        }else if(currentGamepad2.a && !previousGamepad2.a && Base_Pivot.getPosition() > 0){
+            try {
+                Thread.sleep(100);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }else if(gamepad1.left_stick_y < -0.5 && Base_Pivot.getPosition() != Base_Pivot_Collect ){
             Base_Pivot.setPosition(Base_Pivot_Collect); //close base gripper if it is open
+            try {
+                Thread.sleep(100);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }
+
+        if(gamepad2.left_stick_y < 0 && Base_Pivot.getPosition() != 0.85){
+            Base_Pivot.setPosition(0.85); //open base gripper if it is closed
+            try {
+                Thread.sleep(100);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }else if(gamepad2.left_stick_y > 0 && Base_Pivot.getPosition() != Base_Pivot_Collect ){
+            Base_Pivot.setPosition(Base_Pivot_Collect); //close base gripper if it is open
+            try {
+                Thread.sleep(100);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
         }
 
         //set slides to Medium pole
@@ -1030,7 +1113,7 @@ public class Red_Driver extends OpMode {
             Extend.setPower(-1);
             conefound = sensorRange.getDistance(DistanceUnit.MM) < 75;
 
-            while(!conefound && Extend.getCurrentPosition() > -880){
+            while(!conefound && Extend.getCurrentPosition() > -900){
                 if(Right_Slide.getCurrentPosition() < 50 && !Right_Slide.isBusy() && Left_Slide.getCurrentPosition() < 50 && !Left_Slide.isBusy()){
                     Right_Slide.setPower(0);
                     Left_Slide.setPower(0);
@@ -1223,7 +1306,7 @@ public class Red_Driver extends OpMode {
                         System.out.println(e.getMessage());
                     }
 
-                    conefoundcycle = colour.red() > 1500;
+                    conefoundcycle = colour.blue() > 2000;
 
                     if (!conefoundcycle) {
                         Base_Pivot.setPosition(Base_Pivot_Collect);
@@ -1297,12 +1380,11 @@ public class Red_Driver extends OpMode {
 
         telemetry.addData("Pole Vision", PoleAlignmnet);
 
-        telemetry.addData("stick button left", gamepad2.left_stick_button);
-        telemetry.addData("stick button right", gamepad2.right_stick_button);
-
         telemetry.addData("Heading", Math.toDegrees(getheading()));
         telemetry.addData("Y:", getYpos());
         telemetry.addData("X:", getXpos());
+        telemetry.addData("left pod", leftOdometer.getPosition());
+        telemetry.addData("right pod", rightOdometer.getPosition());
 
         telemetry.addData("Limit", SlideZero.getState());
         telemetry.addData("Destacker Left:", Destacker_Left.getPosition());
@@ -1310,7 +1392,7 @@ public class Red_Driver extends OpMode {
 
         telemetry.addData("MM range b:", sensorRange.getDistance(DistanceUnit.MM));
         telemetry.addData("MM range f", Back_Distance.getDistance(DistanceUnit.MM));
-        telemetry.addData("Red:", colour.red());
+        telemetry.addData("Red:", colour.blue());
         telemetry.addData("RF Power:", RF.getPower());
         telemetry.addData("RB Power:", RB.getPower());
         telemetry.addData("LF Power:", LF.getPower());
@@ -1409,7 +1491,7 @@ public class Red_Driver extends OpMode {
 
         Pole = new Pole_Pipe();
 
-        Cone_Pipeline = new Red_Cone_Pipe();
+        Cone_Pipeline = new Blue_Cone_Pipe();
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
 
@@ -1457,7 +1539,7 @@ public class Red_Driver extends OpMode {
 
                 BackWeb.getExposureControl().setMode(ExposureControl.Mode.Manual);
 
-                BackWeb.getExposureControl().setExposure(25, TimeUnit.MILLISECONDS);
+                BackWeb.getExposureControl().setExposure(13, TimeUnit.MILLISECONDS);
 
                 BackWeb.getGainControl().setGain(1);
 

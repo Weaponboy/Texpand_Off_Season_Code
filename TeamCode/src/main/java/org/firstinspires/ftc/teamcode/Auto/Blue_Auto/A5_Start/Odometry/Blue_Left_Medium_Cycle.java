@@ -44,7 +44,7 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 
-@Autonomous
+@Autonomous(name = "Blue_Left_Medium_Cycle", group = "Blue Auto")
 public class Blue_Left_Medium_Cycle extends LinearOpMode {
 
     Drivetrain drive = new Drivetrain();
@@ -985,7 +985,7 @@ public class Blue_Left_Medium_Cycle extends LinearOpMode {
 
         odometry.update(0, 0, 0);
 
-        odometry.updatePose(new Pose2d(0, 6, new Rotation2d(0)));
+        odometry.updatePose(new Pose2d(1, 6, new Rotation2d(0)));
 
 //        odometry.updatePose();
 

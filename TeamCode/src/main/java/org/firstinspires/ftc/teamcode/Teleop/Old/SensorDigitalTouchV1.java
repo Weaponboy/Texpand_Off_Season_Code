@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode.Teleop.Old;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogInput;
@@ -46,7 +47,8 @@ import java.util.Base64;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
  */
-@TeleOp(name = "Sensor: Digital touch", group = "Sensor")
+@TeleOp(name = "", group = "Blue Auto")
+@Disabled
 public class SensorDigitalTouchV1 extends LinearOpMode {
     /**
      * The REV Robotics Touch Sensor

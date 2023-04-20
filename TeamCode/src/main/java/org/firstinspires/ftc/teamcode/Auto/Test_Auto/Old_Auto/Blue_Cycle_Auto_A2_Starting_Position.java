@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Auto.Test_Auto.Old_Auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -20,6 +21,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 
 @Autonomous
+@Disabled
 public class Blue_Cycle_Auto_A2_Starting_Position extends LinearOpMode {
 
     //hardware

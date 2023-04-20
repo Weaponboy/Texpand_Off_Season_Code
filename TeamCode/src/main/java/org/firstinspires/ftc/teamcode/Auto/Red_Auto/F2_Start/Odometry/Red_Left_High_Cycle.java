@@ -963,7 +963,7 @@ public class Red_Left_High_Cycle extends LinearOpMode {
 
         odometry.update(0, 0, 0);
 
-        odometry.updatePose(new Pose2d(0, 0, new Rotation2d(3.141)));
+        odometry.updatePose(new Pose2d(1, 0, new Rotation2d(3.141)));
 
 //        odometry.updatePose();
 
@@ -985,9 +985,9 @@ public class Red_Left_High_Cycle extends LinearOpMode {
             public void onOpened() {
                 Texpandcamera.getExposureControl().setMode(ExposureControl.Mode.Manual);
 
-                Texpandcamera.getExposureControl().setExposure(30, TimeUnit.MILLISECONDS);
+                Texpandcamera.getExposureControl().setExposure(25, TimeUnit.MILLISECONDS);
 
-                Texpandcamera.getGainControl().setGain(100);
+                Texpandcamera.getGainControl().setGain(1);
 
                 FocusControl.Mode focusmode = FocusControl.Mode.Fixed;
 

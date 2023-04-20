@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Teleop.Old;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -25,6 +26,7 @@ import org.openftc.easyopencv.OpenCvWebcam;
 import java.util.concurrent.TimeUnit;
 
 @TeleOp
+@Disabled
 public class DoubleGripperLatestCamera extends OpMode {
 
     public DcMotor RF = null;

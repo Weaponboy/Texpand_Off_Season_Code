@@ -44,7 +44,7 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 
-@Autonomous
+@Autonomous(name = "Blue_Left_High_Cycle", group = "Blue Auto")
 public class Blue_Left_High_Cycle extends LinearOpMode {
 
     Drivetrain drive = new Drivetrain();

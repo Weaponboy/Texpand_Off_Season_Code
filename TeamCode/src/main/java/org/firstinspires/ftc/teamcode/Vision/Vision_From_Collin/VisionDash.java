@@ -58,6 +58,8 @@ public class VisionDash {
     public static int cone_Max_S = 255;
     public static int cone_Max_V = 255;
 
+    public static int PoleVisionEX = 40;
+
     public static int Red_cone_Min_H = 120;
     public static int Red_cone_Min_S = 40;
     public static int Red_cone_Min_V = 70;

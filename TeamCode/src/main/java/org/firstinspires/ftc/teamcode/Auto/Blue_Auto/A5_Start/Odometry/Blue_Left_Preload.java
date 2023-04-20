@@ -43,7 +43,7 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 
-@Autonomous
+@Autonomous(name = "Blue_Left_Preload", group = "Blue Auto")
 public class Blue_Left_Preload extends LinearOpMode {
 
     Drivetrain drive = new Drivetrain();

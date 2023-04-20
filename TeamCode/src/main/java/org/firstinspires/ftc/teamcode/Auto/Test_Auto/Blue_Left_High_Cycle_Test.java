@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Auto.Red_Auto.F5_Start.Odometry;
+package org.firstinspires.ftc.teamcode.Auto.Test_Auto;
 
 import static org.firstinspires.ftc.teamcode.Odometry.PIDMovement.MovePIDTuning.driveD;
 import static org.firstinspires.ftc.teamcode.Odometry.PIDMovement.MovePIDTuning.driveF;
@@ -44,8 +44,8 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 
-@Autonomous
-public class Red_Right_High_Cycle extends LinearOpMode {
+@Autonomous(name = "Blue_Left_High_Cycle_Test", group = "Blue Auto")
+public class Blue_Left_High_Cycle_Test extends LinearOpMode {
 
     Drivetrain drive = new Drivetrain();
 
@@ -80,6 +80,8 @@ public class Red_Right_High_Cycle extends LinearOpMode {
     PIDFController strafePID;
     PIDFController PivotPID;
 
+    private boolean time = false;
+
     double Xdist = 0;
     double Ydist = 0;
 
@@ -113,8 +115,6 @@ public class Red_Right_High_Cycle extends LinearOpMode {
     double StartingHeading = 0;
 
     double StartingHeadinggyro = 0;
-
-    private boolean time = false;
 
     private Motor.Encoder leftOdometer, rightOdometer, centerOdometer;
     private HolonomicOdometry odometry;
@@ -231,10 +231,8 @@ public class Red_Right_High_Cycle extends LinearOpMode {
 
             drive.WithOutEncoders();
 
-            ExtendHighPreloaded();
-
             //Drop Off Position
-            Odo_Drive(112, 0, 150, 0.1, 1, 0);
+            Odo_Drive(112, 0, 210, 0.1, 1, 0, true);
 
             top.Top_Pivot.setPosition(0.19);
 
@@ -263,10 +261,8 @@ public class Red_Right_High_Cycle extends LinearOpMode {
 
             drive.WithOutEncoders();
 
-            ExtendHighPreloaded();
-
             //Drop Off Position
-            Odo_Drive(112, 0, 150, 0.1, 1, 0);
+            Odo_Drive(112, 0, 210, 0.1, 1, 0, true);
 
             top.Top_Pivot.setPosition(0.19);
 
@@ -295,10 +291,8 @@ public class Red_Right_High_Cycle extends LinearOpMode {
 
             drive.WithOutEncoders();
 
-            ExtendHighPreloaded();
-
             //Drop Off Position
-            Odo_Drive(112, 0, 150, 0.1, 1, 0);
+            Odo_Drive(112, 0, 210, 0.1, 1, 0, true);
 
             top.Top_Pivot.setPosition(0.19);
 
@@ -642,7 +636,7 @@ public class Red_Right_High_Cycle extends LinearOpMode {
 
             //make sure gripper is closed
             try {
-                Thread.sleep(150);
+                Thread.sleep(200);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
@@ -650,7 +644,7 @@ public class Red_Right_High_Cycle extends LinearOpMode {
             bottom.Base_Pivot.setPosition(0.82);
 
             try {
-                Thread.sleep(250);
+                Thread.sleep(225);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
@@ -662,7 +656,6 @@ public class Red_Right_High_Cycle extends LinearOpMode {
                 while (slide.Extend.isBusy()) {
 
                     CheckVSlidePosForZero();
-
                     bottom.Base_Pivot.setPosition(0.82);
 
                     slide.Extend.setPower(0.9);
@@ -674,7 +667,7 @@ public class Red_Right_High_Cycle extends LinearOpMode {
                     if(slide.Extend.getCurrentPosition() > -100){
                         bottom.Base_Gripper.setPosition(0.4);
                     }
-                    if(slide.Extend.getCurrentPosition() > -75){
+                    if(slide.Extend.getCurrentPosition() > -70){
                         //open top gripper
                         top.Top_Gripper.setPosition(0.4);
 
@@ -693,7 +686,7 @@ public class Red_Right_High_Cycle extends LinearOpMode {
                 //open base gripper
                 bottom.Base_Gripper.setPosition(0.4);
 
-                Nest_Occupied = slide.colour.red() > 1500;
+                Nest_Occupied = slide.colour.blue() > 1500;
 
                 bottom.Base_Pivot.setPosition(1);
 
@@ -704,7 +697,7 @@ public class Red_Right_High_Cycle extends LinearOpMode {
                 }
 
 
-                Nest_Occupied = slide.colour.red() > 1500;
+                Nest_Occupied = slide.colour.blue() > 1500;
 
                 if(!Nest_Occupied){
                     try {
@@ -720,7 +713,7 @@ public class Red_Right_High_Cycle extends LinearOpMode {
                     }
                 }
 
-                Nest_Occupied = slide.colour.red() > 1500;
+                Nest_Occupied = slide.colour.blue() > 1500;
 
                 if(!Nest_Occupied){
 //                    Top_Pivot.setPosition(0.8);
@@ -782,7 +775,7 @@ public class Red_Right_High_Cycle extends LinearOpMode {
 //                    Top_Pivot.setPosition(1);
             }
 
-            Nest_Occupied = slide.colour.red() > 1500;
+            Nest_Occupied = slide.colour.blue() > 1500;
 
 
             if (Nest_Occupied) {
@@ -823,7 +816,7 @@ public class Red_Right_High_Cycle extends LinearOpMode {
         }
     }
 
-    public void Odo_Drive(double targetX, double targetY, double targetRot, double error, double Power_For_Long_Drive, double RampPower) {
+    public void Odo_Drive(double targetX, double targetY, double targetRot, double error, double Power_For_Long_Drive, double RampPower, boolean Preload) {
 
         do {
 
@@ -837,14 +830,15 @@ public class Red_Right_High_Cycle extends LinearOpMode {
 
             //GET CURRENT Y
             CurrentYPos = getYpos();
-//
-//            gyro.update();
-//
-//            //GET START HEADING WITH GYRO
-//            StartingHeadinggyro = gyro.angle();
 
             //GET START HEADING WITH ODOMETRY
             StartingHeading = Math.toDegrees(getheading());
+
+            if(Preload){
+                if (CurrentXPos > 80){
+                    ExtendHighPreloaded();
+                }
+            }
 
             //PID FOR DRIVING IN THE Y DIRECTION
             drivePID.setPIDF(driveP, 0, driveD, driveF);
@@ -895,32 +889,12 @@ public class Red_Right_High_Cycle extends LinearOpMode {
             Horizontal = strafePID.calculate(-RRYdist);
             Pivot = PivotPID.calculate(-rotdist);
 
-//            if ((Math.abs(rotdistForStop) < 1.5)){
-//                Pivot = Pivot*1.4 + RampPower;
-//            }
-
-//            if ((Math.abs(XdistForStop) < 1.5)){
-//                Vertical = Vertical*1.3;
-//                Horizontal = Horizontal*1.3;
-//            }
-//
-//            if ((Math.abs(YdistForStop) < 1.5)){
-//                Vertical = Vertical*1.3;
-//                Horizontal = Horizontal*1.3;
-//            }
-
             //SET MOTOR POWER USING THE PID OUTPUT
             drive.RF.setPower(Power_For_Long_Drive*(-Pivot + (Vertical + Horizontal)));
             drive.RB.setPower(Power_For_Long_Drive*((-Pivot * 1.4) + (Vertical - (Horizontal * 1.3))));
             drive.LF.setPower(Power_For_Long_Drive*(Pivot + (Vertical - Horizontal)));
             drive.LB.setPower(Power_For_Long_Drive*((Pivot * 1.4) + (Vertical + (Horizontal * 1.3))));
 
-            telemetry.addData("heading", ConvertedHeading);
-            telemetry.addData("Target", rotdistForStop);
-            telemetry.addData("Target w F", rotdist);
-            telemetry.addData("X", getXpos());
-            telemetry.addData("Y", getYpos());
-            telemetry.update();
 
         }while ((Math.abs(XdistForStop) > 1 + error) || (Math.abs(YdistForStop) > 1 + error) || (Math.abs(rotdistForStop) > 1.2 + error));
 
@@ -1013,15 +987,15 @@ public class Red_Right_High_Cycle extends LinearOpMode {
     }
 
     public void Pos_1(){
-        Odo_Drive(124, -53, 180 , 0.1, 1, 0);
+        Odo_Drive(124, -58, 180 , 0.1, 1, 0, false);
     }
 
     public void Pos_2(){
-        Odo_Drive(124, 0, 180 , 0.1, 1, 0);
+        Odo_Drive(124, 0, 180 , 0.1, 1, 0, false);
     }
 
     public void Pos_3(){
-        Odo_Drive(124, 60, 180 , 0.1, 1, 0);
+        Odo_Drive(124, 56, 180 , 0.1, 1, 0, false);
     }
 
     public void Destack_4 () {
@@ -1165,14 +1139,14 @@ public class Red_Right_High_Cycle extends LinearOpMode {
 
         bottom.Base_Pivot.setPosition(0.2);
 
-        Odo_Drive(132, 8, 135, 0.1, 1, 0);
+        Odo_Drive(132, -8, 220, 0.1, 1, 0, false);
 
         bottom.Base_Gripper.setPosition(0.4);
 
-        bottom.Base_Pivot.setPosition(0.05);
+        bottom.Base_Pivot.setPosition(0.1);
 
         //Collect Cone Position
-        Odo_Drive(132, 28, 90, 0.1, 1, 0);
+        Odo_Drive(125, -24, 270, 0.1, 1, 0, false);
 
         //cone 1
         CollectCone(setpoints.De_Pos_1);
@@ -1187,7 +1161,7 @@ public class Red_Right_High_Cycle extends LinearOpMode {
             ExtendHigh();
 
             //Drop Off Position
-            Odo_Drive(132, 19.5, 128 , 0.1, 1, 0.1);
+            Odo_Drive(125, -15, 232 , 0.1, 1, 0.1, false);
 
             DropPreLoad();
         }
@@ -1206,14 +1180,14 @@ public class Red_Right_High_Cycle extends LinearOpMode {
             bottom.Base_Pivot.setPosition(0.2);
 
             //Collect Cone Position
-            Odo_Drive(132, 28, 90, 0.1, 1, 0.1);
+            Odo_Drive(125, -24, 270, 0.1, 1, 0, false);
 
             bottom.Base_Gripper.setPosition(0.4);
 
             bottom.Base_Pivot.setPosition(0.05);
 
             //cone 2
-            CollectCone(setpoints.De_Pos_2);
+            CollectCone(0.2);
 
             top.Top_Gripper.setPosition(0);
 
@@ -1227,7 +1201,7 @@ public class Red_Right_High_Cycle extends LinearOpMode {
                 ExtendHigh();
 
                 //Drop Off Position
-                Odo_Drive(132, 19.5, 128 , 0.1, 1, 0.1);
+                Odo_Drive(125, -15, 232 , 0.1, 1, 0.1, false);
 
                 DropPreLoad();
             }
@@ -1244,7 +1218,7 @@ public class Red_Right_High_Cycle extends LinearOpMode {
                 bottom.Base_Pivot.setPosition(0.2);
 
                 //Collect Cone Position
-                Odo_Drive(132, 28, 90, 0.1, 1, 0.1);
+                Odo_Drive(125, -24, 270, 0.1, 1, 0, false);
 
                 bottom.Base_Gripper.setPosition(0.4);
 
@@ -1264,7 +1238,7 @@ public class Red_Right_High_Cycle extends LinearOpMode {
                     ExtendHigh();
 
                     //Drop Off Position
-                    Odo_Drive(132, 19.5, 128 , 0.1, 1, 0.1);
+                    Odo_Drive(125, -15, 232 , 0.1, 1, 0.1, false);
 
                     DropPreLoad();
                 }
@@ -1282,7 +1256,7 @@ public class Red_Right_High_Cycle extends LinearOpMode {
                     bottom.Base_Pivot.setPosition(0.2);
 
                     //Collect Cone Position
-                    Odo_Drive(132, 28, 90, 0.1, 1, 0.1);
+                    Odo_Drive(125, -24, 270, 0.1, 1, 0, false);
 
                     bottom.Base_Gripper.setPosition(0.4);
 
@@ -1302,7 +1276,7 @@ public class Red_Right_High_Cycle extends LinearOpMode {
                         ExtendHigh();
 
                         //Drop Off Position
-                        Odo_Drive(132, 19.5, 128 , 0.1, 1, 0.1);
+                        Odo_Drive(125, -15, 232 , 0.1, 1, 0.1, false);
 
                         DropPreLoad();
                     }
@@ -1320,7 +1294,7 @@ public class Red_Right_High_Cycle extends LinearOpMode {
                         bottom.Base_Pivot.setPosition(0.2);
 
                         //Collect Cone Position
-                        Odo_Drive(132, 28, 90, 0.1, 1, 0.1);
+                        Odo_Drive(125, -24, 270, 0.1, 1, 0, false);
 
                         bottom.Base_Gripper.setPosition(0.4);
 
@@ -1340,7 +1314,7 @@ public class Red_Right_High_Cycle extends LinearOpMode {
                             ExtendHigh();
 
                             //Drop Off Position
-                            Odo_Drive(132, 19.5, 128 , 0.1, 1, 0.1);
+                            Odo_Drive(125, -15, 232 , 0.1, 1, 0.1, false);
 
                             DropPreLoad();
                         }
