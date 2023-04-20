@@ -50,27 +50,28 @@ public class Field_Centric_Drive extends OpMode {
         LB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         vertical = -gamepad1.right_stick_y;
-        horizontal = -gamepad1.right_stick_x;
+        horizontal = -gamepad1.right_stick_x * 1.2;
         pivot = gamepad1.left_stick_x;
 
         Orientation bothead = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS);
-        double botHeading = bothead.firstAngle;
+
+        double botHeading = -bothead.firstAngle;
 
         //CONVERT TARGET TO ROBOT RELATIVE TARGET
-        RRXdist = vertical * Math.cos(-botHeading) - horizontal * Math.sin(-botHeading);
 
-        RRYdist = vertical * Math.sin(-botHeading) + horizontal * Math.cos(-botHeading);
+        RRXdist = vertical * Math.cos(-botHeading) + horizontal * Math.sin(-botHeading);
+
+        RRYdist = vertical * Math.sin(-botHeading) - horizontal * Math.cos(-botHeading);
 
         double denominator = Math.max(Math.abs(RRYdist) + Math.abs(RRXdist) + Math.abs(pivot), 1);
 
 
-        RF.setPower((slow1*1.4)*(-pivot + (vertical - horizontal)) / denominator);
-        RB.setPower(slow1*(-pivot + (vertical + horizontal)) / denominator);
-        LF.setPower((slow1*1.4)*(pivot + (vertical + horizontal)) / denominator);
-        LB.setPower(slow1*(pivot + (vertical - horizontal)) / denominator);
+        RF.setPower(slow1*(-pivot + (RRXdist - RRYdist)) / denominator);
+        RB.setPower((slow1*1.15)*(-pivot + (RRXdist + RRYdist)) / denominator);
+        LF.setPower(slow1*(pivot + (RRXdist + RRYdist)) / denominator);
+        LB.setPower((slow1*1.15)*(pivot + (RRXdist - RRYdist)) / denominator);
 
-
-
+        telemetry.addData("Imu", imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES));
         telemetry.addData("RF Power:", RF.getPower());
         telemetry.addData("RB Power:", RB.getPower());
         telemetry.addData("LF Power:", LF.getPower());
