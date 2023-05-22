@@ -143,6 +143,8 @@ public class Rebuild_Teleop extends OpMode {
             collectionSlides.Extend.setPower(0.6);
         }
 
+
+
         if (conefound && bottom.Base_Pivot.getPosition() < 0.1 && collectionSlides.Extend.getVelocity() < 0){
 
             collectionSlides.Extend.setPower(0);
