@@ -8,6 +8,7 @@ import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.Sli
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.SlowPoint;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.Top_Pivot_PID;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.brake;
+import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.collecting_cone;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.conefound;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.horizontal;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.pivot;
@@ -143,8 +144,6 @@ public class Rebuild_Teleop extends OpMode {
             collectionSlides.Extend.setPower(0.6);
         }
 
-
-
         if (conefound && bottom.Base_Pivot.getPosition() < 0.1 && collectionSlides.Extend.getVelocity() < 0){
 
             collectionSlides.Extend.setPower(0);
@@ -203,6 +202,8 @@ public class Rebuild_Teleop extends OpMode {
 
             collectionSlides.Extend.setPower(0.8);
 
+            collecting_cone = true;
+
         }
 
         if(collectionSlides.Extend.getCurrentPosition() > -200 && collectionSlides.Extend.getPower() > 0){
@@ -211,7 +212,7 @@ public class Rebuild_Teleop extends OpMode {
         }
 
 
-        if(bottom.Base_Pivot.getPosition() > 0.7 && collectionSlides.Extend.getVelocity() == 0 && collectionSlides.Extend.getCurrentPosition() > -10) {
+        if(bottom.Base_Pivot.getPosition() > 0.7 && collectionSlides.Extend.getVelocity() == 0 && collectionSlides.Extend.getCurrentPosition() > -10 && collecting_cone) {
 
             try {
                 Thread.sleep(200);
@@ -227,13 +228,13 @@ public class Rebuild_Teleop extends OpMode {
 
             bottom.Base_Pivot.setPosition(Base_Pivot_Out_Way);
 
+            collecting_cone = false;
+
         }
 
-        if (Pivot_Target < 300 && sensors.Nest_Check.blue() > 1500){
+        if (top.Top_Pivot.getCurrentPosition() < 5 && sensors.Nest_Check.blue() > 1500){
 
             top.Top_Gripper.setPosition(0);
-
-            Top_Pivot_Position();
         }
 
         /**Top pivot position*/
@@ -401,13 +402,6 @@ public class Rebuild_Teleop extends OpMode {
     @Override
     public void init_loop(){
 
-        if (gamepad1.left_stick_y > 0){
-
-        }else if(gamepad1.right_stick_y > 0){
-
-        }else{
-
-        }
     }
 
     public void Slide_Position(){

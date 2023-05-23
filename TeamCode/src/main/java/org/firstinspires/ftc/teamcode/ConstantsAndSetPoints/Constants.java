@@ -41,6 +41,8 @@ public class Constants {
 
     public static int Pivot_Current_Position = 0;
 
+    public static boolean collecting_cone = false;
+
     public static double Top_Pivot_PID = 0;
 
     public static double Pivot_FF = 0;

@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.FocusControl;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.teamcode.Vision.Pole_Pipe;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
@@ -30,9 +31,13 @@ public class Sensors {
 
     public OpenCvWebcam BackWeb;
 
+    public Pole_Pipe pole;
+
     public void init(HardwareMap Hmap, boolean Stream){
 
         hardwareMap = Hmap;
+
+        pole = new Pole_Pipe();
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
@@ -74,6 +79,8 @@ public class Sensors {
                 public void onError(int errorCode) { }
             });
 
+            BackWeb.setPipeline(pole);
+
             FtcDashboard.getInstance().startCameraStream(BackWeb,30);
         }
 
@@ -104,6 +111,9 @@ public class Sensors {
             @Override
             public void onError(int errorCode) { }
         });
+
+        BackWeb.setPipeline(pole);
+
 
         FtcDashboard.getInstance().startCameraStream(BackWeb,30);
     }
