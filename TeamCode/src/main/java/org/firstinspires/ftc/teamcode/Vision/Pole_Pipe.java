@@ -116,8 +116,6 @@ public class Pole_Pipe extends OpenCvPipeline {
     public Scalar values;
 
 
-
-
     @Override
     public Mat processFrame(Mat input) {
 
@@ -129,12 +127,8 @@ public class Pole_Pipe extends OpenCvPipeline {
         IMG_HEIGHT = input.rows();
         IMG_WIDTH = input.cols();
 
-//        MIN_THRESH = new Scalar(VisionDash.blue_min_H, VisionDash.blue_min_S, VisionDash.blue_min_V);
-//        MAX_THRESH = new Scalar(VisionDash.blue_max_H, VisionDash.blue_max_S, VisionDash.blue_max_V);
-
         //convert to HSV
         Imgproc.cvtColor(input, modified, COLOR_RGB2HSV);
-//        Imgproc.cvtColor(output, output, COLOR_RGB2HSV_FULL);
 
         //submat
         values = Core.mean(modified.submat(center));
@@ -161,17 +155,6 @@ public class Pole_Pipe extends OpenCvPipeline {
         MedRect = -1;
         LowRect = -1;
         numcontours = contours.size();
-
-
-//        if(rects.size() > 0) {
-//            largestRect = VisionUtils.sortRectsByMaxOption(1, VisionUtils.RECT_OPTION.AREA, rects).get(0);
-//            rectangle(output, largestRect, orange, 8);
-//            Imgproc.circle(output, new Point(largestRect.x + largestRect.width / 2, largestRect.y + largestRect.height / 2), 10, orange, 5);
-//
-//            rectX = largestRect.x + largestRect.width / 2;
-//            rectY = largestRect.y + largestRect.height / 2;
-//            Largest_Rect_Width = largestRect.width;
-//        }
 
         if(rects.size() > 0) {
 

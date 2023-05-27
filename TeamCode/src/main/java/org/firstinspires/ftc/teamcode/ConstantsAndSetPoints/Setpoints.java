@@ -7,11 +7,16 @@ public class Setpoints {
 
     /** Slide Set Points*/
 
+    //High pole set point
+    public static int High_Pole_Cycle = 550;
+
+    public static int High_Pole_Cycle_while = 500;
+
     //Top pole set point
-    public static int Top_Pole = 1800;
+    public static int High_Pole_Driver = 700;
 
     //Medium pole set point
-    public static int Medium_Pole = 900;
+    public static int Medium_Pole = 250;
 
     //Collection slides full extension safety stop
     public static double Stop_Point = -550;
@@ -41,24 +46,16 @@ public class Setpoints {
     //Get cone from nest
     public static int Top_Pivot_Nest_Position = 0;
 
-    public static int Top_Pivot_Up = -50;
-
-    public static int Top_Pivot_All_Down = -90;
-
-    //Position for after dropping off a cone
-    public static double Top_Pivot_Just_Dropped = 0.1;
-
     //waiting for cone
-    public static double Top_Pivot_Waiting_For_Cone = 0.6;
+    public static int Top_Pivot_Waiting_For_Cone = 200;
 
-    //Pull the gripper back after the drop off
-    public static double Top_Pivot_After_Delivery = 0.4;
+    public static int Drop_Cone_Cycle = 600;
 
     //Ready for drop
-    public static double Top_Pivot_Almost_Drop = 0.3;
+    public static int Top_Pivot_Almost_Drop = 800;
 
     //Position to drop the cone of once the slides have reached position
-    public static double Top_Pivot_Deliver = 0;
+    public static int Top_Pivot_Deliver = 1000;
 
     /**Top Turn positions*/
     public static double Top_Turn_Middle = 0.5;
@@ -72,11 +69,8 @@ public class Setpoints {
     //ready to collect a cone
     public static double Base_Pivot_Collect = 0.01;
 
-    //Position for the cone alignment vision
-    public static double Base_Pivot_Cone_Alignment = 0.7;
-
     //position to put the cone in the nest
-    public static double Base_Pivot_Flip = 0.85;
+    public static double Base_Pivot_Flip = 0.55;
 
     //Pivot all the way inside the bot
     public static double Base_Pivot_Out_Way = 1;

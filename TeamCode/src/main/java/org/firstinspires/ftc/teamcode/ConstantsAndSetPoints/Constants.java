@@ -20,6 +20,15 @@ public class Constants {
 
     public static boolean Slides_Safety_Stop = false;
 
+    public static double Collect_Cone_Distance = 70;
+
+    public static double slides_slow_point = 200;
+
+    public static double slow_power = -0.35;
+
+    public static double Slides_Max_Speed = -0.8;
+
+    public static double Slides_Reverse_Max_Speed = 0.6;
 
     public static double ticks_in_degrees = 1120 / 180.0;
 

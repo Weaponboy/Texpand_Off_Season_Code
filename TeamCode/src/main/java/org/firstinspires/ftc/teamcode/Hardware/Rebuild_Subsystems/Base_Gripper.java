@@ -29,4 +29,9 @@ public class Base_Gripper {
         Destacker_Left.setDirection(Servo.Direction.REVERSE);
 
     }
+    
+    public void Destacker_Position(double Position){
+        Destacker_Left.setPosition(Position);
+        Destacker_Right.setPosition(Position);
+    }
 }

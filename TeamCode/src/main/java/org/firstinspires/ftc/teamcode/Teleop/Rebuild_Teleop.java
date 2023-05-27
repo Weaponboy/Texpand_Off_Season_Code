@@ -1,9 +1,12 @@
 package org.firstinspires.ftc.teamcode.Teleop;
 
+import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.Collect_Cone_Distance;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.Pivot_Current_Position;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.Pivot_FF;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.Pivot_Power;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.Pivot_Target;
+import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.Slides_Max_Speed;
+import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.Slides_Reverse_Max_Speed;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.Slides_Safety_Stop;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.SlowPoint;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.Top_Pivot_PID;
@@ -17,6 +20,8 @@ import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.piv
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.pivot_i;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.pivot_p;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.slides_Power;
+import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.slides_slow_point;
+import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.slow_power;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.throttle;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.ticks_in_degrees;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.vertical;
@@ -30,9 +35,17 @@ import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Setpoints.De_
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Setpoints.De_Pos_3;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Setpoints.De_Pos_4;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Setpoints.De_Pos_5;
+import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Setpoints.Drop_Cone_Cycle;
+import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Setpoints.High_Pole_Cycle;
+import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Setpoints.High_Pole_Cycle_while;
+import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Setpoints.High_Pole_Driver;
+import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Setpoints.Medium_Pole;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Setpoints.Stop_Point;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Setpoints.Top_Gripper_Closed;
+import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Setpoints.Top_Gripper_Open;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Setpoints.Top_Gripper_Open_Wide;
+import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Setpoints.Top_Pivot_Nest_Position;
+import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Setpoints.Top_Pivot_Waiting_For_Cone;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Setpoints.Top_Turn_Left;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Setpoints.Top_Turn_Middle;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Setpoints.Top_Turn_Right;
@@ -80,8 +93,6 @@ public class Rebuild_Teleop extends OpMode {
 
     Gamepad previousGamepad2 = new Gamepad();
 
-
-
     @Override
     public void loop() {
 
@@ -111,8 +122,6 @@ public class Rebuild_Teleop extends OpMode {
         drive.RB.setPower(throttle *(-pivot + (vertical + horizontal)));
         drive.LF.setPower((throttle *1.4)*(pivot + (vertical + horizontal)));
         drive.LB.setPower(throttle *(pivot + (vertical - horizontal)));
-
-
 
         /**Collection slides*/
 
@@ -211,14 +220,11 @@ public class Rebuild_Teleop extends OpMode {
             bottom.Destacker_Right.setPosition(De_Pos_5);
         }
 
-
         if(bottom.Base_Pivot.getPosition() > 0.7 && collectionSlides.Extend.getVelocity() == 0 && collectionSlides.Extend.getCurrentPosition() > -10 && collecting_cone) {
 
-            try {
-                Thread.sleep(200);
-            }catch (Exception e){
-                System.out.println(e.getMessage());
-            }
+            collectionSlides.Extend.setPower(0);
+
+            collectionSlides.Extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
             Pivot_Target = 0;
 
@@ -235,6 +241,249 @@ public class Rebuild_Teleop extends OpMode {
         if (top.Top_Pivot.getCurrentPosition() < 5 && sensors.Nest_Check.blue() > 1500){
 
             top.Top_Gripper.setPosition(0);
+        }
+
+        /**Full cycle*/
+
+        if (gamepad2.back){
+
+            bottom.Base_Pivot.setPosition(Base_Pivot_Collect);
+
+            drive.RF.setPower(0);
+            drive.RB.setPower(0);
+            drive.LF.setPower(0);
+            drive.LB.setPower(0);
+
+            collectionSlides.Extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            collectionSlides.Extend.setPower(Slides_Max_Speed);
+
+            conefound = sensors.Collect_Cone.getDistance(DistanceUnit.MM) < Collect_Cone_Distance;
+
+            while(!conefound && collectionSlides.Extend.getCurrentPosition() > Stop_Point){
+
+                Slide_Position();
+
+                conefound = sensors.Collect_Cone.getDistance(DistanceUnit.MM) < Collect_Cone_Distance;
+
+                SlowPoint = sensors.Collect_Cone.getDistance(DistanceUnit.MM) < slides_slow_point;
+
+                if (SlowPoint){
+                    collectionSlides.Extend.setPower(slow_power);
+                }else {
+                    collectionSlides.Extend.setPower(Slides_Max_Speed);
+                }
+
+                Top_Pivot_Position();
+
+            }
+
+            collectionSlides.Extend.setPower(0);
+
+            if(conefound) {
+
+                try {
+                    Thread.sleep(50);
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+
+                bottom.Base_Gripper.setPosition(Base_Gripper_Closed);
+
+                try {
+                    Thread.sleep(300);
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+
+                Slide_Position();
+
+                Pivot_Target = Top_Pivot_Waiting_For_Cone;
+
+                Top_Pivot_Position();
+
+                top.Top_Gripper.setPosition(Top_Gripper_Open_Wide);
+
+                Top_Pivot_Position();
+
+                try {
+                    Thread.sleep(125);
+                }catch (Exception e){
+                    System.out.println(e.getMessage());
+                }
+
+                Top_Pivot_Position();
+
+                collectionSlides.Extend.setTargetPosition(0);
+
+                collectionSlides.Extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                collectionSlides.Extend.setPower(Slides_Reverse_Max_Speed);
+
+                while (collectionSlides.Extend.isBusy()) {
+
+                    Slide_Position();
+
+                    bottom.Base_Pivot.setPosition(Base_Pivot_Flip);
+
+                    bottom.Base_Gripper.setPosition(0);
+
+                    collectionSlides.Extend.setPower(Slides_Reverse_Max_Speed);
+
+                    Top_Pivot_Position();
+
+                    if(collectionSlides.Extend.getCurrentPosition() > -40){
+
+                        //open top gripper
+                        top.Top_Gripper.setPosition(Top_Gripper_Open_Wide);
+
+                        //take top pivot to pick up the cone
+                        Pivot_Target = Top_Pivot_Nest_Position;
+
+                        Top_Pivot_Position();
+                    }
+                }
+
+                Slide_Position();
+
+                collectionSlides.Extend.setPower(0);
+
+                bottom.Destacker_Position(De_Pos_5);
+
+                    try {
+                        Thread.sleep(100);
+                    }catch (Exception e){
+                        System.out.println(e.getMessage());
+                    }
+
+                    bottom.Base_Gripper.setPosition(Base_Gripper_Open);
+
+                    try {
+                        Thread.sleep(150);
+                    }catch (Exception e){
+                        System.out.println(e.getMessage());
+                    }
+
+                    bottom.Base_Pivot.setPosition(Base_Pivot_Out_Way);
+
+                    try {
+                        Thread.sleep(50);
+                    }catch (Exception e){
+                        System.out.println(e.getMessage());
+                    }
+
+                    Pivot_Target = Top_Pivot_Nest_Position;
+
+                    Top_Pivot_Position();
+
+                    try {
+                        Thread.sleep(50);
+                    }catch (Exception e){
+                        System.out.println(e.getMessage());
+                    }
+
+                    Top_Pivot_Position();
+
+                    top.Top_Gripper.setPosition(Top_Gripper_Closed);
+
+                    try {
+                        Thread.sleep(100);
+                    }catch (Exception e){
+                        System.out.println(e.getMessage());
+                    }
+
+                    Pivot_Target = Top_Pivot_Waiting_For_Cone;
+
+                Top_Pivot_Position();
+
+                    try {
+                        Thread.sleep(50);
+                    }catch (Exception e){
+                        System.out.println(e.getMessage());
+                    }
+
+                Top_Pivot_Position();
+
+                bottom.Base_Pivot.setPosition(Base_Pivot_Collect);
+
+                collectionSlides.Extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+                try {
+                    Thread.sleep(100);
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+
+                deliverySlides.Right_Slide.setTargetPosition(High_Pole_Cycle);
+                deliverySlides.Left_Slide.setTargetPosition(High_Pole_Cycle);
+
+                deliverySlides.Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                deliverySlides.Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                deliverySlides.Left_Slide.setPower(1);
+                deliverySlides.Right_Slide.setPower(1);
+
+                while (deliverySlides.Right_Slide.getCurrentPosition() < High_Pole_Cycle_while && deliverySlides.Left_Slide.getCurrentPosition() < High_Pole_Cycle_while) {
+
+                    deliverySlides.Right_Slide.setPower(1);
+                    deliverySlides.Left_Slide.setPower(1);
+
+                    Slide_Position();
+
+                }
+
+                Pivot_Target = Drop_Cone_Cycle;
+
+                Top_Pivot_Position();
+
+                try {
+                    Thread.sleep(100);
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+
+                Top_Pivot_Position();
+
+                deliverySlides.Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                deliverySlides.Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+                try {
+                    Thread.sleep(50);
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+
+                top.Top_Gripper.setPosition(Top_Gripper_Open_Wide);
+
+                deliverySlides.Right_Slide.setTargetPosition(0);
+                deliverySlides.Left_Slide.setTargetPosition(0);
+
+                deliverySlides.Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                deliverySlides.Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                Pivot_Target = Top_Pivot_Waiting_For_Cone;
+
+                Top_Pivot_Position();
+
+                deliverySlides.Right_Slide.setPower(-0.9);
+                deliverySlides.Left_Slide.setPower(-0.9);
+
+                slides_Power = true;
+
+            }else{
+                collectionSlides.Extend.setTargetPosition(0);
+
+                collectionSlides.Extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                collectionSlides.Extend.setPower(Slides_Reverse_Max_Speed);
+
+                Slide_Position();
+
+                bottom.Base_Pivot.setPosition(Base_Pivot_Collect);
+            }
+
+
+
         }
 
         /**Top pivot position*/
@@ -271,8 +520,8 @@ public class Rebuild_Teleop extends OpMode {
         //High pole
         if(gamepad2.left_bumper){
 
-            deliverySlides.Right_Slide.setTargetPosition(880);
-            deliverySlides.Left_Slide.setTargetPosition(880);
+            deliverySlides.Right_Slide.setTargetPosition(High_Pole_Driver);
+            deliverySlides.Left_Slide.setTargetPosition(High_Pole_Driver);
 
             deliverySlides.Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             deliverySlides.Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -285,8 +534,8 @@ public class Rebuild_Teleop extends OpMode {
         //Medium pole
         if(gamepad2.right_bumper){
 
-            deliverySlides.Right_Slide.setTargetPosition(500);
-            deliverySlides.Left_Slide.setTargetPosition(500);
+            deliverySlides.Right_Slide.setTargetPosition(Medium_Pole);
+            deliverySlides.Left_Slide.setTargetPosition(Medium_Pole);
 
             deliverySlides.Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             deliverySlides.Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -320,7 +569,7 @@ public class Rebuild_Teleop extends OpMode {
             top.Top_Gripper.setPosition(Top_Gripper_Closed);//lower top gripper if it is up
         }
 
-        if(currentGamepad2.a && !previousGamepad2.a && bottom.Base_Pivot.getPosition() < 0.5){
+        if(currentGamepad2.a && !previousGamepad2.a && bottom.Base_Pivot.getPosition() < 0.45){
             bottom.Base_Pivot.setPosition(Base_Pivot_Flip);
         }else if(currentGamepad2.a && !previousGamepad2.a && bottom.Base_Pivot.getPosition() > 0){
             bottom.Base_Pivot.setPosition(Base_Pivot_Collect);
@@ -383,7 +632,7 @@ public class Rebuild_Teleop extends OpMode {
 
         drive.init(hardwareMap);
 
-        sensors.init(hardwareMap, false);
+        sensors.init(hardwareMap, true);
 
         top.init(hardwareMap);
 
@@ -397,10 +646,13 @@ public class Rebuild_Teleop extends OpMode {
 
         top.pivot_controller = new PIDController(pivot_p, pivot_i, pivot_d);
 
-    }
+        List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
 
-    @Override
-    public void init_loop(){
+        for (LynxModule hub : allHubs) {
+            hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+        }
+
+        Pivot_Target = 0;
 
     }
 

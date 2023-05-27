@@ -7,11 +7,13 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.FocusControl;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.Vision.Pole_Pipe;
 import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
@@ -47,11 +49,16 @@ public class Sensors {
         parameters.loggingTag = "IMU";
 
         imu = hardwareMap.get(BNO055IMU.class, "imu");
+
         imu.initialize(parameters);
 
         Nest_Check = hardwareMap.get(ColorSensor.class, "colour");
 
         Collect_Cone = hardwareMap.get(DistanceSensor.class, "sensor_range");
+
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+
+        BackWeb = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Backcam"));
 
         if (Stream){
             BackWeb.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
