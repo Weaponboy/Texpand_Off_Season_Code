@@ -26,7 +26,7 @@ public class Field_Centric_Drive extends OpMode {
     public DcMotor LB = null;
 
     public Orientation yawAngle;
-    public BNO055IMU imu = null;// Control/Expansion Hub IMU
+    public BNO055IMU imu = null;
 
     double RRXdist = 0;
     double RRYdist = 0;
@@ -38,7 +38,6 @@ public class Field_Centric_Drive extends OpMode {
     private double pivot;
 
     private double slow1 = 0.4;
-
 
     @Override
     public void loop() {
@@ -59,13 +58,10 @@ public class Field_Centric_Drive extends OpMode {
         double botHeading = -bothead.firstAngle;
 
         //CONVERT TARGET TO ROBOT RELATIVE TARGET
-
         RRXdist = vertical * Math.cos(-botHeading) + horizontal * Math.sin(-botHeading);
-
         RRYdist = vertical * Math.sin(-botHeading) - horizontal * Math.cos(-botHeading);
 
         double denominator = Math.max(Math.abs(RRYdist) + Math.abs(RRXdist) + Math.abs(pivot), 1);
-
 
         RF.setPower(slow1*(-pivot + (RRXdist - RRYdist)) / denominator);
         RB.setPower((slow1*1.15)*(-pivot + (RRXdist + RRYdist)) / denominator);

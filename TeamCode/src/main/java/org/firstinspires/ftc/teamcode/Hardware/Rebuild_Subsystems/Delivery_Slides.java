@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Hardware.Rebuild_Subsystems;
 
+import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Setpoints.High_Pole_Driver;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -26,6 +28,20 @@ public class Delivery_Slides {
 
         Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    public void DeliverySlides(int setpoint, double power){
+
+        Right_Slide.setTargetPosition(setpoint);
+        Left_Slide.setTargetPosition(setpoint);
+
+        Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        Right_Slide.setPower(power);
+        Left_Slide.setPower(power);
+
+
     }
 
 }

@@ -165,13 +165,14 @@ public class Pole_Pipe extends OpenCvPipeline {
                 if (OrderedByWidthrects.get(i).width < High_pole_max_width && (OrderedByWidthrects.get(i).width > High_pole_min_width)) {
                     HighRect = i;
                 }
-                if (OrderedByWidthrects.get(i).width < Med_pole_max_width && (OrderedByWidthrects.get(i).width > Med_pole_min_width)) {
-                    MedRect = i;
-                }
 
-                if (OrderedByWidthrects.get(i).width < Low_pole_max_width && (OrderedByWidthrects.get(i).width > Low_pole_min_width)) {
-                    LowRect = i;
-                }
+//                if (OrderedByWidthrects.get(i).width < Med_pole_max_width && (OrderedByWidthrects.get(i).width > Med_pole_min_width)) {
+//                    MedRect = i;
+//                }
+//
+//                if (OrderedByWidthrects.get(i).width < Low_pole_max_width && (OrderedByWidthrects.get(i).width > Low_pole_min_width)) {
+//                    LowRect = i;
+//                }
             }
 
 
@@ -192,40 +193,40 @@ public class Pole_Pipe extends OpenCvPipeline {
 
             }
 
-            if (MedRect > -1) {
-                TargetMedRect = OrderedByWidthrects.get(MedRect);
-                rectangle(output, TargetMedRect, med, 8);
-
-
-                Target_Med_Rect_Width = TargetMedRect.width;
-                TargetMedrectX = TargetMedRect.x + TargetMedRect.width / 2;
-                TargetMedrectY = TargetMedRect.y + TargetMedRect.height / 2;
-
-                Imgproc.circle(output, new Point(TargetMedrectX, TargetMedrectY), 10, med, 5);
-                Imgproc.putText(output, "Medium Pole", new Point(TargetMedrectX + Target_Med_Rect_Width / 2, TargetMedrectY - 10), FONT_HERSHEY_COMPLEX, 0.5, black, 2);
-
-            }else{
-                TargetMedrectX = -1;
-                Target_Med_Rect_Width = -1;
-
-            }
-
-            if (LowRect > -1) {
-                TargetLowRect = OrderedByWidthrects.get(LowRect);
-                rectangle(output, TargetLowRect, low, 8);
-
-
-                Target_Low_Rect_Width = TargetLowRect.width;
-                TargetLowrectX = TargetLowRect.x + TargetLowRect.width / 2;
-                TargetLowrectY = TargetLowRect.y + TargetLowRect.height / 2;
-
-                Imgproc.circle(output, new Point(TargetLowrectX, TargetLowrectX), 10, med, 5);
-                Imgproc.putText(output, "Medium Pole", new Point(TargetLowrectX + Target_Low_Rect_Width / 2, TargetLowrectY - 10), FONT_HERSHEY_COMPLEX, 0.5, black, 2);
-
-            }else{
-                TargetLowrectX = -1;
-                Target_Low_Rect_Width = -1;
-            }
+//            if (MedRect > -1) {
+//                TargetMedRect = OrderedByWidthrects.get(MedRect);
+//                rectangle(output, TargetMedRect, med, 8);
+//
+//
+//                Target_Med_Rect_Width = TargetMedRect.width;
+//                TargetMedrectX = TargetMedRect.x + TargetMedRect.width / 2;
+//                TargetMedrectY = TargetMedRect.y + TargetMedRect.height / 2;
+//
+//                Imgproc.circle(output, new Point(TargetMedrectX, TargetMedrectY), 10, med, 5);
+//                Imgproc.putText(output, "Medium Pole", new Point(TargetMedrectX + Target_Med_Rect_Width / 2, TargetMedrectY - 10), FONT_HERSHEY_COMPLEX, 0.5, black, 2);
+//
+//            }else{
+//                TargetMedrectX = -1;
+//                Target_Med_Rect_Width = -1;
+//
+//            }
+//
+//            if (LowRect > -1) {
+//                TargetLowRect = OrderedByWidthrects.get(LowRect);
+//                rectangle(output, TargetLowRect, low, 8);
+//
+//
+//                Target_Low_Rect_Width = TargetLowRect.width;
+//                TargetLowrectX = TargetLowRect.x + TargetLowRect.width / 2;
+//                TargetLowrectY = TargetLowRect.y + TargetLowRect.height / 2;
+//
+//                Imgproc.circle(output, new Point(TargetLowrectX, TargetLowrectX), 10, med, 5);
+//                Imgproc.putText(output, "Medium Pole", new Point(TargetLowrectX + Target_Low_Rect_Width / 2, TargetLowrectY - 10), FONT_HERSHEY_COMPLEX, 0.5, black, 2);
+//
+//            }else{
+//                TargetLowrectX = -1;
+//                Target_Low_Rect_Width = -1;
+//            }
             //find largest rect and draw a rectangle and mark it with a circle in the center
 
 

@@ -1,14 +1,11 @@
 package org.firstinspires.ftc.teamcode.Hardware.Rebuild_Subsystems;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-
-public class Drivetrain_2 {
+public class Drivetrain {
 
     public DcMotorEx LF;
     public DcMotorEx LB;
@@ -16,7 +13,6 @@ public class Drivetrain_2 {
     public DcMotorEx RB;
 
     HardwareMap hardwareMap;
-
 
     public void init(HardwareMap Hmap){
 

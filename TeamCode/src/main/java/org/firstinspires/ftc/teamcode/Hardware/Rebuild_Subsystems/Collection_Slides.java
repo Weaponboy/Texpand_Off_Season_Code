@@ -24,4 +24,13 @@ public class Collection_Slides {
         Extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
     }
+
+    public void Collect_RunToPosition (int setpoint, double power){
+
+        Extend.setTargetPosition(setpoint);
+
+        Extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        Extend.setPower(power);
+    }
 }

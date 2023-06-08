@@ -68,9 +68,9 @@ public class Sensors {
 
                     BackWeb.getExposureControl().setMode(ExposureControl.Mode.Manual);
 
-                    BackWeb.getExposureControl().setExposure(25, TimeUnit.MILLISECONDS);
+                    BackWeb.getExposureControl().setExposure(80, TimeUnit.MILLISECONDS);
 
-                    BackWeb.getGainControl().setGain(1);
+                    BackWeb.getGainControl().setGain(50);
 
                     FocusControl.Mode focusmode = FocusControl.Mode.Fixed;
 

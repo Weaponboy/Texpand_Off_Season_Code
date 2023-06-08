@@ -34,8 +34,8 @@ public class VisionDash {
 //    public static int blue_max_Cb = 130;
 
     //Pole width
-    public static int High_pole_min_width = 54;
-    public static int High_pole_max_width = 100;
+    public static int High_pole_min_width = 240;
+    public static int High_pole_max_width = 360;
     public static int Med_pole_min_width = 70;
     public static int Med_pole_max_width = 125;
 

@@ -8,12 +8,14 @@ public class Setpoints {
     /** Slide Set Points*/
 
     //High pole set point
-    public static int High_Pole_Cycle = 550;
+    public static int High_Pole_Cycle = 640;
 
-    public static int High_Pole_Cycle_while = 500;
+    public static int High_Pole_Cycle_while = 600;
 
     //Top pole set point
-    public static int High_Pole_Driver = 700;
+    public static int High_Pole_Driver = 740;
+
+    public static int High_Pole_Auto = 880;
 
     //Medium pole set point
     public static int Medium_Pole = 250;
@@ -49,20 +51,20 @@ public class Setpoints {
     //waiting for cone
     public static int Top_Pivot_Waiting_For_Cone = 200;
 
-    public static int Drop_Cone_Cycle = 600;
+    public static int Drop_Cone_Cycle = 900;
 
     //Ready for drop
-    public static int Top_Pivot_Almost_Drop = 800;
+    public static int Top_Pivot_Almost_Drop = 750;
 
     //Position to drop the cone of once the slides have reached position
-    public static int Top_Pivot_Deliver = 1000;
+    public static int Top_Pivot_Deliver = 950;
 
     /**Top Turn positions*/
     public static double Top_Turn_Middle = 0.5;
 
-    public static double Top_Turn_Left = 0;
+    public static double Top_Turn_Left = 0.2;
 
-    public static double Top_Turn_Right = 1;
+    public static double Top_Turn_Right = 0.8;
 
     /**Base Pivot positions*/
 
@@ -70,11 +72,12 @@ public class Setpoints {
     public static double Base_Pivot_Collect = 0.01;
 
     //position to put the cone in the nest
-    public static double Base_Pivot_Flip = 0.55;
+    public static double Base_Pivot_Flip = 0.58;
 
     //Pivot all the way inside the bot
-    public static double Base_Pivot_Out_Way = 1;
+    public static double Base_Pivot_Out_Way = 0.95;
 
+    public static double Base_Pivot_Transfer_Pos = 0.75;
 
     /**Destacker positions*/
 
