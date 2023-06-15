@@ -41,7 +41,7 @@ public class Odometry{
     public int oldLeftPod = 0;
     public int oldCenterPod = 0;
 
-    static double startX = 0, startY = 0, startHeading = Math.toRadians(0);
+    static double startX = 0, startY = -5, startHeading = Math.toRadians(0);
 
     public static double X = startX, Y = startY, heading = startHeading;
 

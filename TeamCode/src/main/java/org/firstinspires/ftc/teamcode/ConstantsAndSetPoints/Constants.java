@@ -1,15 +1,13 @@
 package org.firstinspires.ftc.teamcode.ConstantsAndSetPoints;
 
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.controller.PIDFController;
-import com.qualcomm.hardware.lynx.LynxModule;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-
-import java.util.List;
 
 @Config
 public class Constants {
@@ -36,7 +34,7 @@ public class Constants {
 
     /**Slides power*/
 
-    public static double Collection_slow_power = -0.35;
+    public static double Collection_slow_power = -0.3;
 
     public static double Collection_Slides_Max_Speed = -0.8;
 
@@ -79,16 +77,23 @@ public class Constants {
     //right offset
     public static double Offset_Right = 329;
 
+    public static double TargetPixels = 0;
+
     //convert camera pixels to cm's
-    public static double ConversionPixelstoCm = 20;
+    public static double deltaServoPosition;
+
+    public static double servoPosition;
+
+    public static double ConversionPixelstoServoPosition = 2000;
 
     //Camera real center
     public static double CenterOfScreen = 320;
 
     /**Drive constants*/
 
-    //second toggle speed
-    public static double slow = 0.4;
+    public static double denominator;
+
+    public static double botHeading;
 
     //toggle speed
     public static double slow1 = 0.4;
@@ -112,6 +117,9 @@ public class Constants {
     public static double Nest_Check_Blue = 1500;
 
     /**Cone found variables*/
+    public static double CurrentDraw = 0;
+    public static double OldCurrent = 0;
+    public static boolean CurrentDrawSpike = false;
 
     public static double counterfornest = 0;
 

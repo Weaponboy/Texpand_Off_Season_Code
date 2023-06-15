@@ -92,42 +92,31 @@ public class TestAuto extends LinearOpMode {
 
     Drivetrain drive = new Drivetrain();
 
-    Collection_Slides collectionSlides = new Collection_Slides();
-
-    Delivery_Slides deliverySlides = new Delivery_Slides();
-
-    Top_Gripper top = new Top_Gripper();
-
-    Base_Gripper bottom = new Base_Gripper();
-
-    ElapsedTime elapsedTime = new ElapsedTime();
-
-    Sensors sensors = new Sensors();
+    public static PIDFController drivePID;
+    public static PIDFController strafePID;
+    public static PIDFController PivotPID;
 
     @Override
     public void runOpMode() throws InterruptedException{
-
-        Init();
 
         drivePID = new PIDFController(driveP, 0, driveD, driveF);
         strafePID = new PIDFController(strafeP, 0, strafeD, strafeF);
         PivotPID = new PIDFController(rotationP, 0, rotationD, rotationF);
 
+        drive.init(hardwareMap);
+
+        odometry.init(hardwareMap);
+
         waitForStart();
 
-        ExtendHighPreloaded();
 
-        Odo_Drive(-110, -3, 36);
+        while(opModeIsActive()){
 
-        DropPreLoad();
+            double targetX = 10;
 
-        Odo_Drive(-127, -19, 85.5);
+            double targetY = 40;
 
-    }
-
-    public void Odo_Drive(double targetX, double targetY, double targetRot) {
-
-        do {
+            double targetRot = 0;
 
             odometry.odometry();
 
@@ -189,447 +178,18 @@ public class TestAuto extends LinearOpMode {
             Horizontal = strafePID.calculate(-RRYdist);
             Pivot = PivotPID.calculate(-rotdist);
 
-            telemetry.addData("X", X);
-            telemetry.addData("Y", Y);
-            telemetry.addData("heading", Math.toDegrees(heading));
-
-            telemetry.addData("converted heading", ConvertedHeading);
-
-            telemetry.addData("X target", Xdist);
-            telemetry.addData("Y target", Ydist);
-            telemetry.addData("rot target", rotdist);
-            telemetry.addData("X power", Vertical);
-            telemetry.addData("Y power", Horizontal);
-            telemetry.addData("rot power", Pivot);
-            telemetry.update();
-
             //SET MOTOR POWER USING THE PID OUTPUT
             drive.RF.setPower(-Pivot + (Vertical + Horizontal));
             drive.RB.setPower((-Pivot * 1.4) + (Vertical - (Horizontal * 1.3)));
             drive.LF.setPower(Pivot + (Vertical - Horizontal));
             drive.LB.setPower((Pivot * 1.4) + (Vertical + (Horizontal * 1.3)));
 
-
-        }while ((Math.abs(XdistForStop) > 0.8 ) || (Math.abs(YdistForStop) > 0.8 ) || (Math.abs(rotdistForStop) > 0.8));
-
-        drive.RF.setPower(0);
-        drive.RB.setPower(0);
-        drive.LF.setPower(0);
-        drive.LB.setPower(0);
-
-    }
-
-    public void Init(){
-
-        drive.init(hardwareMap);
-
-        odometry.init(hardwareMap);
-
-        sensors.init(hardwareMap, true);
-
-        deliverySlides.init(hardwareMap);
-
-        collectionSlides.init(hardwareMap);
-
-        top.init(hardwareMap);
-
-        bottom.init(hardwareMap);
-
-        bottom.Base_Pivot.setPosition(Base_Pivot_Out_Way);
-
-        top.Top_Gripper.setPosition(Top_Gripper_Closed);
-
-    }
-
-    public void CollectCone(double De_pos){
-
-        Nest_Check = sensors.Nest_Check.blue() > Nest_Check_Blue;
-
-        if (!Nest_Check){
-
-            bottom.Base_Gripper.setPosition(0.4);
-
-            bottom.Destacker_Left.setPosition(De_pos);
-            bottom.Destacker_Right.setPosition(De_pos);
-
-            if(bottom.Destacker_Left.getPosition() == De_Pos_1){
-                bottom.Base_Pivot.setPosition(0.38);
-            }else{
-                bottom.Base_Pivot.setPosition(0.05);
-            }
-
-            Sleep(400);
-
-            Pivot_Target = 200;
-
-            collectionSlides.Extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-            collectionSlides.Extend.setPower(Collection_Slides_Max_Speed);
-
-            conefound = sensors.Collect_Cone.getDistance(DistanceUnit.MM) < 70;
-
-            //extend till we find a cone or get to the slides limit
-            while (!conefound && collectionSlides.Extend.getCurrentPosition() > Stop_Point) {
-
-                Slide_Position();
-
-                Top_Pivot_Position();
-
-                conefound = sensors.Collect_Cone.getDistance(DistanceUnit.MM) < 70;
-
-                SlowPoint = collectionSlides.Extend.getCurrentPosition() < -350;
-
-                if (SlowPoint){
-                    collectionSlides.Extend.setPower(Collection_slow_power);
-                }else {
-                    collectionSlides.Extend.setPower(Collection_Slides_Max_Speed);
-                }
-
-            }
-
-            collectionSlides.Extend.setPower(0);
-
-            if (conefound || collectionSlides.Extend.getCurrentPosition() <= (Stop_Point - 20)){
-
-                //close gripper
-                bottom.Base_Gripper.setPosition(Base_Gripper_Closed);
-
-                Slide_Position();
-
-                Sleep(200);
-
-                bottom.Base_Pivot.setPosition(Base_Pivot_Transfer_Pos);
-
-                Sleep(225);
-
-                collectionSlides.Extend.setTargetPosition(0);
-
-                collectionSlides.Extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-                while (collectionSlides.Extend.isBusy()) {
-
-                    Slide_Position();
-
-                    bottom.Base_Pivot.setPosition(0.82);
-
-                    collectionSlides.Extend.setPower(0.9);
-
-                    if(collectionSlides.Extend.getCurrentPosition() > -175){
-
-                        bottom.Destacker_Left.setPosition(De_Pos_5);
-                        bottom.Destacker_Right.setPosition(De_Pos_5);
-
-                    }
-                    if(collectionSlides.Extend.getCurrentPosition() > -100){
-                        bottom.Base_Gripper.setPosition(0.4);
-                    }
-                    if(collectionSlides.Extend.getCurrentPosition() > -70){
-
-                        //open top gripper
-                        top.Top_Gripper.setPosition(Top_Gripper_Open_Wide);
-
-                        Pivot_Target = 0;
-                    }
-                }
-
-                collectionSlides.Extend.setPower(0);
-
-                //open base gripper
-                bottom.Base_Gripper.setPosition(Base_Gripper_Open);
-
-                Nest_Check = sensors.Nest_Check.blue() > Nest_Check_Blue;
-
-                bottom.Base_Pivot.setPosition(Base_Pivot_Out_Way);
-
-                Nest_Check = sensors.Nest_Check.blue() > 1500;
-
-                if (!Nest_Check){
-                    Sleep(200);
-                }
-
-                counterfornest = 0;
-
-                while(!Nest_Check && elapsedTime.milliseconds() < 26000){
-
-                    counterfornest++;
-
-                    Sleep(100);
-
-                    if (counterfornest == 5){
-
-                        Pivot_Target = Top_Pivot_Waiting_For_Cone;
-
-                        Sleep(400);
-
-                        Pivot_Target = Top_Pivot_Nest_Position;
-
-                        Sleep(400);
-                    }
-
-
-                    Nest_Check = sensors.Nest_Check.blue() > Nest_Check_Blue;
-
-                }
-
-
-                if (Nest_Check) {
-
-                    //close top gripper
-                    top.Top_Gripper.setPosition(Top_Gripper_Closed);
-
-                    Sleep(100);
-
-                }else{
-                    abort = true;
-                }
-
-            }else{
-
-                bottom.Base_Pivot.setPosition(0.82);
-
-                collectionSlides.Extend.setTargetPosition(0);
-
-                collectionSlides.Extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-                while (collectionSlides.Extend.isBusy()) {
-
-                    Slide_Position();
-
-                    collectionSlides.Extend.setPower(Slides_Reverse_Max_Speed);
-
-                }
-                collectionSlides.Extend.setPower(0);
-
-                bottom.Destacker_Left.setPosition(De_Pos_5);
-                bottom.Destacker_Right.setPosition(De_Pos_5);
-
-                abort = true;
-            }
-
-        }else {
-            abort = true;
-        }
-
-    }
-
-    public void ExtendHigh (){
-
-        top.Top_Gripper.setPosition(0);
-
-        Pivot_Target = 885;
-
-        Top_Pivot_Position();
-
-        deliverySlides.DeliverySlides(High_Pole_Auto, Delivery_Slides_Max_Speed);
-
-        top.Top_Turn_Table.setPosition(0.35);
-
-    }
-
-    public void ExtendHighPreloaded(){
-
-        top.Top_Gripper.setPosition(0);
-
-        Pivot_Target = 550;
-
-        Top_Pivot_Position();
-
-        deliverySlides.DeliverySlides(High_Pole_Cycle, Delivery_Slides_Max_Speed);
-
-    }
-
-    public void DropPreLoad(){
-
-        while (deliverySlides.Right_Slide.getCurrentPosition() < 600){
-
-            Sleep(50);
-
-        }
-
-        Sleep(200);
-
-        Pivot_Target = 600;
-
-        Top_Pivot_Position();
-
-        Sleep(300);
-
-        top.Top_Gripper.setPosition(Top_Gripper_Open_Wide);
-
-        //TO DO: Insert WHILE loop
-        if (top.Top_Gripper.getPosition() == Top_Gripper_Open_Wide) {
-
-            Sleep(50);
-
-            Pivot_Target = 200;
-
-            top.Top_Turn_Table.setPosition(Top_Turn_Middle);
-
-            deliverySlides.DeliverySlides(0, Delivery_Slides_Max_Speed_Reverse);
-
-            slides_Power = true;
-        }
-    }
-
-    public void DropCycleCone(){
-
-//        collectionSlides.Collect_RunToPosition(-200, Collection_Slides_Max_Speed);
-
-        bottom.Base_Pivot.setPosition(Base_Pivot_Collect);
-
-        deliverySlides.DeliverySlides(High_Pole_Auto, Delivery_Slides_Max_Speed);
-
-        while (deliverySlides.Right_Slide.getCurrentPosition() < 870){
-
-            Pivot_Target = 885;
-
-            Top_Pivot_Position();
-
-            top.Top_Turn_Table.setPosition(0.35);
-
-        }
-
-        Sleep(300);
-
-        Pivot_Target = 1000;
-
-        Top_Pivot_Position();
-
-        Sleep(150);
-
-        top.Top_Gripper.setPosition(Top_Gripper_Open);
-
-        Sleep(200);
-
-        deliverySlides.DeliverySlides(0, Delivery_Slides_Max_Speed_Reverse);
-
-        top.Top_Turn_Table.setPosition(Top_Turn_Middle);
-
-        top.Top_Gripper.setPosition(Top_Gripper_Open_Wide);
-
-        Pivot_Target = Top_Pivot_Waiting_For_Cone;
-
-        slides_Power = true;
-    }
-
-    public void Slide_Position(){
-
-        if(deliverySlides.Right_Slide.getCurrentPosition() < 10 && !deliverySlides.Right_Slide.isBusy() && deliverySlides.Left_Slide.getCurrentPosition() < 10 && !deliverySlides.Left_Slide.isBusy()){
-            deliverySlides.Right_Slide.setPower(0);
-            deliverySlides.Left_Slide.setPower(0);
-
-            deliverySlides.Right_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            deliverySlides.Left_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-            slides_Power = false;
-
-        }else if(slides_Power){
-
-            deliverySlides.Right_Slide.setPower(Delivery_Slides_Max_Speed_Reverse);
-            deliverySlides.Left_Slide.setPower(Delivery_Slides_Max_Speed_Reverse);
-
-        }
-
-    }
-
-    public void Top_Pivot_Position(){
-
-        top.pivot_controller.setPID(pivot_p, pivot_i, pivot_d);
-
-        Pivot_Current_Position = top.Top_Pivot.getCurrentPosition();
-
-        Top_Pivot_PID = top.pivot_controller.calculate(Pivot_Current_Position, Pivot_Target) * 0.8;
-
-        Pivot_FF = Math.cos(Math.toRadians(Pivot_Target / ticks_in_degrees)) * pivot_f;
-
-        Pivot_Power = Top_Pivot_PID + Pivot_FF;
-
-        top.Top_Pivot.setPower(Pivot_Power);
-
-    }
-
-    public void Sleep(double Sleep_Time){
-
-        Start_Time = elapsedTime.milliseconds();
-
-        Current_Time = elapsedTime.milliseconds();
-
-        Time_Difference = Current_Time - Start_Time;
-
-        while (Time_Difference < Sleep_Time){
-
-            Top_Pivot_Position();
-
-            Slide_Position();
-
-            Current_Time = elapsedTime.milliseconds();
-
-            Time_Difference = Current_Time - Start_Time;
-
-        }
-
-    }
-
-    public void AutoCycle() {
-
-        bottom.Base_Pivot.setPosition(Base_Pivot_Collect);
-
-        Odo_Drive(-125, -24, 88.5);
-
-        bottom.Base_Pivot.setPosition(Base_Pivot_Collect);
-
-        bottom.Base_Gripper.setPosition(Base_Gripper_Open);
-
-        //cone 1
-        CollectCone(De_Pos_1);
-
-        top.Top_Gripper.setPosition(0);
-
-        Time = elapsedTime.milliseconds() > 27000;
-
-        if (!abort && !Time) {
-
-            top.Top_Gripper.setPosition(0);
-
-            DropCycleCone();
-        }
-
-        Time = elapsedTime.milliseconds() > 27000;
-
-        if (abort || Time) {
-
-            if (collectionSlides.Extend.getCurrentPosition() < -20){
-                collectionSlides.Collect_RunToPosition(0, Slides_Reverse_Max_Speed);
-            }
-
-            Pivot_Target = Top_Pivot_Nest_Position;
-
-            bottom.Base_Pivot.setPosition(Base_Pivot_Transfer_Pos);
-
-        }else {
-
-            Odo_Drive(-125, -24, 88.5);
-
-            bottom.Base_Gripper.setPosition(Base_Gripper_Open);
-
-            bottom.Base_Pivot.setPosition(Base_Pivot_Collect);
-
-            //cone 2
-            CollectCone(De_Pos_2);
-
-            top.Top_Gripper.setPosition(Top_Gripper_Closed);
-
-            Time = elapsedTime.milliseconds() > 27000;
-
-            if (!abort && !Time) {
-
-                top.Top_Gripper.setPosition(0);
-
-                DropCycleCone();
-            }
+            telemetry.addData("X", X);
+            telemetry.addData("Y", Y);
+            telemetry.addData("heading", Math.toDegrees(heading));
+            telemetry.update();
 
         }
     }
-
 
 }

@@ -1,25 +1,36 @@
 package org.firstinspires.ftc.teamcode.Teleop;
 
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.Auto_Collect_Cone_Distance;
+import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.CenterOfScreen;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.Collect_Cone_Distance;
+import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.ConversionPixelstoServoPosition;
+import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.CurrentDraw;
+import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.CurrentDrawSpike;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.Current_Time;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.Delivery_Slides_Max_Speed;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.Delivery_Slides_Max_Speed_Reverse;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.Full_Cycle_Toggle;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.Nest_Check_Blue;
+import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.OldCurrent;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.Pivot_Current_Position;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.Pivot_FF;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.Pivot_Power;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.Pivot_Target;
+import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.RRXdist;
+import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.RRYdist;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.Slides_Safety_Stop;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.SlowPoint;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.Start_Time;
+import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.TargetPixels;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.Time_Difference;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.Top_Pivot_PID;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.Trigger_Collect;
+import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.botHeading;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.collecting_cone;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.conefound;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.conefound_Noslides;
+import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.deltaServoPosition;
+import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.denominator;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.heading;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.horizontal;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.pivot;
@@ -27,8 +38,11 @@ import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.piv
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.pivot_f;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.pivot_i;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.pivot_p;
+import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.rectPositionFromLeft;
+import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.servoPosition;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.slides_Power;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.slides_slow_point;
+import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.slow1;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.throttle;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.ticks_in_degrees;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.vertical;
@@ -59,6 +73,8 @@ import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Setpoints.Top
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Setpoints.Top_Turn_Middle;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Setpoints.Top_Turn_Right;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -67,15 +83,18 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.Hardware.Rebuild_Subsystems.Base_Gripper;
 import org.firstinspires.ftc.teamcode.Hardware.Rebuild_Subsystems.Collection_Slides;
 import org.firstinspires.ftc.teamcode.Hardware.Rebuild_Subsystems.Delivery_Slides;
 import org.firstinspires.ftc.teamcode.Hardware.Rebuild_Subsystems.Drivetrain;
+import org.firstinspires.ftc.teamcode.Hardware.Rebuild_Subsystems.Odometry.Odometry;
 import org.firstinspires.ftc.teamcode.Hardware.Rebuild_Subsystems.OdometryInit;
 import org.firstinspires.ftc.teamcode.Hardware.Rebuild_Subsystems.Sensors;
 import org.firstinspires.ftc.teamcode.Hardware.Rebuild_Subsystems.Top_Gripper;
@@ -87,7 +106,7 @@ public class Rebuild_Teleop extends OpMode {
 
     Drivetrain drive = new Drivetrain();
 
-    OdometryInit odo = new OdometryInit();
+    Odometry odo = new Odometry();
 
     Delivery_Slides deliverySlides = new Delivery_Slides();
 
@@ -109,10 +128,15 @@ public class Rebuild_Teleop extends OpMode {
 
     ElapsedTime elapsedTime = new ElapsedTime();
 
+    public static FtcDashboard dashboard = FtcDashboard.getInstance();
+
+    public static Telemetry dashboardTelemetry = dashboard.getTelemetry();
+
     @Override
     public void loop() {
 
         /**Drive code*/
+
         previousGamepad1.copy(currentGamepad1);
         previousGamepad2.copy(currentGamepad2);
 
@@ -123,27 +147,31 @@ public class Rebuild_Teleop extends OpMode {
 
         throttle = (gamepad1.left_trigger * 0.4) + throttle;
 
-        if (gamepad1.right_trigger > 0) {
+        if (gamepad1.right_bumper) {
             throttle = 0.3;
         }
 
-        drive.RF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        drive.RB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        drive.LF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        drive.LB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
         vertical = -gamepad1.right_stick_y;
-        horizontal = -gamepad1.right_stick_x;
+        horizontal = -gamepad1.right_stick_x*1.5;
         pivot = gamepad1.left_stick_x;
 
-        drive.RF.setPower((throttle *1.15)*(-pivot + (vertical - horizontal)));
-        drive.RB.setPower(throttle *(-pivot + (vertical + horizontal)));
-        drive.LF.setPower((throttle *1.15)*(pivot + (vertical + horizontal)));
-        drive.LB.setPower(throttle *(pivot + (vertical - horizontal)));
+        heading = sensors.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS);
+
+        botHeading = -heading.firstAngle;
+
+        RRXdist = vertical * Math.cos(-botHeading) + horizontal * Math.sin(-botHeading);
+        RRYdist = vertical * Math.sin(-botHeading) - horizontal * Math.cos(-botHeading);
+
+        denominator = Math.max(Math.abs(RRYdist) + Math.abs(RRXdist) + Math.abs(pivot), 1);
+
+        drive.RF.setPower(throttle*(-pivot + (RRXdist - RRYdist)) / denominator);
+        drive.RB.setPower((throttle*1.15)*(-pivot + (RRXdist + RRYdist)) / denominator);
+        drive.LF.setPower(throttle*(pivot + (RRXdist + RRYdist)) / denominator);
+        drive.LB.setPower((throttle*1.15)*(pivot + (RRXdist - RRYdist)) / denominator);
 
         /**Collection slides*/
 
-        if(gamepad2.left_trigger > 0){
+        if(gamepad2.left_trigger > 0 || gamepad1.back){
 
             collectionSlides.Extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
@@ -165,6 +193,12 @@ public class Rebuild_Teleop extends OpMode {
         Slides_Safety_Stop = collectionSlides.Extend.getCurrentPosition() < Stop_Point;
 
         SlowPoint = sensors.Collect_Cone.getDistance(DistanceUnit.MM) < slides_slow_point;
+
+        OldCurrent = CurrentDraw;
+
+        CurrentDraw = collectionSlides.Extend.getCurrent(CurrentUnit.AMPS);
+
+        CurrentDrawSpike = (CurrentDraw - OldCurrent) > 1.2 && collectionSlides.Extend.getCurrentPosition() < -100 && !conefound;
 
         if (SlowPoint && collectionSlides.Extend.getVelocity() < 0 && collectionSlides.Extend.getCurrentPosition() < -50){
             collectionSlides.Extend.setPower(-0.2);
@@ -197,7 +231,7 @@ public class Rebuild_Teleop extends OpMode {
 
         }
 
-        if (Slides_Safety_Stop && !conefound){
+        if (Slides_Safety_Stop || CurrentDrawSpike && !conefound){
             collectionSlides.Extend.setPower(0);
 
             collectionSlides.Extend.setTargetPosition(0);
@@ -207,7 +241,7 @@ public class Rebuild_Teleop extends OpMode {
             collectionSlides.Extend.setPower(0.6);
         }
 
-        if (conefound && bottom.Base_Pivot.getPosition() < 0.2 && collectionSlides.Extend.getVelocity() < 0){
+        if (conefound && bottom.Base_Pivot.getPosition() < 0.4 && collectionSlides.Extend.getVelocity() < 0){
 
             collectionSlides.Extend.setPower(0);
 
@@ -392,99 +426,105 @@ public class Rebuild_Teleop extends OpMode {
         /** Delivery slides*/
 
         //High pole set point
-        if(gamepad2.left_bumper){
+        if(gamepad2.left_bumper || gamepad1.left_bumper){
             deliverySlides.DeliverySlides(High_Pole_Driver, Delivery_Slides_Max_Speed);
         }
 
-        //Auto test button
-        if(gamepad2.dpad_left){
-
-            deliverySlides.Right_Slide.setTargetPosition(High_Pole_Auto);
-            deliverySlides.Left_Slide.setTargetPosition(High_Pole_Auto);
-
-            deliverySlides.Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            deliverySlides.Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            deliverySlides.Right_Slide.setPower(1);
-            deliverySlides.Left_Slide.setPower(1);
-
-            while (deliverySlides.Right_Slide.getCurrentPosition() < 870){
-
-                Pivot_Target = 885;
-
-                Top_Pivot_Position();
-
-                top.Top_Turn_Table.setPosition(0.35);
-
-            }
-
-            try {
-                Thread.sleep(300);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-
-            Pivot_Target = 1000;
-
-            Top_Pivot_Position();
-
-            try {
-                Thread.sleep(50);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-
-            Top_Pivot_Position();
-
-            try {
-                Thread.sleep(50);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-
-            Top_Pivot_Position();
-
-            try {
-                Thread.sleep(50);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-
-            top.Top_Gripper.setPosition(Top_Gripper_Open);
-
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-
-            deliverySlides.Right_Slide.setTargetPosition(0);
-            deliverySlides.Left_Slide.setTargetPosition(0);
-
-            deliverySlides.Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            deliverySlides.Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            deliverySlides.Right_Slide.setPower(-0.9);
-            deliverySlides.Left_Slide.setPower(-0.9);
-
-            top.Top_Turn_Table.setPosition(Top_Turn_Middle);
-
-            top.Top_Gripper.setPosition(Top_Gripper_Open_Wide);
-
-            Pivot_Target = Top_Pivot_Waiting_For_Cone;
-
-            slides_Power = true;
-
-        }
+//        //Auto test button
+//        if(gamepad2.dpad_left){
+//
+//            deliverySlides.Right_Slide.setTargetPosition(High_Pole_Auto);
+//            deliverySlides.Left_Slide.setTargetPosition(High_Pole_Auto);
+//
+//            deliverySlides.Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//            deliverySlides.Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//
+//            deliverySlides.Right_Slide.setPower(1);
+//            deliverySlides.Left_Slide.setPower(1);
+//
+//            while (deliverySlides.Right_Slide.getCurrentPosition() < 870){
+//
+//                Pivot_Target = 885;
+//
+//                Top_Pivot_Position();
+//
+//                top.Top_Turn_Table.setPosition(0.35);
+//
+//            }
+//
+//            try {
+//                Thread.sleep(300);
+//            } catch (InterruptedException e) {
+//                throw new RuntimeException(e);
+//            }
+//
+//            Pivot_Target = 1000;
+//
+//            Top_Pivot_Position();
+//
+//            try {
+//                Thread.sleep(50);
+//            } catch (InterruptedException e) {
+//                throw new RuntimeException(e);
+//            }
+//
+//            Top_Pivot_Position();
+//
+//            try {
+//                Thread.sleep(50);
+//            } catch (InterruptedException e) {
+//                throw new RuntimeException(e);
+//            }
+//
+//            Top_Pivot_Position();
+//
+//            try {
+//                Thread.sleep(50);
+//            } catch (InterruptedException e) {
+//                throw new RuntimeException(e);
+//            }
+//
+//            top.Top_Gripper.setPosition(Top_Gripper_Open);
+//
+//            try {
+//                Thread.sleep(200);
+//            } catch (InterruptedException e) {
+//                throw new RuntimeException(e);
+//            }
+//
+//            deliverySlides.Right_Slide.setTargetPosition(0);
+//            deliverySlides.Left_Slide.setTargetPosition(0);
+//
+//            deliverySlides.Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//            deliverySlides.Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//
+//            deliverySlides.Right_Slide.setPower(-0.9);
+//            deliverySlides.Left_Slide.setPower(-0.9);
+//
+//            top.Top_Turn_Table.setPosition(Top_Turn_Middle);
+//
+//            top.Top_Gripper.setPosition(Top_Gripper_Open_Wide);
+//
+//            Pivot_Target = Top_Pivot_Waiting_For_Cone;
+//
+//            slides_Power = true;
+//
+//        }
 
         //Return to zero
-        if(gamepad2.right_trigger > 0){
+
+        if(gamepad2.right_trigger > 0 || gamepad1.right_trigger > 0){
 
             deliverySlides.DeliverySlides(0, Delivery_Slides_Max_Speed_Reverse);
 
             top.Top_Gripper.setPosition(Top_Gripper_Open_Wide);
 
-            Pivot_Target = Top_Pivot_Waiting_For_Cone;
+            if (bottom.Destacker_Left.getPosition() > 0.9){
+                Pivot_Target = Top_Pivot_Nest_Position;
+            }else {
+                Pivot_Target = Top_Pivot_Waiting_For_Cone;
+            }
+
 
             slides_Power = true;
 
@@ -492,49 +532,43 @@ public class Rebuild_Teleop extends OpMode {
 
         /** Manual controls*/
 
-        if (gamepad1.dpad_right && bottom.Base_Pivot.getPosition() <= 0.3){
-            bottom.Base_Pivot.setPosition(0.38);
-        }else if (gamepad1.dpad_right && bottom.Base_Pivot.getPosition() == 0.38){
-            bottom.Base_Pivot.setPosition(0.3);
-        }
-
-        if(currentGamepad2.y && !previousGamepad2.y && top.Top_Gripper.getPosition() == 0){
+        if(currentGamepad1.y && !previousGamepad1.y && top.Top_Gripper.getPosition() == 0){
             top.Top_Gripper.setPosition(Top_Gripper_Open_Wide);
-        }else if(currentGamepad2.y && !previousGamepad2.y && top.Top_Gripper.getPosition() > 0){
+        }else if(currentGamepad1.y && !previousGamepad1.y && top.Top_Gripper.getPosition() > 0){
             top.Top_Gripper.setPosition(Top_Gripper_Closed);
         }
 
-        if(currentGamepad2.a && !previousGamepad2.a && bottom.Base_Pivot.getPosition() < 0.45){
+        if(currentGamepad1.a && !previousGamepad1.a && bottom.Base_Pivot.getPosition() < 0.45){
             bottom.Base_Pivot.setPosition(Base_Pivot_Flip);
-        }else if(currentGamepad2.a && !previousGamepad2.a && bottom.Base_Pivot.getPosition() > 0){
+        }else if(currentGamepad1.a && !previousGamepad1.a && bottom.Base_Pivot.getPosition() > 0){
             bottom.Base_Pivot.setPosition(Base_Pivot_Collect);
         }
 
-        if(currentGamepad2.b && !previousGamepad2.b && bottom.Base_Gripper.getPosition() == Base_Gripper_Closed) {
+        if(currentGamepad1.b && !previousGamepad1.b && bottom.Base_Gripper.getPosition() == Base_Gripper_Closed) {
             bottom.Base_Gripper.setPosition(Base_Gripper_Open);
-        }else if(currentGamepad2.b && !previousGamepad2.b && bottom.Base_Gripper.getPosition() > Base_Gripper_Closed){
+        }else if(currentGamepad1.b && !previousGamepad1.b && bottom.Base_Gripper.getPosition() > Base_Gripper_Closed){
             bottom.Base_Gripper.setPosition(Base_Gripper_Closed);
         }
 
         /** Destacker Position */
 
-        if (gamepad1.dpad_up && top.Top_Pivot.getCurrentPosition() > 180) {
+        if (gamepad2.dpad_up && top.Top_Pivot.getCurrentPosition() > 180) {
             bottom.Destacker_Position(De_Pos_1);
             bottom.Base_Pivot.setPosition(0.3);
         }
-        if (gamepad1.right_bumper && top.Top_Pivot.getCurrentPosition() > 180) {
+        if (gamepad2.right_bumper && top.Top_Pivot.getCurrentPosition() > 180) {
             bottom.Destacker_Position(De_Pos_1);
             bottom.Base_Pivot.setPosition(Base_Pivot_Collect);
         }
-        if (gamepad1.y && top.Top_Pivot.getCurrentPosition() > 180) {
+        if (gamepad2.y && top.Top_Pivot.getCurrentPosition() > 180) {
             bottom.Destacker_Position(De_Pos_3);
             bottom.Base_Pivot.setPosition(Base_Pivot_Collect);
         }
-        if (gamepad1.b && top.Top_Pivot.getCurrentPosition() > 180) {
+        if (gamepad2.b && top.Top_Pivot.getCurrentPosition() > 180) {
             bottom.Destacker_Position(De_Pos_4);
             bottom.Base_Pivot.setPosition(Base_Pivot_Collect);
         }
-        if (gamepad1.a && top.Top_Pivot.getCurrentPosition() > 180) {
+        if (gamepad2.a && top.Top_Pivot.getCurrentPosition() > 180) {
             bottom.Destacker_Position(De_Pos_5);
             bottom.Base_Pivot.setPosition(Base_Pivot_Collect);
         }
@@ -543,38 +577,44 @@ public class Rebuild_Teleop extends OpMode {
 
         Top_Pivot_Position();
 
-        odo.odometry.updatePose();
+        if (gamepad2.dpad_right){
+            alignToPole();
+        }
+
+        odo.odometry();
 
         heading = sensors.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
-        telemetry.addData("Top Pivot", bottom.Base_Pivot.getPosition());
+        telemetry.addData("Base pivot", bottom.Base_Pivot.getPosition());
         telemetry.addData("Full cycle toggle", Full_Cycle_Toggle);
         telemetry.addData("Distance sensor", sensors.Collect_Cone.getDistance(DistanceUnit.MM));
         telemetry.addData("Top_Pivot Target", Pivot_Target);
         telemetry.addData("Top_Pivot", top.Top_Pivot.getCurrentPosition());
         telemetry.addData("Extend ticks", collectionSlides.Extend.getCurrentPosition());
         telemetry.addData("Extend velocity", collectionSlides.Extend.getVelocity());
-        telemetry.addData("Extend velocity", sensors.pole.getTargetHighrectX());
         telemetry.addData("Pivot current draw", top.Top_Pivot.getCurrent(CurrentUnit.MILLIAMPS));
 
-        telemetry.addData("heading", heading.firstAngle);
-        telemetry.addData("X", odo.getXpos());
-        telemetry.addData("Y", odo.getYpos());
+        telemetry.addData("heading", odo.oldHeading);
+        telemetry.addData("X", odo.X);
+        telemetry.addData("Y", odo.Y);
 
-        telemetry.addData("Left pod", odo.leftOdometer.getPosition());
-        telemetry.addData("Right pod", odo.rightOdometer.getPosition());
-        telemetry.addData("center pod", odo.centerOdometer.getPosition());
         telemetry.addData("Extend", collectionSlides.Extend.getCurrentPosition());
         telemetry.addData("Right slide", deliverySlides.Right_Slide.getCurrentPosition());
         telemetry.addData("Left slide", deliverySlides.Left_Slide.getCurrentPosition());
         telemetry.addData("Blue", sensors.Nest_Check.blue());
+        telemetry.addLine();
+        telemetry.addData("Target distance in pixels", TargetPixels);
+        telemetry.addData("Pole alignment servo position", servoPosition);
+        telemetry.addData("Pole alignment delta position", deltaServoPosition);
+        telemetry.addData("turn pos", top.Top_Turn_Table.getPosition());
         telemetry.update();
-
 
     }
 
     @Override
     public void init() {
+
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         odo.init(hardwareMap);
 
@@ -601,6 +641,8 @@ public class Rebuild_Teleop extends OpMode {
         Pivot_Target = Top_Pivot_Nest_Position;
 
         elapsedTime.reset();
+
+        top.Top_Turn_Table.setPosition(Top_Turn_Middle                                                      );
 
     }
 
@@ -656,6 +698,33 @@ public class Rebuild_Teleop extends OpMode {
 
             Time_Difference = Current_Time - Start_Time;
 
+        }
+
+    }
+
+    public void alignToPole(){
+
+        if (top.Top_Pivot.getCurrentPosition() > 740 && sensors.pole.getTargetHighrectX() > 0){
+
+            rectPositionFromLeft = sensors.pole.getTargetHighrectX();
+
+            TargetPixels =  CenterOfScreen - rectPositionFromLeft;
+
+            deltaServoPosition = TargetPixels/ConversionPixelstoServoPosition;
+
+            servoPosition = top.Top_Turn_Table.getPosition() + deltaServoPosition;
+
+            if (servoPosition > 0.65){
+                servoPosition = 0.65;
+            }else if (servoPosition < 0.35) {
+                servoPosition = 0.35;
+            }
+
+            top.Top_Turn_Table.setPosition(servoPosition);
+        }
+
+        if (sensors.pole.getTargetHighrectX() <= 0){
+            top.Top_Turn_Table.setPosition(Top_Turn_Middle);
         }
 
     }

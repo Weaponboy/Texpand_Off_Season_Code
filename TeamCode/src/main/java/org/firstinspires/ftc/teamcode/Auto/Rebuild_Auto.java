@@ -3,12 +3,15 @@ package org.firstinspires.ftc.teamcode.Auto;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.Collection_Slides_Max_Speed;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.Collection_slow_power;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.ConvertedHeading;
+import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.CurrentDraw;
+import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.CurrentDrawSpike;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.Current_Time;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.Delivery_Slides_Max_Speed;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.Delivery_Slides_Max_Speed_Reverse;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.Horizontal;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.Nest_Check;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.Nest_Check_Blue;
+import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.OldCurrent;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.Pivot;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.PivotPID;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.Pivot_Current_Position;
@@ -44,7 +47,6 @@ import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.tic
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Setpoints.Base_Gripper_Closed;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Setpoints.Base_Gripper_Open;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Setpoints.Base_Pivot_Collect;
-import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Setpoints.Base_Pivot_Flip;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Setpoints.Base_Pivot_Out_Way;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Setpoints.Base_Pivot_Transfer_Pos;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Setpoints.De_Pos_1;
@@ -76,14 +78,13 @@ import static org.firstinspires.ftc.teamcode.Hardware.Rebuild_Subsystems.Odometr
 
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.arcrobotics.ftclib.controller.PIDFController;
-import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants;
 import org.firstinspires.ftc.teamcode.Hardware.Rebuild_Subsystems.Base_Gripper;
 import org.firstinspires.ftc.teamcode.Hardware.Rebuild_Subsystems.Collection_Slides;
 import org.firstinspires.ftc.teamcode.Hardware.Rebuild_Subsystems.Delivery_Slides;
@@ -91,8 +92,6 @@ import org.firstinspires.ftc.teamcode.Hardware.Rebuild_Subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Hardware.Rebuild_Subsystems.Odometry.Odometry;
 import org.firstinspires.ftc.teamcode.Hardware.Rebuild_Subsystems.Sensors;
 import org.firstinspires.ftc.teamcode.Hardware.Rebuild_Subsystems.Top_Gripper;
-
-import java.util.List;
 
 
 @Autonomous
@@ -132,8 +131,6 @@ public class Rebuild_Auto extends LinearOpMode {
         Odo_Drive(-110, -3, 36, true);
 
         DropPreLoad();
-
-        Odo_Drive(-129, -21, 85.5, false);
 
         AutoCycle();
 
@@ -279,14 +276,14 @@ public class Rebuild_Auto extends LinearOpMode {
 
     public void AutoCycle() {
 
-        Odo_Drive(-125, -24, 88.5,false);
+        Odo_Drive(-129, -21, 85.5, false);
 
         bottom.Base_Pivot.setPosition(Base_Pivot_Collect);
 
         bottom.Base_Gripper.setPosition(Base_Gripper_Open);
 
         //cone 1
-        CollectCone(De_Pos_1);
+        CollectCone(De_Pos_1, -0);
 
         top.Top_Gripper.setPosition(0);
 
@@ -303,24 +300,20 @@ public class Rebuild_Auto extends LinearOpMode {
 
         if (abort || Time) {
 
-            if (collectionSlides.Extend.getCurrentPosition() < -20){
-                collectionSlides.Collect_RunToPosition(0, Slides_Reverse_Max_Speed);
-            }
-
             Pivot_Target = Top_Pivot_Nest_Position;
 
             bottom.Base_Pivot.setPosition(Base_Pivot_Transfer_Pos);
 
         }else {
 
-            Odo_Drive(-125, -24, 88.5,false);
+            Odo_Drive(-129, -21, 85.5, false);
 
             bottom.Base_Gripper.setPosition(Base_Gripper_Open);
 
             bottom.Base_Pivot.setPosition(Base_Pivot_Collect);
 
             //cone 2
-            CollectCone(De_Pos_2);
+            CollectCone(De_Pos_2, 0);
 
             top.Top_Gripper.setPosition(Top_Gripper_Closed);
 
@@ -337,24 +330,20 @@ public class Rebuild_Auto extends LinearOpMode {
 
             if (abort || Time) {
 
-                if (collectionSlides.Extend.getCurrentPosition() < -20){
-                    collectionSlides.Collect_RunToPosition(0, Slides_Reverse_Max_Speed);
-                }
-
                 Pivot_Target = Top_Pivot_Nest_Position;
 
                 bottom.Base_Pivot.setPosition(Base_Pivot_Transfer_Pos);
 
             }else {
 
-                Odo_Drive(-125, -24, 88.5,false);
+                Odo_Drive(-129, -21, 85.5, false);
 
                 bottom.Base_Gripper.setPosition(Base_Gripper_Open);
 
                 bottom.Base_Pivot.setPosition(Base_Pivot_Collect);
 
                 //cone 3
-                CollectCone(De_Pos_3);
+                CollectCone(De_Pos_3, 0);
 
                 top.Top_Gripper.setPosition(Top_Gripper_Closed);
 
@@ -371,24 +360,20 @@ public class Rebuild_Auto extends LinearOpMode {
 
                 if (abort || Time) {
 
-                    if (collectionSlides.Extend.getCurrentPosition() < -20){
-                        collectionSlides.Collect_RunToPosition(0, Slides_Reverse_Max_Speed);
-                    }
-
                     Pivot_Target = Top_Pivot_Nest_Position;
 
                     bottom.Base_Pivot.setPosition(Base_Pivot_Transfer_Pos);
 
                 }else {
 
-                    Odo_Drive(-125, -24, 88.5,false);
+                    Odo_Drive(-129, -21, 85.5, false);
 
                     bottom.Base_Gripper.setPosition(Base_Gripper_Open);
 
                     bottom.Base_Pivot.setPosition(Base_Pivot_Collect);
 
                     //cone 4
-                    CollectCone(De_Pos_4);
+                    CollectCone(De_Pos_4, 0);
 
                     top.Top_Gripper.setPosition(Top_Gripper_Closed);
 
@@ -405,24 +390,20 @@ public class Rebuild_Auto extends LinearOpMode {
 
                     if (abort || Time) {
 
-                        if (collectionSlides.Extend.getCurrentPosition() < -20){
-                            collectionSlides.Collect_RunToPosition(0, Slides_Reverse_Max_Speed);
-                        }
-
                         Pivot_Target = Top_Pivot_Nest_Position;
 
                         bottom.Base_Pivot.setPosition(Base_Pivot_Transfer_Pos);
 
                     }else {
 
-                        Odo_Drive(-125, -24, 88.5,false);
+                        Odo_Drive(-129, -21, 85.5, false);
 
                         bottom.Base_Gripper.setPosition(Base_Gripper_Open);
 
                         bottom.Base_Pivot.setPosition(Base_Pivot_Collect);
 
                         //cone 5
-                        CollectCone(De_Pos_5);
+                        CollectCone(De_Pos_5, 0);
 
                         top.Top_Gripper.setPosition(Top_Gripper_Closed);
 
@@ -433,6 +414,8 @@ public class Rebuild_Auto extends LinearOpMode {
                             top.Top_Gripper.setPosition(0);
 
                             DropCycleCone();
+
+                            bottom.Base_Pivot.setPosition(Base_Pivot_Transfer_Pos);
                         }
 
                     }
@@ -458,7 +441,7 @@ public class Rebuild_Auto extends LinearOpMode {
         Odo_Drive(125, -28, 270,false);
 
         //cone 1
-        CollectCone(De_Pos_1);
+        CollectCone(De_Pos_1, 0);
 
         top.Top_Gripper.setPosition(0);
 
@@ -496,7 +479,7 @@ public class Rebuild_Auto extends LinearOpMode {
             bottom.Base_Pivot.setPosition(Base_Pivot_Collect);
 
             //cone 2
-            CollectCone(0.2);
+            CollectCone(0.2, 0);
 
             top.Top_Gripper.setPosition(0);
 
@@ -535,7 +518,7 @@ public class Rebuild_Auto extends LinearOpMode {
                 bottom.Base_Pivot.setPosition(0.05);
 
                 //cone 3
-                CollectCone(De_Pos_3);
+                CollectCone(De_Pos_3, 0);
 
                 top.Top_Gripper.setPosition(0);
 
@@ -574,7 +557,7 @@ public class Rebuild_Auto extends LinearOpMode {
                     bottom.Base_Pivot.setPosition(0.05);
 
                     //cone 4
-                    CollectCone(De_Pos_4);
+                    CollectCone(De_Pos_4, 0);
 
                     top.Top_Gripper.setPosition(0);
 
@@ -612,7 +595,7 @@ public class Rebuild_Auto extends LinearOpMode {
                         bottom.Base_Pivot.setPosition(0.05);
 
                         //cone 5
-                        CollectCone(De_Pos_5);
+                        CollectCone(De_Pos_5, 0);
 
                         top.Top_Gripper.setPosition(0);
 
@@ -638,7 +621,7 @@ public class Rebuild_Auto extends LinearOpMode {
 
     }
 
-    public void CollectCone(double De_pos){
+    public void CollectCone(double De_pos, double TopConeDistance){
 
         Nest_Check = sensors.Nest_Check.blue() > Nest_Check_Blue;
 
@@ -650,29 +633,37 @@ public class Rebuild_Auto extends LinearOpMode {
             bottom.Destacker_Right.setPosition(De_pos);
 
             if(bottom.Destacker_Left.getPosition() == De_Pos_1){
-                bottom.Base_Pivot.setPosition(0.38);
+                bottom.Base_Pivot.setPosition(0.05);
             }else{
                 bottom.Base_Pivot.setPosition(0.05);
             }
 
-            Sleep(400);
+            Sleep(200);
 
-            Pivot_Target = 200;
+            Pivot_Target = 190;
 
             collectionSlides.Extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
             collectionSlides.Extend.setPower(Collection_Slides_Max_Speed);
 
-            conefound = sensors.Collect_Cone.getDistance(DistanceUnit.MM) < 70;
+            conefound = sensors.Collect_Cone.getDistance(DistanceUnit.MM) < 65 + TopConeDistance;
+
+            CurrentDrawSpike = false;
 
             //extend till we find a cone or get to the slides limit
-            while (!conefound && collectionSlides.Extend.getCurrentPosition() > Stop_Point) {
+            while (!conefound && collectionSlides.Extend.getCurrentPosition() > (Stop_Point - 40) && !CurrentDrawSpike) {
+
+//                OldCurrent = CurrentDraw;
+//
+//                CurrentDraw = collectionSlides.Extend.getCurrent(CurrentUnit.AMPS);
+//
+//                CurrentDrawSpike = (CurrentDraw - OldCurrent) > 1.2 && collectionSlides.Extend.getCurrentPosition() < -100 && !conefound;
 
                 Slide_Position();
 
                 Top_Pivot_Position();
 
-                conefound = sensors.Collect_Cone.getDistance(DistanceUnit.MM) < 70;
+                conefound = sensors.Collect_Cone.getDistance(DistanceUnit.MM) < 65 + TopConeDistance;
 
                 SlowPoint = collectionSlides.Extend.getCurrentPosition() < -350;
 
@@ -686,7 +677,9 @@ public class Rebuild_Auto extends LinearOpMode {
 
             collectionSlides.Extend.setPower(0);
 
-            if (conefound || collectionSlides.Extend.getCurrentPosition() <= (Stop_Point - 20)){
+            conefound = sensors.Collect_Cone.getDistance(DistanceUnit.MM) < 65 + TopConeDistance;
+
+            if (conefound || collectionSlides.Extend.getCurrentPosition() <= ((Stop_Point - 40) + 20)){
 
                 //close gripper
                 bottom.Base_Gripper.setPosition(Base_Gripper_Closed);
@@ -707,17 +700,16 @@ public class Rebuild_Auto extends LinearOpMode {
 
                     Slide_Position();
 
-                    bottom.Base_Pivot.setPosition(0.82);
-
                     collectionSlides.Extend.setPower(0.9);
 
-                    if(collectionSlides.Extend.getCurrentPosition() > -175){
+                    bottom.Base_Pivot.setPosition(Base_Pivot_Transfer_Pos);
 
+                    if(collectionSlides.Extend.getCurrentPosition() > -200){
                         bottom.Destacker_Left.setPosition(De_Pos_5);
                         bottom.Destacker_Right.setPosition(De_Pos_5);
 
                     }
-                    if(collectionSlides.Extend.getCurrentPosition() > -100){
+                    if(collectionSlides.Extend.getCurrentPosition() > -50){
                         bottom.Base_Gripper.setPosition(0.4);
                     }
                     if(collectionSlides.Extend.getCurrentPosition() > -70){
@@ -754,15 +746,14 @@ public class Rebuild_Auto extends LinearOpMode {
 
                     if (counterfornest == 5){
 
-                        Pivot_Target = Top_Pivot_Waiting_For_Cone;
+                        bottom.Base_Pivot.setPosition(0.55);
 
                         Sleep(400);
 
-                        Pivot_Target = Top_Pivot_Nest_Position;
+                        bottom.Base_Pivot.setPosition(Base_Pivot_Out_Way);
 
                         Sleep(400);
                     }
-
 
                     Nest_Check = sensors.Nest_Check.blue() > Nest_Check_Blue;
 
@@ -774,7 +765,7 @@ public class Rebuild_Auto extends LinearOpMode {
                     //close top gripper
                     top.Top_Gripper.setPosition(Top_Gripper_Closed);
 
-                    Sleep(100);
+                    Sleep(400);
 
                 }else{
                     abort = true;
@@ -827,7 +818,7 @@ public class Rebuild_Auto extends LinearOpMode {
 
         top.Top_Gripper.setPosition(0);
 
-        Pivot_Target = 700;
+        Pivot_Target = 650;
 
         Top_Pivot_Position();
 
@@ -838,9 +829,7 @@ public class Rebuild_Auto extends LinearOpMode {
     public void DropPreLoad(){
 
         while (deliverySlides.Right_Slide.getCurrentPosition() < 600){
-
             Sleep(50);
-
         }
 
         Sleep(200);
@@ -878,7 +867,7 @@ public class Rebuild_Auto extends LinearOpMode {
 
         deliverySlides.DeliverySlides(High_Pole_Auto, Delivery_Slides_Max_Speed);
 
-        while (deliverySlides.Right_Slide.getCurrentPosition() < 870){
+        while (deliverySlides.Right_Slide.getCurrentPosition() < 910){
 
             Pivot_Target = 850;
 
@@ -888,7 +877,7 @@ public class Rebuild_Auto extends LinearOpMode {
 
         }
 
-        Sleep(300);
+        Sleep(400);
 
         Pivot_Target = 1000;
 
@@ -968,6 +957,5 @@ public class Rebuild_Auto extends LinearOpMode {
         }
 
     }
-
 
 }

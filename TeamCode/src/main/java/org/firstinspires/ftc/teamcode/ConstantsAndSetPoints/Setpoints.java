@@ -15,7 +15,7 @@ public class Setpoints {
     //Top pole set point
     public static int High_Pole_Driver = 740;
 
-    public static int High_Pole_Auto = 880;
+    public static int High_Pole_Auto = 920;
 
     //Medium pole set point
     public static int Medium_Pole = 250;
@@ -82,16 +82,16 @@ public class Setpoints {
     /**Destacker positions*/
 
     //the top cone on the stack
-    public static double De_Pos_1 = 0.4;
+    public static double De_Pos_1 = 0.36;
 
     //second cone from the top of the cone stack
-    public static double De_Pos_2 = 0.5;
+    public static double De_Pos_2 = 0.38;
 
     //middle cone on the stack
-    public static double De_Pos_3 = 0.6;
+    public static double De_Pos_3 = 0.5;
 
     //second from the bottom cone on the stack
-    public static double De_Pos_4 = 0.8;
+    public static double De_Pos_4 = 0.72;
 
     //normal cone collection position
     public static double De_Pos_5 = 1;

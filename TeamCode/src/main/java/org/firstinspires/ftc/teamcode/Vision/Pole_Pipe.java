@@ -68,7 +68,6 @@ public class Pole_Pipe extends OpenCvPipeline {
     public int numcontours;
     public int numrects;
 
-
     private int font = FONT_HERSHEY_COMPLEX;
     private double rectX = 0;
     public double TargetHighrectX = 0;
@@ -99,6 +98,9 @@ public class Pole_Pipe extends OpenCvPipeline {
     private List<Rect> rects = new ArrayList<>();
     //POLE WIDTH SPECIFIC VARIABLES
     private List<Rect> OrderedByWidthrects = new ArrayList<>();
+
+    private List<Rect> OrderedByHeightrects = new ArrayList<>();
+
     private int HighRect = -1;
 
     private int LowRect = -1;
@@ -160,12 +162,13 @@ public class Pole_Pipe extends OpenCvPipeline {
 
             //order the rectangles by width and find the first one that is the expected pole width
             OrderedByWidthrects = VisionUtils.sortRectsByMaxOption(rects.size(), VisionUtils.RECT_OPTION.WIDTH, rects);
+
             //find the widths expected for a high pole and a medium pole
             for (int i = 0; i < OrderedByWidthrects.size(); i++) {
+
                 if (OrderedByWidthrects.get(i).width < High_pole_max_width && (OrderedByWidthrects.get(i).width > High_pole_min_width)) {
                     HighRect = i;
                 }
-
 //                if (OrderedByWidthrects.get(i).width < Med_pole_max_width && (OrderedByWidthrects.get(i).width > Med_pole_min_width)) {
 //                    MedRect = i;
 //                }
@@ -173,10 +176,12 @@ public class Pole_Pipe extends OpenCvPipeline {
 //                if (OrderedByWidthrects.get(i).width < Low_pole_max_width && (OrderedByWidthrects.get(i).width > Low_pole_min_width)) {
 //                    LowRect = i;
 //                }
+
             }
 
 
             if (HighRect > -1) {
+
                 TargetHighRect = OrderedByWidthrects.get(HighRect);
                 rectangle(output, TargetHighRect, high, 8);
 
