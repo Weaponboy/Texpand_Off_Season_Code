@@ -78,6 +78,7 @@ import static org.firstinspires.ftc.teamcode.Hardware.Rebuild_Subsystems.Odometr
 
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.arcrobotics.ftclib.controller.PIDFController;
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -236,27 +237,12 @@ public class Rebuild_Auto extends LinearOpMode {
 
             //CONVERT TARGET TO ROBOT RELATIVE TARGET
             RRXdist = Xdist * Math.cos(Math.toRadians(360 - ConvertedHeading)) - Ydist * Math.sin(Math.toRadians(360 - ConvertedHeading));
-
             RRYdist = Xdist * Math.sin(Math.toRadians(360 - ConvertedHeading)) + Ydist * Math.cos(Math.toRadians(360 - ConvertedHeading));
 
             //SET DRIVE CONSTANTS TO THE PIDF CONTROL LOOPS
             Vertical = drivePID.calculate(RRXdist);
             Horizontal = strafePID.calculate(-RRYdist);
             Pivot = PivotPID.calculate(-rotdist);
-
-//            telemetry.addData("X", X);
-//            telemetry.addData("Y", Y);
-//            telemetry.addData("heading", Math.toDegrees(heading));
-//
-//            telemetry.addData("converted heading", ConvertedHeading);
-//
-//            telemetry.addData("X target", Xdist);
-//            telemetry.addData("Y target", Ydist);
-//            telemetry.addData("rot target", rotdist);
-//            telemetry.addData("X power", Vertical);
-//            telemetry.addData("Y power", Horizontal);
-//            telemetry.addData("rot power", Pivot);
-//            telemetry.update();
 
             //SET MOTOR POWER USING THE PID OUTPUT
             drive.RF.setPower(-Pivot + (Vertical + Horizontal));

@@ -27,10 +27,6 @@ public class Sensors {
 
     public ColorSensor Nest_Check;
 
-    public BNO055IMU imu = null;
-
-    Orientation YawAngle;
-
     public OpenCvWebcam BackWeb;
 
     public Pole_Pipe pole;
@@ -41,16 +37,6 @@ public class Sensors {
 
         pole = new Pole_Pipe();
 
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.calibrationDataFile = "BNO055IMUCalibration.json";
-        parameters.loggingEnabled = true;
-        parameters.loggingTag = "IMU";
-
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
-
-        imu.initialize(parameters);
 
         Nest_Check = hardwareMap.get(ColorSensor.class, "colour");
 

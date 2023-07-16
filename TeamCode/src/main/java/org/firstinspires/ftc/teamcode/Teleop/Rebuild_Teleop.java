@@ -72,6 +72,8 @@ import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Setpoints.Top
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Setpoints.Top_Turn_Left;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Setpoints.Top_Turn_Middle;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Setpoints.Top_Turn_Right;
+import static org.firstinspires.ftc.teamcode.Hardware.Rebuild_Subsystems.Odometry.Odometry.X;
+import static org.firstinspires.ftc.teamcode.Hardware.Rebuild_Subsystems.Odometry.Odometry.Y;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -136,7 +138,6 @@ public class Rebuild_Teleop extends OpMode {
     public void loop() {
 
         /**Drive code*/
-
         previousGamepad1.copy(currentGamepad1);
         previousGamepad2.copy(currentGamepad2);
 
@@ -155,7 +156,7 @@ public class Rebuild_Teleop extends OpMode {
         horizontal = -gamepad1.right_stick_x*1.5;
         pivot = gamepad1.left_stick_x;
 
-        heading = sensors.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS);
+        heading = odo.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS);
 
         botHeading = -heading.firstAngle;
 
@@ -577,13 +578,17 @@ public class Rebuild_Teleop extends OpMode {
 
         Top_Pivot_Position();
 
-        if (gamepad2.dpad_right){
+        if (gamepad1.dpad_right){
             alignToPole();
+        }
+
+        if (gamepad1.dpad_left){
+            odo.resetHeading();
         }
 
         odo.odometry();
 
-        heading = sensors.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        heading = odo.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
         telemetry.addData("Base pivot", bottom.Base_Pivot.getPosition());
         telemetry.addData("Full cycle toggle", Full_Cycle_Toggle);
@@ -594,19 +599,19 @@ public class Rebuild_Teleop extends OpMode {
         telemetry.addData("Extend velocity", collectionSlides.Extend.getVelocity());
         telemetry.addData("Pivot current draw", top.Top_Pivot.getCurrent(CurrentUnit.MILLIAMPS));
 
-        telemetry.addData("heading", odo.oldHeading);
-        telemetry.addData("X", odo.X);
-        telemetry.addData("Y", odo.Y);
-
         telemetry.addData("Extend", collectionSlides.Extend.getCurrentPosition());
         telemetry.addData("Right slide", deliverySlides.Right_Slide.getCurrentPosition());
         telemetry.addData("Left slide", deliverySlides.Left_Slide.getCurrentPosition());
         telemetry.addData("Blue", sensors.Nest_Check.blue());
-        telemetry.addLine();
         telemetry.addData("Target distance in pixels", TargetPixels);
         telemetry.addData("Pole alignment servo position", servoPosition);
         telemetry.addData("Pole alignment delta position", deltaServoPosition);
         telemetry.addData("turn pos", top.Top_Turn_Table.getPosition());
+        telemetry.addLine();
+        telemetry.addData("IMU heading", heading.firstAngle);
+        telemetry.addData("heading", Math.toDegrees(Odometry.heading));
+        telemetry.addData("X", X);
+        telemetry.addData("Y", Y);
         telemetry.update();
 
     }
@@ -642,7 +647,7 @@ public class Rebuild_Teleop extends OpMode {
 
         elapsedTime.reset();
 
-        top.Top_Turn_Table.setPosition(Top_Turn_Middle                                                      );
+        top.Top_Turn_Table.setPosition(Top_Turn_Middle);
 
     }
 
@@ -708,11 +713,9 @@ public class Rebuild_Teleop extends OpMode {
 
             rectPositionFromLeft = sensors.pole.getTargetHighrectX();
 
-            TargetPixels =  CenterOfScreen - rectPositionFromLeft;
+            deltaServoPosition = rectPositionFromLeft/ConversionPixelstoServoPosition;
 
-            deltaServoPosition = TargetPixels/ConversionPixelstoServoPosition;
-
-            servoPosition = top.Top_Turn_Table.getPosition() + deltaServoPosition;
+            servoPosition = deltaServoPosition + 0.4;
 
             if (servoPosition > 0.65){
                 servoPosition = 0.65;
