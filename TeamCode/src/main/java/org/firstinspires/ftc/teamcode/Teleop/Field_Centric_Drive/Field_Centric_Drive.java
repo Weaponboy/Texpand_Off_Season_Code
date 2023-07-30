@@ -89,6 +89,7 @@ public class Field_Centric_Drive extends OpMode {
         parameters.loggingTag = "IMU";
 
         imu = hardwareMap.get(BNO055IMU.class, "imu");
+
         imu.initialize(parameters);
 
         RF = hardwareMap.get(DcMotor.class, "RF");

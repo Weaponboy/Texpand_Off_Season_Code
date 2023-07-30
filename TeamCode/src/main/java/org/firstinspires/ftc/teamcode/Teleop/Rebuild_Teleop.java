@@ -72,6 +72,8 @@ import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Setpoints.Top
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Setpoints.Top_Turn_Left;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Setpoints.Top_Turn_Middle;
 import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Setpoints.Top_Turn_Right;
+import static org.firstinspires.ftc.teamcode.Hardware.Rebuild_Subsystems.Odometry.Odometry.X;
+import static org.firstinspires.ftc.teamcode.Hardware.Rebuild_Subsystems.Odometry.Odometry.Y;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -136,7 +138,6 @@ public class Rebuild_Teleop extends OpMode {
     public void loop() {
 
         /**Drive code*/
-
         previousGamepad1.copy(currentGamepad1);
         previousGamepad2.copy(currentGamepad2);
 
@@ -155,19 +156,10 @@ public class Rebuild_Teleop extends OpMode {
         horizontal = -gamepad1.right_stick_x*1.5;
         pivot = gamepad1.left_stick_x;
 
-        heading = sensors.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS);
-
-        botHeading = -heading.firstAngle;
-
-        RRXdist = vertical * Math.cos(-botHeading) + horizontal * Math.sin(-botHeading);
-        RRYdist = vertical * Math.sin(-botHeading) - horizontal * Math.cos(-botHeading);
-
-        denominator = Math.max(Math.abs(RRYdist) + Math.abs(RRXdist) + Math.abs(pivot), 1);
-
-        drive.RF.setPower(throttle*(-pivot + (RRXdist - RRYdist)) / denominator);
-        drive.RB.setPower((throttle*1.15)*(-pivot + (RRXdist + RRYdist)) / denominator);
-        drive.LF.setPower(throttle*(pivot + (RRXdist + RRYdist)) / denominator);
-        drive.LB.setPower((throttle*1.15)*(pivot + (RRXdist - RRYdist)) / denominator);
+        drive.RF.setPower(throttle*(-pivot + (horizontal - vertical)));
+        drive.RB.setPower((throttle*1.15)*(-pivot + (horizontal + vertical)));
+        drive.LF.setPower(throttle*(pivot + (horizontal + vertical)));
+        drive.LB.setPower((throttle*1.15)*(pivot + (horizontal - vertical)));
 
         /**Collection slides*/
 
@@ -430,89 +422,6 @@ public class Rebuild_Teleop extends OpMode {
             deliverySlides.DeliverySlides(High_Pole_Driver, Delivery_Slides_Max_Speed);
         }
 
-//        //Auto test button
-//        if(gamepad2.dpad_left){
-//
-//            deliverySlides.Right_Slide.setTargetPosition(High_Pole_Auto);
-//            deliverySlides.Left_Slide.setTargetPosition(High_Pole_Auto);
-//
-//            deliverySlides.Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//            deliverySlides.Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//
-//            deliverySlides.Right_Slide.setPower(1);
-//            deliverySlides.Left_Slide.setPower(1);
-//
-//            while (deliverySlides.Right_Slide.getCurrentPosition() < 870){
-//
-//                Pivot_Target = 885;
-//
-//                Top_Pivot_Position();
-//
-//                top.Top_Turn_Table.setPosition(0.35);
-//
-//            }
-//
-//            try {
-//                Thread.sleep(300);
-//            } catch (InterruptedException e) {
-//                throw new RuntimeException(e);
-//            }
-//
-//            Pivot_Target = 1000;
-//
-//            Top_Pivot_Position();
-//
-//            try {
-//                Thread.sleep(50);
-//            } catch (InterruptedException e) {
-//                throw new RuntimeException(e);
-//            }
-//
-//            Top_Pivot_Position();
-//
-//            try {
-//                Thread.sleep(50);
-//            } catch (InterruptedException e) {
-//                throw new RuntimeException(e);
-//            }
-//
-//            Top_Pivot_Position();
-//
-//            try {
-//                Thread.sleep(50);
-//            } catch (InterruptedException e) {
-//                throw new RuntimeException(e);
-//            }
-//
-//            top.Top_Gripper.setPosition(Top_Gripper_Open);
-//
-//            try {
-//                Thread.sleep(200);
-//            } catch (InterruptedException e) {
-//                throw new RuntimeException(e);
-//            }
-//
-//            deliverySlides.Right_Slide.setTargetPosition(0);
-//            deliverySlides.Left_Slide.setTargetPosition(0);
-//
-//            deliverySlides.Right_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//            deliverySlides.Left_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//
-//            deliverySlides.Right_Slide.setPower(-0.9);
-//            deliverySlides.Left_Slide.setPower(-0.9);
-//
-//            top.Top_Turn_Table.setPosition(Top_Turn_Middle);
-//
-//            top.Top_Gripper.setPosition(Top_Gripper_Open_Wide);
-//
-//            Pivot_Target = Top_Pivot_Waiting_For_Cone;
-//
-//            slides_Power = true;
-//
-//        }
-
-        //Return to zero
-
         if(gamepad2.right_trigger > 0 || gamepad1.right_trigger > 0){
 
             deliverySlides.DeliverySlides(0, Delivery_Slides_Max_Speed_Reverse);
@@ -577,13 +486,13 @@ public class Rebuild_Teleop extends OpMode {
 
         Top_Pivot_Position();
 
-        if (gamepad2.dpad_right){
-            alignToPole();
+        if (gamepad1.dpad_left){
+            odo.resetHeading();
         }
 
         odo.odometry();
 
-        heading = sensors.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        heading = odo.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
         telemetry.addData("Base pivot", bottom.Base_Pivot.getPosition());
         telemetry.addData("Full cycle toggle", Full_Cycle_Toggle);
@@ -594,19 +503,19 @@ public class Rebuild_Teleop extends OpMode {
         telemetry.addData("Extend velocity", collectionSlides.Extend.getVelocity());
         telemetry.addData("Pivot current draw", top.Top_Pivot.getCurrent(CurrentUnit.MILLIAMPS));
 
-        telemetry.addData("heading", odo.oldHeading);
-        telemetry.addData("X", odo.X);
-        telemetry.addData("Y", odo.Y);
-
         telemetry.addData("Extend", collectionSlides.Extend.getCurrentPosition());
         telemetry.addData("Right slide", deliverySlides.Right_Slide.getCurrentPosition());
         telemetry.addData("Left slide", deliverySlides.Left_Slide.getCurrentPosition());
         telemetry.addData("Blue", sensors.Nest_Check.blue());
-        telemetry.addLine();
         telemetry.addData("Target distance in pixels", TargetPixels);
         telemetry.addData("Pole alignment servo position", servoPosition);
         telemetry.addData("Pole alignment delta position", deltaServoPosition);
         telemetry.addData("turn pos", top.Top_Turn_Table.getPosition());
+        telemetry.addLine();
+        telemetry.addData("IMU heading", heading.firstAngle);
+        telemetry.addData("heading", Math.toDegrees(Odometry.heading));
+        telemetry.addData("X", X);
+        telemetry.addData("Y", Y);
         telemetry.update();
 
     }
@@ -642,7 +551,7 @@ public class Rebuild_Teleop extends OpMode {
 
         elapsedTime.reset();
 
-        top.Top_Turn_Table.setPosition(Top_Turn_Middle                                                      );
+        top.Top_Turn_Table.setPosition(Top_Turn_Middle);
 
     }
 
@@ -708,11 +617,9 @@ public class Rebuild_Teleop extends OpMode {
 
             rectPositionFromLeft = sensors.pole.getTargetHighrectX();
 
-            TargetPixels =  CenterOfScreen - rectPositionFromLeft;
+            deltaServoPosition = rectPositionFromLeft/ConversionPixelstoServoPosition;
 
-            deltaServoPosition = TargetPixels/ConversionPixelstoServoPosition;
-
-            servoPosition = top.Top_Turn_Table.getPosition() + deltaServoPosition;
+            servoPosition = deltaServoPosition + 0.4;
 
             if (servoPosition > 0.65){
                 servoPosition = 0.65;

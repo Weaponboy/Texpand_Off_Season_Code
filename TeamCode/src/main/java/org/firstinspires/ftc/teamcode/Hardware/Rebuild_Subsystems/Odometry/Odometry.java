@@ -1,6 +1,10 @@
 package org.firstinspires.ftc.teamcode.Hardware.Rebuild_Subsystems.Odometry;
 
 
+import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.botHeading;
+import static org.firstinspires.ftc.teamcode.ConstantsAndSetPoints.Constants.heading;
+
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -8,10 +12,14 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+
 import java.util.ArrayList;
 
 import kotlin.Triple;
-
 
 public class Odometry{
 
@@ -42,6 +50,7 @@ public class Odometry{
     public int oldCenterPod = 0;
 
     static double startX = 0, startY = -5, startHeading = Math.toRadians(0);
+    static double oldXreset = 0, oldYreset = -5, oldHeadingreset = Math.toRadians(0);
 
     public static double X = startX, Y = startY, heading = startHeading;
 
@@ -55,6 +64,9 @@ public class Odometry{
     public double dx;
     public double dy;
 
+    public BNO055IMU imu = null;
+
+    Orientation YawAngle;
 
     public void odometry(){
 
@@ -95,6 +107,17 @@ public class Odometry{
         RB.setDirection(DcMotorSimple.Direction.FORWARD);
         LB.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json";
+        parameters.loggingEnabled = true;
+        parameters.loggingTag = "IMU";
+
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+
+        imu.initialize(parameters);
+
         RF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         RB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         LF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -108,6 +131,35 @@ public class Odometry{
         leftPod = LB;
         rightPod = RF;
         centerPod = LF;
+    }
+
+    public void resetHeading(){
+
+        odometry();
+
+        oldXreset = X;
+
+        oldYreset = Y;
+
+        leftPod.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightPod.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        centerPod.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        leftPod.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightPod.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        centerPod.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        YawAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+        botHeading = -YawAngle.firstAngle;
+
+        oldHeadingreset = Math.toRadians(botHeading);
+
+        X = oldXreset;
+
+        Y = oldYreset;
+
+        heading = oldHeadingreset;
 
     }
 

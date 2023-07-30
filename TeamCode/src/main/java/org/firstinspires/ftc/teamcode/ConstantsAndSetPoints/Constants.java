@@ -84,7 +84,7 @@ public class Constants {
 
     public static double servoPosition;
 
-    public static double ConversionPixelstoServoPosition = 2000;
+    public static double ConversionPixelstoServoPosition = 3200;
 
     //Camera real center
     public static double CenterOfScreen = 320;
