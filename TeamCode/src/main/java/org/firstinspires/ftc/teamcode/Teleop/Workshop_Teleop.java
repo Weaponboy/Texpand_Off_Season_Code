@@ -167,11 +167,6 @@ public class Workshop_Teleop extends OpMode {
 
         /** Delivery slides*/
 
-        //High pole set point
-        if(gamepad2.left_bumper || gamepad1.left_bumper){
-            deliverySlides.DeliverySlides(High_Pole_Driver, Delivery_Slides_Max_Speed);
-        }
-
         if(gamepad2.right_trigger > 0 || gamepad1.right_trigger > 0){
 
             deliverySlides.DeliverySlides(0, Delivery_Slides_Max_Speed_Reverse);
@@ -205,7 +200,7 @@ public class Workshop_Teleop extends OpMode {
 
         if(currentGamepad1.b && !previousGamepad1.b && bottom.Base_Gripper.getPosition() == Base_Gripper_Closed) {
             bottom.Base_Gripper.setPosition(Base_Gripper_Open);
-        }else if(currentGamepad1.b && !previousGamepad1.b && bottom.Base_Gripper.getPosition() > Base_Gripper_Closed){
+        }else if(currentGamepad1.b && !previousGamepad1.b && bottom.Base_Gripper.getPosition() > Base_Gripper_Closed && bottom.Base_Pivot.getPosition() < 0.4){
             bottom.Base_Gripper.setPosition(Base_Gripper_Closed);
         }
 
