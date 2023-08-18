@@ -208,29 +208,6 @@ public class Workshop_Teleop extends OpMode {
 
         Top_Pivot_Position();
 
-        telemetry.addData("Base pivot", bottom.Base_Pivot.getPosition());
-        telemetry.addData("Full cycle toggle", Full_Cycle_Toggle);
-        telemetry.addData("Distance sensor", sensors.Collect_Cone.getDistance(DistanceUnit.MM));
-        telemetry.addData("Top_Pivot Target", Pivot_Target);
-        telemetry.addData("Top_Pivot", top.Top_Pivot.getCurrentPosition());
-        telemetry.addData("Extend ticks", collectionSlides.Extend.getCurrentPosition());
-        telemetry.addData("Extend velocity", collectionSlides.Extend.getVelocity());
-        telemetry.addData("Pivot current draw", top.Top_Pivot.getCurrent(CurrentUnit.MILLIAMPS));
-
-        telemetry.addData("Extend", collectionSlides.Extend.getCurrentPosition());
-        telemetry.addData("Right slide", deliverySlides.Right_Slide.getCurrentPosition());
-        telemetry.addData("Left slide", deliverySlides.Left_Slide.getCurrentPosition());
-        telemetry.addData("Blue", sensors.Nest_Check.blue());
-        telemetry.addData("Target distance in pixels", TargetPixels);
-        telemetry.addData("Pole alignment servo position", servoPosition);
-        telemetry.addData("Pole alignment delta position", deltaServoPosition);
-        telemetry.addData("turn pos", top.Top_Turn_Table.getPosition());
-        telemetry.addLine();
-        telemetry.addData("IMU heading", heading.firstAngle);
-        telemetry.addData("heading", Math.toDegrees(Odometry.heading));
-        telemetry.addData("X", X);
-        telemetry.addData("Y", Y);
-        telemetry.update();
 
     }
 
