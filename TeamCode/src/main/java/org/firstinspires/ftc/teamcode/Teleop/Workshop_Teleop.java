@@ -110,10 +110,10 @@ public class Workshop_Teleop extends OpMode {
         horizontal = -gamepad1.right_stick_x*1.5;
         pivot = gamepad1.left_stick_x;
 
-        drive.RF.setPower(throttle*(-pivot + (horizontal - vertical)));
-        drive.RB.setPower((throttle*1.15)*(-pivot + (horizontal + vertical)));
-        drive.LF.setPower(throttle*(pivot + (horizontal + vertical)));
-        drive.LB.setPower((throttle*1.15)*(pivot + (horizontal - vertical)));
+        drive.RF.setPower(throttle*(-pivot + (vertical - horizontal)));
+        drive.RB.setPower((throttle*1.15)*(-pivot + (vertical + horizontal)));
+        drive.LF.setPower(throttle*(pivot + (vertical + horizontal)));
+        drive.LB.setPower((throttle*1.15)*(pivot + (vertical - horizontal)));
 
         /**Collection slides*/
 
