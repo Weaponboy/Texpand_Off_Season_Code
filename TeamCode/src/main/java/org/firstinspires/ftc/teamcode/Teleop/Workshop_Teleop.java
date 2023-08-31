@@ -106,6 +106,8 @@ public class Workshop_Teleop extends OpMode {
         currentGamepad1.copy(gamepad1);
         currentGamepad2.copy(gamepad2);
 
+        throttle = 0.3;
+
         vertical = -gamepad1.right_stick_y;
         horizontal = -gamepad1.right_stick_x*1.5;
         pivot = gamepad1.left_stick_x;

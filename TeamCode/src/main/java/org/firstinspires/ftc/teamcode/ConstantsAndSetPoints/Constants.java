@@ -102,7 +102,7 @@ public class Constants {
     public static double horizontal;
     public static double pivot;
 
-    public static double throttle = 0.3;
+    public static double throttle = 0.6;
 
     public static double brake = 0.5;
 
