@@ -58,8 +58,6 @@ public class SensorDigitalTouch extends LinearOpMode {
 
     DigitalChannel digitalTouch;  // Hardware Device Object
 
-
-
     @Override
     public void runOpMode() {
 

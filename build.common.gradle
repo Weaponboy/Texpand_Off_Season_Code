@@ -12,7 +12,6 @@
  *      apply from: '../build.common.gradle'
  *
  * which will pick up this file here. This approach allows makes it easier to integrate
- *
  * updates to the FTC SDK into your code.
  */
 
@@ -59,18 +58,18 @@ android {
         //noinspection ExpiredTargetSdkVersion
         targetSdkVersion 28
 
-//        /**
-//         * We keep the versionCode and versionName of robot controller applications in sync with
-//         * the master information published in the AndroidManifest.xml file of the FtcRobotController
-//         * module. This helps avoid confusion that might arise from having multiple versions of
-//         * a robot controller app simultaneously installed on a robot controller device.
-//         *
-//         * We accomplish this with the help of a funky little Groovy script that maintains that
-//         * correspondence automatically.
-//         *
-//         * @see <a href="http://developer.android.com/tools/building/configuring-gradle.html">Configure Your Build</a>
-//         * @see <a href="http://developer.android.com/tools/publishing/versioning.html">Versioning Your App</a>
-//         */
+        /**
+         * We keep the versionCode and versionName of robot controller applications in sync with
+         * the master information published in the AndroidManifest.xml file of the FtcRobotController
+         * module. This helps avoid confusion that might arise from having multiple versions of
+         * a robot controller app simultaneously installed on a robot controller device.
+         *
+         * We accomplish this with the help of a funky little Groovy script that maintains that
+         * correspondence automatically.
+         *
+         * @see <a href="http://developer.android.com/tools/building/configuring-gradle.html">Configure Your Build</a>
+         * @see <a href="http://developer.android.com/tools/publishing/versioning.html">Versioning Your App</a>
+         */
         def manifestFile = project(':FtcRobotController').file('src/main/AndroidManifest.xml');
         def manifestText = manifestFile.getText()
         //
@@ -123,8 +122,5 @@ android {
 }
 
 repositories {
-    flatDir {
-        dirs rootProject.file('libs')
-    }
 }
 

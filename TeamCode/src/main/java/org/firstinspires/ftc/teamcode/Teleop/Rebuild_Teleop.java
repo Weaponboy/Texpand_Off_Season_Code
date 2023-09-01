@@ -153,7 +153,7 @@ public class Rebuild_Teleop extends OpMode {
         }
 
         vertical = -gamepad1.right_stick_y;
-        horizontal = -gamepad1.right_stick_x*1.5;
+        horizontal = gamepad1.right_stick_x*1.5;
         pivot = gamepad1.left_stick_x;
 
         drive.RF.setPower(throttle*(-pivot + (vertical - horizontal)));
